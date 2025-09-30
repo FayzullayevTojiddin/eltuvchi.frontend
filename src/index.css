@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Eltuvchi Taxi Service Design System */
+
+@layer base {
+  :root {
+    /* Brand Colors - Transport themed */
+    --background: 0 0% 100%;
+    --foreground: 222 84% 5%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 84% 5%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 84% 5%;
+
+    /* Primary - Ash Blue */
+    --primary: 210 22% 49%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 210 22% 59%;
+
+    /* Secondary - Midsummer Night */
+    --secondary: 229 84% 5%;
+    --secondary-foreground: 0 0% 100%;
+
+    /* Success - Green for completed rides */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+
+    /* Warning - Watermelon Red */
+    --warning: 348 83% 47%;
+    --warning-foreground: 0 0% 100%;
+
+    /* Muted grays */
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 84% 5%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 210 22% 49%;
+
+    --radius: 0.75rem;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(210 22% 49%), hsl(210 22% 59%));
+    --gradient-secondary: linear-gradient(135deg, hsl(229 84% 5%), hsl(229 84% 15%));
+    --gradient-hero: linear-gradient(135deg, hsl(210 22% 49%) 0%, hsl(348 83% 47%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(210 40% 98%) 100%);
+
+    /* Shadows */
+    --shadow-primary: 0 10px 25px -5px hsl(210 22% 49% / 0.2);
+    --shadow-card: 0 4px 6px -1px hsl(0 0% 0% / 0.1);
+    --shadow-glow: 0 0 30px hsl(210 22% 59% / 0.3);
+
+    /* Sidebar colors */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5% 26%;
+    --sidebar-primary: 210 22% 49%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 222 84% 5%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 210 22% 49%;
+  }
+
+  .dark {
+    --background: 222 84% 5%;
+    --foreground: 210 40% 98%;
+
+    --card: 224 71% 4%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 224 71% 4%;
+    --popover-foreground: 210 40% 98%;
+
+    /* Primary - Ash Blue for dark mode */
+    --primary: 210 22% 69%;
+    --primary-foreground: 229 84% 5%;
+    --primary-glow: 210 22% 79%;
+
+    /* Secondary - Midsummer Night for dark mode */
+    --secondary: 229 84% 15%;
+    --secondary-foreground: 0 0% 100%;
+
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 348 83% 57%;
+    --warning-foreground: 0 0% 100%;
+
+    --muted: 217 33% 18%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 217 33% 18%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217 33% 18%;
+    --input: 217 33% 18%;
+    --ring: 210 22% 69%;
+
+    /* Dark mode gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(210 22% 69%), hsl(210 22% 79%));
+    --gradient-secondary: linear-gradient(135deg, hsl(229 84% 15%), hsl(229 84% 25%));
+    --gradient-hero: linear-gradient(135deg, hsl(210 22% 69%) 0%, hsl(348 83% 57%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(224 71% 4%) 0%, hsl(217 33% 15%) 100%);
+
+    /* Dark shadows */
+    --shadow-primary: 0 10px 25px -5px hsl(210 22% 69% / 0.3);
+    --shadow-card: 0 4px 6px -1px hsl(0 0% 0% / 0.3);
+    --shadow-glow: 0 0 30px hsl(210 22% 79% / 0.4);
+
+    --sidebar-background: 224 71% 4%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 210 22% 69%;
+    --sidebar-primary-foreground: 222 84% 5%;
+    --sidebar-accent: 217 33% 18%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 33% 18%;
+    --sidebar-ring: 210 22% 69%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
