@@ -54,28 +54,6 @@ const TaxiDashboard = () => {
         // {title: "Onlayn vaqt", value: "8.5", unit: "soat", icon: Clock, change: "+2.1h"},
     ]
 
-    const recentTrips = [
-        {id: "001", from: "Toshkent", to: "Samarqand", date: "2025-01-30", price: 100000, status: "completed"},
-        {id: "002", from: "Andijon", to: "Toshkent", date: "2025-01-29", price: 120000, status: "completed"},
-        {id: "003", from: "Buxoro", to: "Toshkent", date: "2025-01-28", price: 80000, status: "completed"},
-        {id: "004", from: "Toshkent", to: "Farg'ona", date: "2025-01-27", price: 150000, status: "completed"},
-    ]
-
-    const weeklyEarnings = [
-        {day: "Dush", amount: 350000},
-        {day: "Sesh", amount: 420000},
-        {day: "Chor", amount: 380000},
-        {day: "Pay", amount: 450000},
-        {day: "Juma", amount: 520000},
-        {day: "Shan", amount: 680000},
-        {day: "Yak", amount: 590000},
-    ]
-
-    const handleWithdrawMoney = () => {
-        console.log("Pul yechish so'rovi")
-        // Real implementation would process withdrawal
-    }
-
     const getFilteredEarnings = () => {
         const today = new Date().toISOString().split('T')[0]
 
