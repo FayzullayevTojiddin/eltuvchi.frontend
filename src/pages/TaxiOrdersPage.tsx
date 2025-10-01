@@ -614,22 +614,31 @@ const TaxiOrdersPage = () => {
                                         </div>
                                     </div>
 
-                                    <div className="border-t pt-4">
-                                        <h4 className="font-medium mb-2">Mijoz ma'lumotlari:</h4>
-                                        <div className="space-y-1 text-sm">
-                                            {/*<p className="flex items-center justify-between">*/}
-                                            {/*    <span>Mijoz reytingi:</span>*/}
-                                            {/*    <span>⭐ {order.client.rating || 4}</span>*/}
-                                            {/*</p>*/}
-                                            {/*<p className="flex items-center gap-1">*/}
-                                            {/*    <Phone className="h-3 w-3"/>*/}
-                                            {/*    <a href={`tel:${order.client.phone || "990690142"}`}*/}
-                                            {/*       className="text-primary hover:underline">*/}
-                                            {/*        {order.client.phone || "+998990690142"}*/}
-                                            {/*    </a>*/}
-                                            {/*</p>*/}
+                                    {order.client && (
+                                        <div className="border-t pt-4">
+                                            <h4 className="font-medium mb-2">Mijoz ma'lumotlari:</h4>
+                                            <div className="space-y-1 text-sm">
+                                                {order.client.rating && (
+                                                    <p className="flex items-center justify-between">
+                                                        <span>Mijoz reytingi:</span>
+                                                        <span>⭐ {order.client.rating}</span>
+                                                    </p>
+                                                )}
+                                                {order.client.phone && (
+                                                    <p className="flex items-center gap-1">
+                                                        <Phone className="h-3 w-3" />
+                                                        <a
+                                                            href={`tel:${order.client.phone}`}
+                                                            className="text-primary hover:underline"
+                                                        >
+                                                            {order.client.phone}
+                                                        </a>
+                                                    </p>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
+
 
                                     {order.status !== "completed" && (
                                         <div className="border-t pt-4">
