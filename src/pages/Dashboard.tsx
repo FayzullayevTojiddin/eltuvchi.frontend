@@ -1,6 +1,6 @@
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
 import {Button} from "@/components/ui/button"
-import {Car, CheckCircle, XCircle, Clock, TrendingUp, Calendar, DollarSign} from "lucide-react"
+import {Car, CheckCircle, XCircle, Clock, TrendingUp, Calendar, DollarSign, CircleDollarSign, Coins} from "lucide-react"
 import {useNavigate} from "react-router-dom"
 import {useEffect, useState} from "react";
 import toast from "react-hot-toast";
@@ -42,7 +42,7 @@ const Dashboard = () => {
                 <p className="text-muted-foreground">Sizning buyurtmalar statistikasi</p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <Card className="border-0 shadow-card-custom">
                     <CardContent className="p-6">
                         <div className="flex items-center gap-3">
@@ -50,7 +50,7 @@ const Dashboard = () => {
                                 <Car className="h-6 w-6 text-primary"/>
                             </div>
                             <div>
-                                <p className="text-2xl font-bold">{stats.totalOrders}</p>
+                                <p className="text-2xl font-bold">{dashboardData?.orders_count || '0'}</p>
                                 <p className="text-sm text-muted-foreground">Jami buyurtmalar</p>
                             </div>
                         </div>
@@ -61,11 +61,11 @@ const Dashboard = () => {
                     <CardContent className="p-6">
                         <div className="flex items-center gap-3">
                             <div className="h-12 w-12 rounded-full bg-green-500/20 flex items-center justify-center">
-                                <CheckCircle className="h-6 w-6 text-green-600"/>
+                                <CircleDollarSign className="h-6 w-6 text-green-600"/>
                             </div>
                             <div>
-                                <p className="text-2xl font-bold">{stats.completedOrders}</p>
-                                <p className="text-sm text-muted-foreground">Yakunlangan</p>
+                                <p className="text-2xl font-bold">{dashboardData?.balance || "0"} so'm</p>
+                                <p className="text-sm text-muted-foreground">To'lov</p>
                             </div>
                         </div>
                     </CardContent>
@@ -75,29 +75,29 @@ const Dashboard = () => {
                     <CardContent className="p-6">
                         <div className="flex items-center gap-3">
                             <div className="h-12 w-12 rounded-full bg-blue-500/20 flex items-center justify-center">
-                                <Clock className="h-6 w-6 text-blue-600"/>
+                                <Coins className="h-6 w-6 text-blue-600"/>
                             </div>
                             <div>
-                                <p className="text-2xl font-bold">{stats.activeOrders}</p>
-                                <p className="text-sm text-muted-foreground">Faol</p>
+                                <p className="text-2xl font-bold">{dashboardData?.points || "0"}</p>
+                                <p className="text-sm text-muted-foreground">Ball</p>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
 
-                <Card className="border-0 shadow-card-custom">
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-3">
-                            <div className="h-12 w-12 rounded-full bg-red-500/20 flex items-center justify-center">
-                                <XCircle className="h-6 w-6 text-red-600"/>
-                            </div>
-                            <div>
-                                <p className="text-2xl font-bold">{stats.cancelledOrders}</p>
-                                <p className="text-sm text-muted-foreground">Bekor qilingan</p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                {/*<Card className="border-0 shadow-card-custom">*/}
+                {/*    <CardContent className="p-6">*/}
+                {/*        <div className="flex items-center gap-3">*/}
+                {/*            <div className="h-12 w-12 rounded-full bg-red-500/20 flex items-center justify-center">*/}
+                {/*                <XCircle className="h-6 w-6 text-red-600"/>*/}
+                {/*            </div>*/}
+                {/*            <div>*/}
+                {/*                <p className="text-2xl font-bold">{stats.cancelledOrders}</p>*/}
+                {/*                <p className="text-sm text-muted-foreground">Bekor qilingan</p>*/}
+                {/*            </div>*/}
+                {/*        </div>*/}
+                {/*    </CardContent>*/}
+                {/*</Card>*/}
             </div>
 
             {/* Additional Statistics */}
