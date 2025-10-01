@@ -377,22 +377,13 @@ const TaxiOrdersPage = () => {
                     </Button>
                 )
             case "started":
-                if (order?.client) {
-                    return (
-                        <Button onClick={() => openConfirmDialog("complete", order.id)} className="flex-1 gap-2"
-                                variant="default">
-                            <Square className="h-4 w-4"/>
-                            Tugatish
-                        </Button>
-                    )
-                } else {
-                    return (
-                        <Button className="flex-1 gap-2"
-                                variant="default" disabled>
-                            Tasdiqlanish kutulmoqda...
-                        </Button>
-                    )
-                }
+                return (
+                    <Button onClick={() => openConfirmDialog("complete", order.id)} className="flex-1 gap-2"
+                            variant="default">
+                        <Square className="h-4 w-4"/>
+                        Tugatish
+                    </Button>
+                )
             case "waiting_confirmation":
                 return (
                     <Button variant="outline" disabled className="flex-1">
