@@ -34,7 +34,7 @@ Frontend bo‘yicha:
 Frontend qismini ishga tushirish uchun quyidagilar:
 
 ```bash
-git clone https://github.com/alamovAsadbek/eltuvchi  
-cd eltuvchi 
+git clone https://github.com/alamovAsadbek/eltuvchi-app-10.git  
+cd eltuvchi-app-10  
 npm install  
-npm run dev
+npm start

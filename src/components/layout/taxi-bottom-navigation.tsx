@@ -1,31 +1,17 @@
-import { Home, Car, DollarSign, User, MoreHorizontal, ShoppingBag, Share2, FileText, HelpCircle, Info, CreditCard } from "lucide-react"
+import { LayoutDashboard, ShoppingBag, Wallet, Store } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { useState } from "react"
 
 export function TaxiBottomNavigation() {
   const location = useLocation()
   const currentPath = location.pathname
-  const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false)
   const userRole = localStorage.getItem('userRole') || 'client'
 
-  // Main navigation items (shown in bottom bar)
-  const mainNavItems = [
-    { title: "Bosh sahifa", url: "/taxi", icon: Home },
-    { title: "Buyurtmalar", url: "/taxi/orders", icon: Car },
-    { title: "Hisobot", url: "/taxi/earnings", icon: DollarSign },
-  ]
-
-  // Additional items (shown in drawer)
-  const moreItems = [
-    { title: "Market", url: "/taxi/market", icon: ShoppingBag },
-    { title: "Referal", url: "/referral", icon: Share2 },
-    { title: "Profil", url: "/profile", icon: User },
-    { title: "Balans", url: "/balance", icon: CreditCard },
-    { title: "Yordam", url: "/help", icon: HelpCircle },
-    { title: "Biz haqimizda", url: "/about", icon: Info },
-    { title: "Shartlar", url: "/terms", icon: FileText },
+  // Sidebar dan olingan navigation items
+  const navItems = [
+    { title: "Dashboard", url: "/taxi", icon: LayoutDashboard },
+    { title: "Buyurtmalar", url: "/taxi/orders", icon: ShoppingBag },
+    { title: "Daromad", url: "/taxi/earnings", icon: Wallet },
+    { title: "Market", url: "/taxi/market", icon: Store },
   ]
 
   const isActive = (path: string) => currentPath === path
@@ -37,8 +23,8 @@ export function TaxiBottomNavigation() {
         : "text-muted-foreground hover:text-foreground"
     }`
 
-  // Only show for taxi role
-  if (userRole !== 'taxi') {
+  // Only show for taxi/driver role
+  if (userRole !== 'taxi' && userRole !== 'driver') {
     return null
   }
 
@@ -47,8 +33,7 @@ export function TaxiBottomNavigation() {
       {/* Bottom Navigation Bar - Fixed at bottom */}
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t md:hidden">
         <div className="flex h-16">
-          {/* Main Navigation Items */}
-          {mainNavItems.map((item) => (
+          {navItems.map((item) => (
             <NavLink
               key={item.title}
               to={item.url}
@@ -58,46 +43,8 @@ export function TaxiBottomNavigation() {
               <span className="text-xs font-medium truncate">{item.title}</span>
             </NavLink>
           ))}
-
-          {/* More Menu Button */}
-          <Sheet open={isMoreMenuOpen} onOpenChange={setIsMoreMenuOpen}>
-            <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                className="flex-1 flex flex-col items-center gap-1 h-full rounded-none text-muted-foreground hover:text-foreground"
-              >
-                <MoreHorizontal className="h-5 w-5" />
-                <span className="text-xs font-medium">Ko'proq</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="bottom" className="h-[400px] rounded-t-2xl">
-              <div className="py-6">
-                <h3 className="text-lg font-semibold mb-6 text-center">Ko'proq menyular</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  {moreItems.map((item) => (
-                    <NavLink
-                      key={item.title}
-                      to={item.url}
-                      onClick={() => setIsMoreMenuOpen(false)}
-                      className={`flex items-center gap-3 p-4 rounded-lg transition-colors ${
-                        isActive(item.url)
-                          ? "bg-primary/10 text-primary border border-primary/20"
-                          : "bg-muted/50 hover:bg-muted"
-                      }`}
-                    >
-                      <item.icon className="h-6 w-6" />
-                      <span className="font-medium">{item.title}</span>
-                    </NavLink>
-                  ))}
-                </div>
-              </div>
-            </SheetContent>
-          </Sheet>
         </div>
       </div>
-
-      {/* Bottom padding for fixed navigation */}
-      <div className="h-16 md:hidden"></div>
     </>
   )
 }

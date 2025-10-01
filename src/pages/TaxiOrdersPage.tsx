@@ -26,24 +26,34 @@ const TaxiOrdersPage = () => {
 
     // get order data from server
     useEffect(() => {
-        let apiKey = '/driver/orders'
+        let queryParam = ''
 
         if (myOrderStatusFilter !== 'all' && myOrderStatusFilter === 'created') {
-            apiKey = '/driver/orders?status=created'
+            queryParam = '?status=created'
         } else if (myOrderStatusFilter !== 'all' && myOrderStatusFilter === 'accepted') {
-            apiKey = '/driver/orders?status=accepted'
+            queryParam = '?status=accepted'
         } else if (myOrderStatusFilter !== 'all' && myOrderStatusFilter === 'started') {
-            apiKey = '/driver/orders?status=started'
+            queryParam = '?status=started'
         } else if (myOrderStatusFilter !== 'all' && myOrderStatusFilter === 'stopped') {
-            apiKey = '/driver/orders?status=stopped'
+            queryParam = '?status=stopped'
         } else if (myOrderStatusFilter !== 'all' && myOrderStatusFilter === 'completed') {
-            apiKey = '/driver/orders?status=completed'
+            queryParam = '?status=completed'
         } else if (myOrderStatusFilter !== 'all' && myOrderStatusFilter === 'cancelled') {
-            apiKey = '/driver/orders?status=cancelled'
+            queryParam = '?status=cancelled'
         }
 
+        api.get(`/driver/my_orders${queryParam}`)
+            .then((res) => {
+                setCompletedOrders(res.data);
+                console.log("my orders:", res.data);
+            })
+            .catch((err) => {
+                console.log(err);
+                toast.error("Xatolik yuz berdi. Iltimos, qayta urinib ko'ring.");
+            });
 
-        api.get(apiKey)
+
+        api.get('/driver/orders')
             .then((res) => {
                 setOrderData(res.data);
                 console.log("📦 Initial orders:", res.data);
@@ -54,16 +64,23 @@ const TaxiOrdersPage = () => {
             });
 
 
-        window.Pusher = Pusher;
-
+        (window as any).Pusher = Pusher;
 
         const echo = new Echo({
             broadcaster: "reverb",
             key: "eltuvchi-key",
             wsHost: "89.39.94.112",
             wsPort: 8080,
+            wssPort: 8080,
             forceTLS: false,
-            enabledTransports: ["ws"],
+            disableStats: true,
+            enabledTransports: ["ws", "wss"],
+            authEndpoint: "http://89.39.94.112:8000/broadcasting/auth",
+            auth: {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+                },
+            },
         });
 
         echo.channel("driver/orders")
@@ -85,7 +102,7 @@ const TaxiOrdersPage = () => {
         return () => {
             echo.disconnect();
         };
-    }, []);
+    }, [myOrderStatusFilter]);
 
 
     // Confirmation dialog states
@@ -260,8 +277,8 @@ const TaxiOrdersPage = () => {
 
             }).catch(err => {
                 console.log(err?.response)
-                if (err?.response?.data?.error && !err?.response?.data?.success) {
-                    toast.error(err?.response?.data?.error)
+                if (err?.response?.data?.message) {
+                    toast.error(err?.response?.data?.message)
                 } else {
                     toast.error("Xatolik yuz berdi!")
                 }
@@ -311,17 +328,6 @@ const TaxiOrdersPage = () => {
         }))
 
         toast.success("Mijoz tasdiqlashi kutulmoqda...")
-    }
-
-    const handleClientConfirmation = (orderId: string) => {
-        setOrders(prev => ({
-            ...prev,
-            myOrders: prev.myOrders.map(order =>
-                order.id === orderId ? {...order, status: "completed"} : order
-            )
-        }))
-
-        toast.success("Safar tugatildi!")
     }
 
     const getStatusBadge = (status: string) => {
@@ -571,77 +577,80 @@ const TaxiOrdersPage = () => {
                             </div>
                         </CardHeader>
                     </Card>
+
                     {completedOrders.length === 0 ? (
                         <Card className="bg-gradient-card border-0">
                             <CardContent className="p-8 text-center">
                                 <p className="text-muted-foreground">Mavjud buyurtmalar yo'q</p>
                             </CardContent>
                         </Card>
-                    ) : (completedOrders.map((order) => (
-                        <Card key={order.id} className="bg-gradient-card border-0 shadow-card-custom">
-                            <CardHeader>
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <CardTitle className="flex items-center gap-2">
-                                            <MapPin className="h-5 w-5"/>
-                                            {order.router.from.name} → {order.router.to.name}
-                                        </CardTitle>
-                                        <CardDescription>Buyurtma #{order.id}</CardDescription>
+                    ) : (
+                        completedOrders.map((order) => (
+                            <Card key={order.id} className="bg-gradient-card border-0 shadow-card-custom">
+                                <CardHeader>
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <CardTitle className="flex items-center gap-2">
+                                                <MapPin className="h-5 w-5"/>
+                                                {order.router.from.name} → {order.router.to.name}
+                                            </CardTitle>
+                                            <CardDescription>Buyurtma #{order.id}</CardDescription>
+                                        </div>
+                                        {getStatusBadge(order.status)}
                                     </div>
-                                    {getStatusBadge(order.status)}
-                                </div>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                                    <div>
-                                        <Clock className="h-4 w-4 inline mr-1"/>
-                                        {formatDateTime(order.date, "date")} • {formatDateTime(order.time, "time")}
-                                    </div>
-                                    <div>
-                                        <User className="h-4 w-4 inline mr-1"/>
-                                        {order.passengers} kishi
-                                    </div>
-                                    <div className="font-medium text-primary">
-                                        {formatCurrency(order?.client_deposit)} so'm
-                                    </div>
-                                </div>
-
-                                <div className="border-t pt-4">
-                                    <h4 className="font-medium mb-2">Mijoz ma'lumotlari:</h4>
-                                    <div className="space-y-1 text-sm">
-                                        <p className="flex items-center justify-between">
-                                            <span>Mijoz reytingi:</span>
-                                            <span>⭐ {order.client.rating || 4}</span>
-                                        </p>
-                                        <p className="flex items-center gap-1">
-                                            <Phone className="h-3 w-3"/>
-                                            <a href={`tel:${order.client.phone || "990690142"}`}
-                                               className="text-primary hover:underline">
-                                                {order.client.phone || "+998990690142"}
-                                            </a>
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {order.status !== "completed" && (
-                                    <div className="border-t pt-4">
-                                        <div className="flex gap-2">
-                                            {getActionButton(order)}
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                asChild
-                                            >
-                                                <a href={`tel:${order.client.phone || "990690142"}`}>
-                                                    <Phone className="h-4 w-4"/>
-                                                </a>
-                                            </Button>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                        <div>
+                                            <Clock className="h-4 w-4 inline mr-1"/>
+                                            {formatDateTime(order.date, "date")} • {formatDateTime(order.time, "time")}
+                                        </div>
+                                        <div>
+                                            <User className="h-4 w-4 inline mr-1"/>
+                                            {order.passengers} kishi
+                                        </div>
+                                        <div className="font-medium text-primary">
+                                            {formatCurrency(order?.client_deposit)} so'm
                                         </div>
                                     </div>
-                                )}
-                            </CardContent>
-                        </Card>
-                    )))}
+
+                                    <div className="border-t pt-4">
+                                        <h4 className="font-medium mb-2">Mijoz ma'lumotlari:</h4>
+                                        <div className="space-y-1 text-sm">
+                                            <p className="flex items-center justify-between">
+                                                <span>Mijoz reytingi:</span>
+                                                <span>⭐ {order.client.rating || 4}</span>
+                                            </p>
+                                            <p className="flex items-center gap-1">
+                                                <Phone className="h-3 w-3"/>
+                                                <a href={`tel:${order.client.phone || "990690142"}`}
+                                                   className="text-primary hover:underline">
+                                                    {order.client.phone || "+998990690142"}
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {order.status !== "completed" && (
+                                        <div className="border-t pt-4">
+                                            <div className="flex gap-2">
+                                                {getActionButton(order)}
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    asChild
+                                                >
+                                                    <a href={`tel:${order.client.phone || "990690142"}`}>
+                                                        <Phone className="h-4 w-4"/>
+                                                    </a>
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        ))
+                    )}
                 </TabsContent>
             </Tabs>
 

@@ -35,48 +35,6 @@ const OrdersPage = () => {
     const [cancelOrderId, setCancelOrderId] = useState<number | null>(null);
     const [showCancelDialog, setShowCancelDialog] = useState(false);
     const navigate = useNavigate();
-    const orders = [
-        {
-            id: 1,
-            fromAddress: "Chilonzor tumani, Bunyodkor ko'chasi 1-uy",
-            toAddress: "Yunusobod tumani, Shohjalol ko'chasi 25-uy",
-            status: "completed",
-            carType: "Komfort",
-            driver: "Bobur Umarov",
-            driverPhone: "+998907654321",
-            carNumber: "01A234BC",
-            price: "20,000",
-            date: "2025-01-30",
-            time: "14:30",
-            rating: 5,
-            paymentMethod: "Naqd pul"
-        },
-        {
-            id: 2,
-            fromAddress: "Mirobod tumani, Amir Temur ko'chasi 10-uy",
-            toAddress: "Sergeli tumani, Qatortol ko'chasi 5-uy",
-            status: "active",
-            carType: "Ekonom",
-            driver: "Aziz Mahmudov",
-            driverPhone: "+998901112233",
-            carNumber: "01B345CD",
-            price: "15,000",
-            date: "2025-01-31",
-            time: "09:15",
-            paymentMethod: "Plastik karta"
-        },
-        {
-            id: 3,
-            fromAddress: "Yashnobod tumani, Bog'ishamol ko'chasi 3-uy",
-            toAddress: "Olmazor tumani, Fairuz ko'chasi 12-uy",
-            status: "cancelled",
-            carType: "Biznes",
-            price: "30,000",
-            date: "2025-01-29",
-            time: "18:45",
-            paymentMethod: "Balans"
-        }
-    ];
 
     // get data from server
     // useEffect(() => {
@@ -133,16 +91,23 @@ const OrdersPage = () => {
             });
 
         // 2. WebSocket ulanishi
-        window.Pusher = Pusher;
+        (window as any).Pusher = Pusher;
 
         const echo = new Echo({
-            broadcaster: "pusher",
-            key: "eltuvchi-key",       // .env dagi REVERB_APP_KEY
-            wsHost: "89.39.94.112",    // server IP
+            broadcaster: "reverb",
+            key: "eltuvchi-key",
+            wsHost: "89.39.94.112",
             wsPort: 8080,
+            wssPort: 8080,
             forceTLS: false,
             disableStats: true,
-            cluster: "mt1",
+            enabledTransports: ["ws", "wss"],
+            authEndpoint: "http://89.39.94.112:8000/broadcasting/auth",
+            auth: {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+                },
+            },
         });
 
         const channel = echo.channel("client-orders");
@@ -181,6 +146,8 @@ const OrdersPage = () => {
                 return <Badge className="bg-blue-500">Faol</Badge>;
             case "cancelled":
                 return <Badge variant="destructive">Bekor qilingan</Badge>;
+            case "accepted":
+                return <Badge className='bg-green-500'>Qabul qilingan</Badge>;
             default:
                 return <Badge variant="outline">{status}</Badge>;
         }
@@ -373,7 +340,7 @@ const OrdersPage = () => {
 
                             {/* Action Buttons */}
                             <div className="flex gap-2 pt-2">
-                                {(order.status === "active" || order.status === "created") && (
+                                {(order.status === "active" || order.status === "created" || order.status === "accepted") && (
                                     <>
                                         <Button
                                             variant="destructive"
@@ -382,10 +349,6 @@ const OrdersPage = () => {
                                         >
                                             Bekor qilish
                                         </Button>
-                                        {/*<Button variant="outline" size="sm">*/}
-                                        {/*    <MapPin className="h-3 w-3 mr-1"/>*/}
-                                        {/*    Xaritada ko'rish*/}
-                                        {/*</Button>*/}
                                     </>
                                 )}
                                 {order.status === "completed" && !order.rating && (

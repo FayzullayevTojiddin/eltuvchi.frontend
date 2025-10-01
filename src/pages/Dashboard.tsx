@@ -8,7 +8,7 @@ import api from "@/lib/api.ts";
 
 const Dashboard = () => {
     const navigate = useNavigate()
-    const [dashboardData, setDashboardData] = useState([])
+    const [dashboardData, setDashboardData] = useState<any>(null)
 
     useEffect(() => {
         try {

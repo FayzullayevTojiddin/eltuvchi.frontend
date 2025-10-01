@@ -12,7 +12,7 @@ const TaxiDashboard = () => {
     const [selectedDate, setSelectedDate] = useState("")
     const [dateFilter, setDateFilter] = useState("today")
 
-    const [dashboardData, setDashboardData] = useState([])
+    const [dashboardData, setDashboardData] = useState<any>(null)
 
     // get dashboard data from API
     useEffect(() => {
@@ -58,8 +58,6 @@ const TaxiDashboard = () => {
         // {title: "Umumiy safar", value: "1,240", unit: "km", icon: MapPin, change: "+120km"},
         // {title: "Onlayn vaqt", value: "8.5", unit: "soat", icon: Clock, change: "+2.1h"},
     ]
-
-
 
     return (
         <div className="space-y-6 animate-fade-in">
@@ -211,7 +209,7 @@ const TaxiDashboard = () => {
                                     </div>
                                     <div className="text-right">
                                         <p className="font-bold text-primary">
-                                            {formatCurrency(trip.price_order) || "0"} so'm
+                                            {new Intl.NumberFormat("uz-UZ").format(trip.price_order)} so'm
                                         </p>
                                         <p className="text-sm text-success">Yakunlandi</p>
                                     </div>

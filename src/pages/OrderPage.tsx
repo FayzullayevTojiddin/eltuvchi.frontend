@@ -100,7 +100,7 @@ const OrderPage = () => {
             console.log(response?.data)
             setRegionDatas(response?.data)
         }).catch(error => {
-            toast.error(error.message)
+            toast.error(error.response.data.message)
         })
     }, []);
 
@@ -197,9 +197,8 @@ const OrderPage = () => {
                 }
             }).catch((err) => {
                 console.log(err)
-                toast.error("Xatolik yuz berdi!")
+                toast.error(err.response.data.message)
             })
-            console.log(orderData)
             // setShowPaymentModal(true)
         } catch (e) {
             console.log(e)

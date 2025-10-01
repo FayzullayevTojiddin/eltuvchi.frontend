@@ -87,7 +87,7 @@ function AppContent() {
                 <div className="flex-1 flex flex-col">
                     {!isLoginPage && !isRegisterPage && <SiteHeader/>}
 
-                    <main className="flex-1 p-6">
+                    <main className="flex-1 p-6 pb-20 md:pb-6">
                         <ScrollToTop/>
                         <Routes>
                             <Route path="/" element={<LoginPage/>}/>
@@ -165,7 +165,7 @@ function AppContent() {
 
             {/* Bottom Navigation for Mobile */}
             {userRole === 'client' && <BottomNavigation/>}
-            {userRole === 'taxi' && <TaxiBottomNavigation/>}
+            {(userRole === 'taxi' || userRole === 'driver') && <TaxiBottomNavigation/>}
             {userRole === 'admin' && <AdminBottomNavigation/>}
             {userRole === 'dispatcher' && <DispatcherBottomNavigation/>}
             {userRole === 'taxi-park-admin' && <TaxiParkBottomNavigation/>}

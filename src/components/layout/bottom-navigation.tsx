@@ -96,9 +96,6 @@ export function BottomNavigation() {
           </Sheet>
         </div>
       </div>
-
-      {/* Bottom padding for fixed navigation */}
-      <div className="h-16 md:hidden"></div>
     </>
   )
 }
