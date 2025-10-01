@@ -309,14 +309,22 @@ const TaxiOrdersPage = () => {
 
 
     const handleStartOrder = (orderId: string) => {
-        setOrders(prev => ({
-            ...prev,
-            myOrders: prev.myOrders.map(order =>
-                order.id === orderId ? {...order, status: "in_progress"} : order
-            )
-        }))
-
-        toast.success("Safar boshlandi! Oq yo'l!!!")
+        try {
+            console.log(orderId)
+            api.post(`/driver/orders/${orderId}/start`, {orderId}).then((res) => {
+                console.log(res.data)
+            }).catch(err => {
+                console.log(err?.response?.data?.error)
+                if (err?.response?.data?.error) {
+                    toast.error(err?.response?.data?.error)
+                } else {
+                    toast.error("Xatolik yuz berdi!")
+                }
+            })
+        } catch (e) {
+            console.log(e)
+            toast.error("Xatolik yuz berdi!")
+        }
     }
 
     const handleCompleteOrder = (orderId: string) => {
@@ -333,8 +341,17 @@ const TaxiOrdersPage = () => {
     const getStatusBadge = (status: string) => {
         switch (status) {
             case "accepted":
-                return <Badge variant="secondary" className="bg-warning/20 text-warning border-warning/30">Qabul
-                    qilingan</Badge>
+                return (
+                    <Badge className="bg-green-100 text-green-700 border border-green-300">
+                        Qabul qilingan
+                    </Badge>
+                );
+            case "started":
+                return (
+                    <Badge className="bg-green-100 text-green-700 border border-green-300">
+                        Boshlangan
+                    </Badge>
+                );
             case "in_progress":
                 return <Badge variant="secondary"
                               className="bg-primary/20 text-primary border-primary/30">Jarayonda</Badge>
@@ -626,7 +643,7 @@ const TaxiOrdersPage = () => {
                                                 )}
                                                 {order.client.phone && (
                                                     <p className="flex items-center gap-1">
-                                                        <Phone className="h-3 w-3" />
+                                                        <Phone className="h-3 w-3"/>
                                                         <a
                                                             href={`tel:${order.client.phone}`}
                                                             className="text-primary hover:underline"
