@@ -313,6 +313,8 @@ const TaxiOrdersPage = () => {
             console.log(orderId)
             api.post(`/driver/orders/${orderId}/start`, {orderId}).then((res) => {
                 console.log(res.data)
+                toast.success("Buyurtma boshlandi!")
+                window.location.reload()
             }).catch(err => {
                 console.log(err?.response?.data?.error)
                 if (err?.response?.data?.error) {
