@@ -592,9 +592,9 @@ const TaxiOrdersPage = () => {
                                         <div>
                                             <CardTitle className="flex items-center gap-2">
                                                 <MapPin className="h-5 w-5"/>
-                                                {order.router.from.name} → {order.router.to.name}
+                                                {order.route.from.name || "Topilmadi"} → {order.route.to.name || "Topilmadi"}
                                             </CardTitle>
-                                            <CardDescription>Buyurtma #{order.id}</CardDescription>
+                                            <CardDescription>Buyurtma #{order.id || "0"}</CardDescription>
                                         </div>
                                         {getStatusBadge(order.status)}
                                     </div>
@@ -617,17 +617,17 @@ const TaxiOrdersPage = () => {
                                     <div className="border-t pt-4">
                                         <h4 className="font-medium mb-2">Mijoz ma'lumotlari:</h4>
                                         <div className="space-y-1 text-sm">
-                                            <p className="flex items-center justify-between">
-                                                <span>Mijoz reytingi:</span>
-                                                <span>⭐ {order.client.rating || 4}</span>
-                                            </p>
-                                            <p className="flex items-center gap-1">
-                                                <Phone className="h-3 w-3"/>
-                                                <a href={`tel:${order.client.phone || "990690142"}`}
-                                                   className="text-primary hover:underline">
-                                                    {order.client.phone || "+998990690142"}
-                                                </a>
-                                            </p>
+                                            {/*<p className="flex items-center justify-between">*/}
+                                            {/*    <span>Mijoz reytingi:</span>*/}
+                                            {/*    <span>⭐ {order.client.rating || 4}</span>*/}
+                                            {/*</p>*/}
+                                            {/*<p className="flex items-center gap-1">*/}
+                                            {/*    <Phone className="h-3 w-3"/>*/}
+                                            {/*    <a href={`tel:${order.client.phone || "990690142"}`}*/}
+                                            {/*       className="text-primary hover:underline">*/}
+                                            {/*        {order.client.phone || "+998990690142"}*/}
+                                            {/*    </a>*/}
+                                            {/*</p>*/}
                                         </div>
                                     </div>
 
@@ -640,7 +640,7 @@ const TaxiOrdersPage = () => {
                                                     size="sm"
                                                     asChild
                                                 >
-                                                    <a href={`tel:${order.client.phone || "990690142"}`}>
+                                                    <a href={`tel:${order.phone || "999999999"}`}>
                                                         <Phone className="h-4 w-4"/>
                                                     </a>
                                                 </Button>
