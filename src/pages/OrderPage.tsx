@@ -127,31 +127,6 @@ const OrderPage = () => {
         }
     }, [orderData]);
 
-    // Mock user discounts
-    const userDiscounts = [
-        {
-            id: "1",
-            title: "25% chegirma",
-            description: "Keyingi buyurtmaga 25% chegirma",
-            percentage: 25,
-            isUsed: false
-        },
-        {
-            id: "2",
-            title: "10% chegirma",
-            description: "Har qanday buyurtmaga 10% chegirma",
-            percentage: 10,
-            isUsed: false
-        },
-        {
-            id: "3",
-            title: "15% chegirma",
-            description: "Uzoq masofa uchun 15% chegirma",
-            percentage: 15,
-            isUsed: true
-        }
-    ]
-
     // Mock payment cards
     const paymentCards = [
         {
