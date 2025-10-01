@@ -571,8 +571,13 @@ const TaxiOrdersPage = () => {
                             </div>
                         </CardHeader>
                     </Card>
-
-                    {completedOrders.map((order) => (
+                    {completedOrders.length === 0 ? (
+                        <Card className="bg-gradient-card border-0">
+                            <CardContent className="p-8 text-center">
+                                <p className="text-muted-foreground">Mavjud buyurtmalar yo'q</p>
+                            </CardContent>
+                        </Card>
+                    ) : (completedOrders.map((order) => (
                         <Card key={order.id} className="bg-gradient-card border-0 shadow-card-custom">
                             <CardHeader>
                                 <div className="flex justify-between items-start">
@@ -636,7 +641,7 @@ const TaxiOrdersPage = () => {
                                 )}
                             </CardContent>
                         </Card>
-                    ))}
+                    )))}
                 </TabsContent>
             </Tabs>
 
