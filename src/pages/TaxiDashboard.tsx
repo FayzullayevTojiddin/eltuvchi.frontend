@@ -211,7 +211,7 @@ const TaxiDashboard = () => {
                                     </div>
                                     <div className="text-right">
                                         <p className="font-bold text-primary">
-                                            {new Intl.NumberFormat("uz-UZ").format(trip.price_order)} so'm
+                                            {formatCurrency(trip.price_order) || "0"} so'm
                                         </p>
                                         <p className="text-sm text-success">Yakunlandi</p>
                                     </div>
