@@ -202,48 +202,56 @@ const TaxiMarketPage = () => {
 
                 <TabsContent value="purchased" className="space-y-6">
                     <div className="space-y-4">
-                        {myMarketData.map((item) => (
-                            <Card key={item.id}>
-                                <CardContent className="p-4">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-4">
-                                            <div
-                                                className="w-12 h-12 bg-muted rounded flex items-center justify-center">
-                                                <Package className="h-6 w-6 text-muted-foreground"/>
-                                            </div>
-                                            <div>
-                                                <h3 className="font-semibold">{item.title || "Mahsulot nomi"}</h3>
-                                                <p className="text-sm text-muted-foreground">
-                                                    Xarid sanasi: {item.created_at}
-                                                </p>
-                                                <p className="text-sm text-muted-foreground">
-                                                    Qo'shimcha: {item.description || "Qisqacha ma'lumot yo'q"}
-                                                </p>
-                                                <div className="flex items-center gap-2 mt-1">
-                                                    <Badge variant="outline"
-                                                           className="text-green-600 border-green-600">
-                                                        <CheckCircle className="h-3 w-3 mr-1"/>
-                                                        Yetkazildi
-                                                    </Badge>
+                        <div className="space-y-4">
+                            {myMarketData.length === 0 ? (
+                                <div className="text-center py-10 text-muted-foreground">
+                                    <p className="text-lg font-medium">📭 Hozircha hech qanday ma'lumot mavjud emas</p>
+                                    <p className="text-sm">Sizning xaridlaringiz shu yerda ko‘rinadi</p>
+                                </div>
+                            ) : (
+                                myMarketData.map((item) => (
+                                    <Card key={item.id}>
+                                        <CardContent className="p-4">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-12 h-12 bg-muted rounded flex items-center justify-center">
+                                                        <Package className="h-6 w-6 text-muted-foreground"/>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="font-semibold">{item.title || "Mahsulot nomi"}</h3>
+                                                        <p className="text-sm text-muted-foreground">
+                                                            Xarid sanasi: {item.created_at}
+                                                        </p>
+                                                        <p className="text-sm text-muted-foreground">
+                                                            Qo'shimcha: {item.description || "Qisqacha ma'lumot yo'q"}
+                                                        </p>
+                                                        <div className="flex items-center gap-2 mt-1">
+                                                            <Badge variant="outline" className="text-green-600 border-green-600">
+                                                                <CheckCircle className="h-3 w-3 mr-1"/>
+                                                                Yetkazildi
+                                                            </Badge>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-4">
+                                                    <span className="font-bold">{item.points || "0"} point</span>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        onClick={() => reorderItem(item)}
+                                                        className="flex items-center gap-2"
+                                                    >
+                                                        <RefreshCw className="h-4 w-4"/>
+                                                        Qayta sotib olish
+                                                    </Button>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="flex items-center gap-4">
-                                            <span className="font-bold">{item.points || "0"} point</span>
-                                            <Button
-                                                size="sm"
-                                                variant="outline"
-                                                onClick={() => reorderItem(item)}
-                                                className="flex items-center gap-2"
-                                            >
-                                                <RefreshCw className="h-4 w-4"/>
-                                                Qayta sotib olish
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
+                                        </CardContent>
+                                    </Card>
+                                ))
+                            )}
+                        </div>
+
                     </div>
                 </TabsContent>
             </Tabs>
