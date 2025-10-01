@@ -32,11 +32,16 @@ const TaxiDashboard = () => {
         }
     }, []);
 
+    const formatCurrency = (value: number | string) => {
+        if (!value) return "0";
+        return new Intl.NumberFormat("ru-RU").format(Number(value));
+    };
+
 
     const stats = [
         {
             title: "Umumiy daromat",
-            value: dashboardData?.total_income || "0",
+            value: formatCurrency(dashboardData?.total_income) || "0",
             unit: "so'm",
             icon: DollarSign,
             change: "+12%"
@@ -54,30 +59,7 @@ const TaxiDashboard = () => {
         // {title: "Onlayn vaqt", value: "8.5", unit: "soat", icon: Clock, change: "+2.1h"},
     ]
 
-    const getFilteredEarnings = () => {
-        const today = new Date().toISOString().split('T')[0]
 
-        switch (dateFilter) {
-            case "today":
-                return {amount: 450000, period: "Bugun"}
-            case "yesterday":
-                return {amount: 380000, period: "Kecha"}
-            case "week":
-                return {amount: 2850000, period: "Bu hafta"}
-            case "month":
-                return {amount: 8950000, period: "Bu oy"}
-            case "custom":
-                if (selectedDate) {
-                    // Simulate earnings for selected date
-                    return {amount: Math.floor(Math.random() * 500000) + 200000, period: selectedDate}
-                }
-                return {amount: 450000, period: "Tanlangan sana"}
-            default:
-                return {amount: 450000, period: "Bugun"}
-        }
-    }
-
-    const filteredEarnings = getFilteredEarnings()
 
     return (
         <div className="space-y-6 animate-fade-in">
