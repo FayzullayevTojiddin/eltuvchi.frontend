@@ -676,11 +676,19 @@ const TaxiOrdersPage = () => {
                                                     variant="outline"
                                                     size="sm"
                                                     asChild
+                                                    disabled={!order?.client}
                                                 >
-                                                    <a href={`tel:${order.phone || "999999999"}`}>
-                                                        <Phone className="h-4 w-4"/>
-                                                    </a>
+                                                    {order?.client ? (
+                                                        <a href={`tel:${order.client.phone || "999999999"}`}>
+                                                            <Phone className="h-4 w-4" />
+                                                        </a>
+                                                    ) : (
+                                                        <span className="flex items-center">
+                                                            <Phone className="h-4 w-4" />
+                                                        </span>
+                                                    )}
                                                 </Button>
+
                                             </div>
                                         </div>
                                     )}
