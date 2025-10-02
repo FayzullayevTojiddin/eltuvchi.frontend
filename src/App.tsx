@@ -90,7 +90,7 @@ function AppContent() {
                     <main className="flex-1 p-6 pb-20 md:pb-6">
                         <ScrollToTop/>
                         <Routes>
-                            <Route path="/" element={<LoginPage/>}/>
+                            <Route path="/" element={<Dashboard/>}/>
                             <Route path="/home" element={<Dashboard/>}/>
                             <Route path="/about" element={<AboutPage/>}/>
                             <Route path="/contact" element={<ContactPage/>}/>
