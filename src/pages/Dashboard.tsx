@@ -42,22 +42,25 @@ const Dashboard = () => {
                         localStorage.setItem('token', res?.data?.token)
                         navigate('/taxi')
                         toast.success("Muvaffaqiyatli kirdingiz!")
+                        return
                     } else {
                         toast.error("Kirishda xatolik yuz berdi!")
                         setLoading(true)
                     }
+
+                    api.get('/client/dashboard').then((res) => {
+                        console.log(res?.data)
+                        setDashboardData(res.data)
+                    }).catch((err) => {
+                        console.log(err)
+                        toast.error("Xatolik yuz berdi")
+                    })
+
+
                 }
             }).catch((err) => {
                 console.log(err)
                 toast.error(err.message)
-            })
-
-            api.get('/client/dashboard').then((res) => {
-                console.log(res?.data)
-                setDashboardData(res.data)
-            }).catch((err) => {
-                console.log(err)
-                toast.error("Xatolik yuz berdi")
             })
         } catch (e) {
             console.log(e)
@@ -66,6 +69,7 @@ const Dashboard = () => {
             setLoading(true)
         }
     }, [])
+
 
     if (loading) {
         return (
