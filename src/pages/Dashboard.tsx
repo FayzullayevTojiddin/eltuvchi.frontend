@@ -19,10 +19,33 @@ import api from "@/lib/api.ts";
 import axios from "axios";
 
 const Dashboard = () => {
+    const [initData, setInitData] = useState<any>(null);
     const navigate = useNavigate()
     const [dashboardData, setDashboardData] = useState<any>(null)
 
     const [loading, setLoading] = useState(false)
+
+
+    useEffect(() => {
+        try{
+            if (window.Telegram?.WebApp) {
+                const tg = window.Telegram.WebApp;
+                setInitData(tg.initDataUnsafe);
+
+                tg.ready();
+            }
+        }catch (e) {
+            console.log(e)
+            toast.error(e.message)
+        }
+    }, []);
+
+
+    useEffect(() => {
+        if (initData) {
+            toast.error(initData.message)
+        }
+    }, []);
     useEffect(() => {
         try {
             setLoading(true)
