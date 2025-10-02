@@ -41,7 +41,7 @@ const Dashboard = () => {
                         localStorage.setItem('userRole', 'driver')
                         localStorage.setItem('token', res?.data?.token)
                         navigate('/taxi')
-                        toast.success("Muvaffaqiyatli kirdingiz!")
+                        toast.success("Tizimga muvaffaqiyatli kirdingiz!")
                         return
                     } else {
                         toast.error("Kirishda xatolik yuz berdi!")
