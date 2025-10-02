@@ -25,16 +25,6 @@ const Dashboard = () => {
         }
     }, [])
 
-    // Mock statistics data - replace with real API calls
-    const stats = {
-        totalOrders: 28,
-        completedOrders: 22,
-        cancelledOrders: 3,
-        activeOrders: 3,
-        totalSpent: 450000,
-        thisMonthOrders: 8
-    }
-
     return (
         <div className="space-y-6 animate-fade-in">
             <div className="text-center">
