@@ -1,6 +1,17 @@
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
 import {Button} from "@/components/ui/button"
-import {Car, CheckCircle, XCircle, Clock, TrendingUp, Calendar, DollarSign, CircleDollarSign, Coins} from "lucide-react"
+import {
+    Car,
+    CheckCircle,
+    XCircle,
+    Clock,
+    TrendingUp,
+    Calendar,
+    DollarSign,
+    CircleDollarSign,
+    Coins,
+    Loader2
+} from "lucide-react"
 import {useNavigate} from "react-router-dom"
 import {useEffect, useState} from "react";
 import toast from "react-hot-toast";
@@ -11,7 +22,7 @@ const Dashboard = () => {
     const navigate = useNavigate()
     const [dashboardData, setDashboardData] = useState<any>(null)
 
-    const [loading, setLoading]=useState(false)
+    const [loading, setLoading]=useState(true)
     useEffect(() => {
         try {
             axios.post(api.apiUrl + "/auth", {
@@ -52,6 +63,26 @@ const Dashboard = () => {
             toast.error("Xatolik yuz berdi")
         }
     }, [])
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen gap-4 animate-fade-in">
+                {/* Mashina yurayotgandek effekt */}
+                <div className="relative w-40 h-20">
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 animate-[moveCar_3s_linear_infinite]">
+                        <Car className="h-12 w-12 text-yellow-500" />
+                    </div>
+                    <div className="absolute bottom-0 w-full h-1 bg-gray-200 rounded">
+                        <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 opacity-50 animate-pulse"></div>
+                    </div>
+                </div>
+                <p className="text-lg font-medium text-muted-foreground">Sayt yuklanmoqda...</p>
+
+                {/* Agar xohlasangiz oddiy spinner ham qo‘shib qo‘ying */}
+                <Loader2 className="h-6 w-6 text-primary animate-spin"/>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6 animate-fade-in">

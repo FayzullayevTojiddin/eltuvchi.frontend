@@ -3,15 +3,13 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/compo
 import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
-import {DollarSign, Check, User, TrendingUp, Clock, Car, Star, MapPin, Calendar, Filter} from "lucide-react"
+import {DollarSign, Check, User, TrendingUp, Clock, Car, Star, MapPin, Calendar, Filter, Loader2} from "lucide-react"
 import {useEffect, useState} from "react"
 import {toast} from "react-hot-toast";
 import api from "@/lib/api.ts";
 
 const TaxiDashboard = () => {
-    const [selectedDate, setSelectedDate] = useState("")
-    const [dateFilter, setDateFilter] = useState("today")
-
+    const [loading, setLoading]= useState<boolean>(true)
     const [dashboardData, setDashboardData] = useState<any>(null)
 
     // get dashboard data from API
@@ -58,6 +56,26 @@ const TaxiDashboard = () => {
         // {title: "Umumiy safar", value: "1,240", unit: "km", icon: MapPin, change: "+120km"},
         // {title: "Onlayn vaqt", value: "8.5", unit: "soat", icon: Clock, change: "+2.1h"},
     ]
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen gap-4 animate-fade-in">
+                {/* Mashina yurayotgandek effekt */}
+                <div className="relative w-40 h-16">
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 animate-[moveCar_3s_linear_infinite]">
+                        <Car className="h-12 w-12 text-yellow-500" />
+                    </div>
+                    <div className="absolute bottom-0 w-full h-1 bg-gray-200 rounded">
+                        <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 opacity-50 animate-pulse"></div>
+                    </div>
+                </div>
+                <p className="text-lg font-medium text-muted-foreground">Sayt yuklanmoqda...</p>
+
+                {/* Agar xohlasangiz oddiy spinner ham qo‘shib qo‘ying */}
+                <Loader2 className="h-6 w-6 text-primary animate-spin"/>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6 animate-fade-in">
