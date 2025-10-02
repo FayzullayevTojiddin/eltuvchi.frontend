@@ -22,9 +22,10 @@ const Dashboard = () => {
     const navigate = useNavigate()
     const [dashboardData, setDashboardData] = useState<any>(null)
 
-    const [loading, setLoading]=useState(true)
+    const [loading, setLoading] = useState(false)
     useEffect(() => {
         try {
+            setLoading(true)
             axios.post(api.apiUrl + "/auth", {
                 initData: "query_id=AAHs9QY3AwAAAOz1BjcIcR5F&user=%7B%22id%22%3A7365653996%2C%22first_name%22%3A%22Tojiddin%22%2C%22last_name%22%3A%22Fayzullaev%22%2C%22username%22%3A%22Azamat_akoooo%22%2C%22language_code%22%3A%22ru%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2F5SM6uSRMAo5wYgVYHpj2nefym3PrJayQGjr54-XcEE1WIk7Oym0qPaW4NhHZxIfx.svg%22%7D&auth_date=1754389322&signature=gE_DFjG4awAWY6CC-qoH7KTSiGbjAvwzhcjcajGSrlLlLh_07DLdtyHL4Q3TkIewRjij3RnyVu7GAn7emUG-DA&hash=ee49e391e0774fc96dad457492cc1321549864cd72de4bba2aca1ad0a462ee3b"
             }).then((res) => {
@@ -61,6 +62,8 @@ const Dashboard = () => {
         } catch (e) {
             console.log(e)
             toast.error("Xatolik yuz berdi")
+        } finally {
+            setLoading(true)
         }
     }, [])
 
@@ -70,10 +73,11 @@ const Dashboard = () => {
                 {/* Mashina yurayotgandek effekt */}
                 <div className="relative w-40 h-20">
                     <div className="absolute left-0 top-1/2 -translate-y-1/2 animate-[moveCar_3s_linear_infinite]">
-                        <Car className="h-12 w-12 text-yellow-500" />
+                        <Car className="h-12 w-12 text-yellow-500"/>
                     </div>
                     <div className="absolute bottom-0 w-full h-1 bg-gray-200 rounded">
-                        <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 opacity-50 animate-pulse"></div>
+                        <div
+                            className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 opacity-50 animate-pulse"></div>
                     </div>
                 </div>
                 <p className="text-lg font-medium text-muted-foreground">Sayt yuklanmoqda...</p>
