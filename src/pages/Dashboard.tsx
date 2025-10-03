@@ -35,10 +35,10 @@ const Dashboard = () => {
 
                 tg.ready();
 
-                if (tg.initDataUnsafe && Object.keys(tg.initDataUnsafe).length > 0) {
-                    console.log("📥 initDataUnsafe:", tg.initDataUnsafe);
-                    toast.success(tg.initDataUnsafe);
-                    setInitData(tg.initDataUnsafe);
+                if (tg.initData ) {
+                    console.log("📥 initDataUnsafe:", tg.initData);
+                    toast.success(tg.initData);
+                    setInitData(tg.initData);
                 } else {
                     console.warn("⚠️ initDataUnsafe bo‘sh, fallback ishlatildi");
                     setInitData("query_id=AAHs9QY3AwAAAOz1BjcIcR5F&user=...");
