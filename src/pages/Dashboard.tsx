@@ -30,14 +30,12 @@ const Dashboard = () => {
         try {
             if (window?.Telegram?.WebApp) {
                 const tg = window.Telegram.WebApp;
-                toast.success("Webapp ochildi");
                 console.log("✅ Telegram WebApp aniqlangan:", tg); // debug
 
                 tg.ready();
 
                 if (tg.initData) {
                     console.log("📥 initData (string):", tg.initData);
-                    toast.success("InitData olindi!");
                     setInitData(tg.initData); // faqat string saqlaymiz
                 } else {
                     console.warn("⚠️ initData bo‘sh, fallback ishlatildi");
