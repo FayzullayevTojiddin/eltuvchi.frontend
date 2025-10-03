@@ -43,51 +43,50 @@ const Dashboard = () => {
     }, []);
 
     useEffect(() => {
+        if (!initData) return; // initData bo'lmasa ishlamasin
+
         try {
-            setLoading(true)
-            axios.post(api.apiUrl + "/auth", {
-                initData: initData
-            }).then((res) => {
-                console.log(res, res?.data)
+            setLoading(true);
+            axios.post(api.apiUrl + "/auth", { initData }).then((res) => {
+                console.log(res, res?.data);
                 if (res?.status === 200) {
-                    if (res?.data?.role == 'client') {
-                        localStorage.clear()
-                        localStorage.setItem('userRole', 'client')
-                        localStorage.setItem('token', res?.data?.token)
-                        toast.success("Muvaffaqiyatli kirdingiz!")
-                    } else if (res?.data?.role == "driver") {
-                        localStorage.clear()
-                        localStorage.setItem('userRole', 'driver')
-                        localStorage.setItem('token', res?.data?.token)
-                        navigate('/taxi')
-                        toast.success("Tizimga muvaffaqiyatli kirdingiz!")
-                        return
+                    if (res?.data?.role === "client") {
+                        localStorage.clear();
+                        localStorage.setItem("userRole", "client");
+                        localStorage.setItem("token", res?.data?.token);
+                        toast.success("Muvaffaqiyatli kirdingiz!");
+                    } else if (res?.data?.role === "driver") {
+                        localStorage.clear();
+                        localStorage.setItem("userRole", "driver");
+                        localStorage.setItem("token", res?.data?.token);
+                        navigate("/taxi");
+                        toast.success("Tizimga muvaffaqiyatli kirdingiz!");
+                        return;
                     } else {
-                        toast.error("Kirishda xatolik yuz berdi!")
-                        setLoading(true)
+                        toast.error("Kirishda xatolik yuz berdi!");
                     }
 
-                    api.get('/client/dashboard').then((res) => {
-                        console.log(res?.data)
-                        setDashboardData(res.data)
-                    }).catch((err) => {
-                        console.log(err)
-                        toast.error("Xatolik yuz berdi")
-                    })
-
-
+                    api.get("/client/dashboard")
+                        .then((res) => {
+                            console.log(res?.data);
+                            setDashboardData(res.data);
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                            toast.error("Xatolik yuz berdi");
+                        });
                 }
             }).catch((err) => {
-                console.log(err)
-                toast.error(err.message)
-            })
+                console.log(err);
+                toast.error(err.message);
+            });
         } catch (e) {
-            console.log(e)
-            toast.error("Xatolik yuz berdi")
+            console.log(e);
+            toast.error("Xatolik yuz berdi");
         } finally {
-            setLoading(true)
+            setLoading(false);
         }
-    }, [])
+    }, [initData])
 
 
     if (loading) {
