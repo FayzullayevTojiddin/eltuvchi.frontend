@@ -30,7 +30,7 @@ const Dashboard = () => {
         try {
             if (window?.Telegram?.WebApp) {
                 const tg = window.Telegram.WebApp;
-
+                toast.success("Webapp ochildi");
                 console.log("✅ Telegram WebApp aniqlangan:", tg); // debug
 
                 tg.ready();
