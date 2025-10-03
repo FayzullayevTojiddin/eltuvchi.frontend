@@ -46,7 +46,7 @@ const Dashboard = () => {
                     );
                 }
             } else {
-                console.warn("⚠️ Telegram WebApp topilmadi, fallback ishlatildi");
+                toast.error("⚠️ Telegram WebApp topilmadi, fallback ishlatildi")
                 setInitData(
                     "query_id=AAHs9QY3AwAAAOz1BjcIcR5F&user=..."
                 );
