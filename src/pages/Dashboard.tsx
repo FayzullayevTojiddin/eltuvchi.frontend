@@ -28,22 +28,33 @@ const Dashboard = () => {
 
     useEffect(() => {
         try {
-            if (window.Telegram?.WebApp) {
+            if (window?.Telegram?.WebApp) {
                 const tg = window.Telegram.WebApp;
-                setInitData(tg.initDataUnsafe);
+
+                console.log("✅ Telegram WebApp aniqlangan:", tg); // debug
 
                 tg.ready();
+
+                if (tg.initDataUnsafe && Object.keys(tg.initDataUnsafe).length > 0) {
+                    console.log("📥 initDataUnsafe:", tg.initDataUnsafe);
+                    setInitData(tg.initDataUnsafe);
+                } else {
+                    console.warn("⚠️ initDataUnsafe bo‘sh, fallback ishlatildi");
+                    setInitData("query_id=AAHs9QY3AwAAAOz1BjcIcR5F&user=...");
+                }
             } else {
-                setInitData("query_id=AAHs9QY3AwAAAOz1BjcIcR5F&user=%7B%22id%22%3A7365653996%2C%22first_name%22%3A%22Tojiddin%22%2C%22last_name%22%3A%22Fayzullaev%22%2C%22username%22%3A%22Azamat_akoooo%22%2C%22language_code%22%3A%22ru%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2F5SM6uSRMAo5wYgVYHpj2nefym3PrJayQGjr54-XcEE1WIk7Oym0qPaW4NhHZxIfx.svg%22%7D&auth_date=1754389322&signature=gE_DFjG4awAWY6CC-qoH7KTSiGbjAvwzhcjcajGSrlLlLh_07DLdtyHL4Q3TkIewRjij3RnyVu7GAn7emUG-DA&hash=ee49e391e0774fc96dad457492cc1321549864cd72de4bba2aca1ad0a462ee3b")
+                console.warn("⚠️ Telegram WebApp topilmadi, fallback ishlatildi");
+                setInitData("query_id=AAHs9QY3AwAAAOz1BjcIcR5F&user=...");
             }
-        } catch (e) {
-            console.log(e)
-            toast.error(e.message)
+        } catch (e: any) {
+            console.error("❌ initData olishda xato:", e);
+            toast.error(e.message);
         }
     }, []);
 
+
     useEffect(() => {
-        if (!initData) return; // initData bo'lmasa ishlamasin
+        if (!initData) return setLoading(false); // initData bo'lmasa ishlamasin
 
         try {
             setLoading(true);
