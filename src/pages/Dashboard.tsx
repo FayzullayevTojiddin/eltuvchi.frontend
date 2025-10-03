@@ -35,23 +35,28 @@ const Dashboard = () => {
 
                 tg.ready();
 
-                if (tg.initData ) {
-                    console.log("📥 initDataUnsafe:", tg.initData);
-                    toast.success(tg.initData);
-                    setInitData(tg.initData);
+                if (tg.initData) {
+                    console.log("📥 initData (string):", tg.initData);
+                    toast.success("InitData olindi!");
+                    setInitData(tg.initData); // faqat string saqlaymiz
                 } else {
-                    console.warn("⚠️ initDataUnsafe bo‘sh, fallback ishlatildi");
-                    setInitData("query_id=AAHs9QY3AwAAAOz1BjcIcR5F&user=...");
+                    console.warn("⚠️ initData bo‘sh, fallback ishlatildi");
+                    setInitData(
+                        "query_id=AAHs9QY3AwAAAOz1BjcIcR5F&user=..." // test uchun dummy
+                    );
                 }
             } else {
                 console.warn("⚠️ Telegram WebApp topilmadi, fallback ishlatildi");
-                setInitData("query_id=AAHs9QY3AwAAAOz1BjcIcR5F&user=...");
+                setInitData(
+                    "query_id=AAHs9QY3AwAAAOz1BjcIcR5F&user=..."
+                );
             }
         } catch (e: any) {
             console.error("❌ initData olishda xato:", e);
             toast.error(e.message);
         }
     }, []);
+
 
 
     useEffect(() => {
