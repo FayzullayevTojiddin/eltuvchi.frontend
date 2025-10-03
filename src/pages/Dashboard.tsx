@@ -37,6 +37,7 @@ const Dashboard = () => {
 
                 if (tg.initDataUnsafe && Object.keys(tg.initDataUnsafe).length > 0) {
                     console.log("📥 initDataUnsafe:", tg.initDataUnsafe);
+                    toast.success(tg.initDataUnsafe);
                     setInitData(tg.initDataUnsafe);
                 } else {
                     console.warn("⚠️ initDataUnsafe bo‘sh, fallback ishlatildi");
