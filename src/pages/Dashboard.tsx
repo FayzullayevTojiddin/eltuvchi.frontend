@@ -64,7 +64,7 @@ const Dashboard = () => {
 
         try {
             setLoading(true);
-            axios.post(api.apiUrl + "/auth", { initData }).then((res) => {
+            axios.post(api.apiUrl + "/auth", { initData: initData }).then((res) => {
                 console.log(res, res?.data);
                 if (res?.status === 200) {
                     if (res?.data?.role === "client") {
