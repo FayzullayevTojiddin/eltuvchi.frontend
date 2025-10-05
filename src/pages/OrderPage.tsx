@@ -189,7 +189,6 @@ const OrderPage = () => {
             }
             orderData.route_id = routesData?.id
             orderData.client_deposit = 0
-            toast.loading("Yuklanmoqda...")
             api.post('/client/orders', orderData).then((res) => {
                 if (res && res?.success) {
                     toast.success("Buyurtma yaratildi!")
@@ -197,10 +196,8 @@ const OrderPage = () => {
                 } else {
                     toast.error("Xatolik yuz berdi!")
                 }
-                toast.dismiss("Nimadir")
             }).catch((err) => {
                 console.log(err)
-                toast.error("Xatolik yuz berdi!")
                 toast.error(err?.response?.data?.data)
             })
             // setShowPaymentModal(true)
