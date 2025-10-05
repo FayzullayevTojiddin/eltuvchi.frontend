@@ -197,8 +197,10 @@ const OrderPage = () => {
                 } else {
                     toast.error("Xatolik yuz berdi!")
                 }
+                toast.dismiss("Nimadir")
             }).catch((err) => {
                 console.log(err)
+                toast.error("Xatolik yuz berdi!")
                 toast.error(err?.data?.message)
             })
             // setShowPaymentModal(true)
