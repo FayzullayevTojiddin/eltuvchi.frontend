@@ -316,9 +316,9 @@ const TaxiOrdersPage = () => {
                 toast.success("Buyurtma boshlandi!")
                 window.location.reload()
             }).catch(err => {
-                console.log(err?.response?.data?.error)
-                if (err?.response?.data?.error) {
-                    toast.error(err?.response?.data?.error)
+                console.log(err?.response?.data?.data)
+                if (err?.response?.data?.data) {
+                    toast.error(err?.response?.data?.data)
                 } else {
                     toast.error("Xatolik yuz berdi!")
                 }
