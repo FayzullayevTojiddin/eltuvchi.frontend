@@ -330,14 +330,20 @@ const TaxiOrdersPage = () => {
     }
 
     const handleCompleteOrder = (orderId: string) => {
-        setOrders(prev => ({
-            ...prev,
-            myOrders: prev.myOrders.map(order =>
-                order.id === orderId ? {...order, status: "waiting_confirmation"} : order
-            )
-        }))
-
-        toast.success("Mijoz tasdiqlashi kutulmoqda...")
+        try {
+            api.post(`/driver/orders/${orderId}/stop`, {
+                orderId
+            }).then((res) => {
+                console.log(res.data)
+                toast.success("Buyurtma tugadi!")
+            }).catch(err => {
+                console.log(err)
+                toast.error("Xatolik yuz berdi!")
+            })
+        } catch (e) {
+            console.log(e)
+            toast.error("Xatolik yuz berdi!")
+        }
     }
 
     const getStatusBadge = (status: string) => {
@@ -671,11 +677,11 @@ const TaxiOrdersPage = () => {
                                                 >
                                                     {order?.client ? (
                                                         <a href={`tel:${order.client.phone || "999999999"}`}>
-                                                            <Phone className="h-4 w-4" />
+                                                            <Phone className="h-4 w-4"/>
                                                         </a>
                                                     ) : (
                                                         <span className="flex items-center">
-                                                            <Phone className="h-4 w-4" />
+                                                            <Phone className="h-4 w-4"/>
                                                         </span>
                                                     )}
                                                 </Button>
