@@ -182,6 +182,7 @@ const OrderPage = () => {
 
     const handleOrderSubmit = () => {
         try {
+            toast.success("Bosildi!!!")
             if (!orderData.fromRegion || !orderData.fromDistrict || !orderData.toRegion || !orderData.toDistrict || !orderData.date || !orderData.time || !orderData.phone) {
                 toast.error("Barcha maydonlar to'ldirilishi shart!")
                 return
