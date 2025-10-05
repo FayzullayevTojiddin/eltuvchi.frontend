@@ -19,7 +19,7 @@ import api from "@/lib/api.ts";
 import axios from "axios";
 
 const Dashboard = () => {
-    const [initData, setInitData] = useState<any>(null);
+    const [initData, setInitData] = useState<any>('');
     const navigate = useNavigate()
     const [dashboardData, setDashboardData] = useState<any>(null)
 
@@ -57,6 +57,7 @@ const Dashboard = () => {
             axios.post(api.apiUrl + "/auth", { initData: initData }).then((res) => {
                 console.log(res, res?.data);
                 if (res?.status === 200) {
+                    toast.success(res?.data);
                     if (res?.data?.role === "client") {
                         localStorage.clear();
                         localStorage.setItem("userRole", "client");
