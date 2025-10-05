@@ -361,6 +361,12 @@ const OrdersPage = () => {
                                         Baholash
                                     </Button>
                                 )}
+                                {order.status === "stopped"  && (
+                                    <Button variant="outline" size="sm">
+                                        <Star className="h-3 w-3 mr-1"/>
+                                        Yetib keldim
+                                    </Button>
+                                )}
                                 <Dialog>
                                     <DialogTrigger asChild>
                                         <Button variant="ghost" size="sm">
