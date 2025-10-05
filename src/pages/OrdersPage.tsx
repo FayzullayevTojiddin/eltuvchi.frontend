@@ -209,10 +209,13 @@ const OrdersPage = () => {
             api.post(`/client/orders/${orderId}/complete`, {orderId}).then((res) => {
                 console.log(res?.data);
                 toast.success("Siz manzilga yetib keldingiz!!!");
+            }).catch((err)=>{
+                console.log(err)
+                toast(err.response.data.data)
             })
         } catch (e) {
             console.log(e)
-            toast.error(e.response.data.data)
+            toast.error('Xatolik yuz berdi!!!')
         }
     }
 
