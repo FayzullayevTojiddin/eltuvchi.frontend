@@ -34,7 +34,7 @@ const Dashboard = () => {
 
                 tg.ready();
                 toast.success(tg.initData)
-                if (tg.initData) {
+                if (tg.initData.length > 0) {
                     console.log("📥 initData (string):", tg.initData);
                     toast.success(tg.initData);
                     setInitData(tg.initData); // faqat string saqlaymiz
