@@ -53,6 +53,7 @@ const Dashboard = () => {
 
         try {
             setLoading(true);
+            toast.success("Loading...")
             axios.post(api.apiUrl + "/auth", { initData: initData }).then((res) => {
                 console.log(res, res?.data);
                 toast.success(res?.status);
