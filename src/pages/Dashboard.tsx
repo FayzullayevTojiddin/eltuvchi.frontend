@@ -49,7 +49,7 @@ const Dashboard = () => {
 
 
     useEffect(() => {
-        if (!initData) return setLoading(false); // initData bo'lmasa ishlamasin
+        if (initData.length === 0) return setLoading(false); // initData bo'lmasa ishlamasin
 
         try {
             setLoading(true);
