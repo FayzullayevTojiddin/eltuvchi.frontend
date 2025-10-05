@@ -187,6 +187,7 @@ const OrderPage = () => {
                 toast.error("Barcha maydonlar to'ldirilishi shart!")
                 return
             }
+            toast.loading("Yuklanmoqda...")
             orderData.route_id = routesData?.id
             orderData.client_deposit = 0
             api.post('/client/orders', orderData).then((res) => {
