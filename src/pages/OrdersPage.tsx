@@ -144,6 +144,8 @@ const OrdersPage = () => {
                 return <Badge className="bg-green-500">Yakunlangan</Badge>;
             case "created":
                 return <Badge className="bg-blue-500">Faol</Badge>;
+            case "started":
+                return <Badge className="bg-green-500">Boshlangan</Badge>;
             case "cancelled":
                 return <Badge variant="destructive">Bekor qilingan</Badge>;
             case "accepted":
