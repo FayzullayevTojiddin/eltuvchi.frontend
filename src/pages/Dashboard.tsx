@@ -33,7 +33,6 @@ const Dashboard = () => {
                 console.log("✅ Telegram WebApp aniqlangan:", tg); // debug
 
                 tg.ready();
-                toast.success(tg.initData)
                 setInitData(tg.initData)
             } else {
                 toast.error("⚠️ Telegram WebApp topilmadi, fallback ishlatildi")
