@@ -86,7 +86,8 @@ const Dashboard = () => {
                 }
             }).catch((err) => {
                 console.log(err);
-                toast.error(err.message);
+                // toast.error(err.message);
+                toast.error(`${err?.status}`);
             });
         } catch (e) {
             console.log(e);
