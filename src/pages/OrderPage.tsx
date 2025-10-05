@@ -202,7 +202,7 @@ const OrderPage = () => {
             // setShowPaymentModal(true)
         } catch (e) {
             console.log(e)
-            toast.error(e.message)
+            toast.error("Xatolik yuz berdi!")
             window.location.reload()
         }
     }
