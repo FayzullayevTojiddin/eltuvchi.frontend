@@ -209,7 +209,7 @@ const OrdersPage = () => {
             api.post(`/client/orders/${orderId}/complete`, {orderId}).then((res) => {
                 console.log(res?.data);
                 toast.success("Siz manzilga yetib keldingiz!!!");
-            }).catch((err)=>{
+            }).catch((err) => {
                 console.log(err)
                 toast(err.response.data.data)
             })
@@ -359,7 +359,7 @@ const OrdersPage = () => {
                             </div>
 
                             {/* Action Buttons */}
-                            <div className="flex gap-2 pt-2">
+                            <div className="gap-2 pt-2">
                                 {(order.status === "active" || order.status === "created" || order.status === "accepted") && (
                                     <>
                                         <Button
@@ -378,9 +378,9 @@ const OrdersPage = () => {
                                     </Button>
                                 )}
                                 {order.status === "stopped" && (
-                                    <Button className="flex-1 gap-2"
+                                    <Button className="flex-1 gap-2 bg-green-500 text-white"
                                             onClick={confirmCompleteOrder.bind(this, order.id)}>
-                                        <CircleCheck className="h-4 w-4"/>
+                                        <CircleCheck className="h-4 w-4 text-white"/>
                                         Yetib keldim
                                     </Button>
                                 )}
