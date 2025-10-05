@@ -187,9 +187,9 @@ const OrderPage = () => {
                 toast.error("Barcha maydonlar to'ldirilishi shart!")
                 return
             }
-            toast.loading("Yuklanmoqda...")
             orderData.route_id = routesData?.id
             orderData.client_deposit = 0
+            toast.loading("Yuklanmoqda...")
             api.post('/client/orders', orderData).then((res) => {
                 if (res && res?.success) {
                     toast.success("Buyurtma yaratildi!")
@@ -199,7 +199,7 @@ const OrderPage = () => {
                 }
             }).catch((err) => {
                 console.log(err)
-                toast.error(err.response.err.message)
+                toast.error(err.data)
             })
             // setShowPaymentModal(true)
         } catch (e) {
