@@ -204,6 +204,19 @@ const OrdersPage = () => {
     };
 
 
+    const confirmCompleteOrder = (orderId: number) => {
+        try {
+            api.post(`/client/orders/${orderId}/complete`, {orderId}).then((res) => {
+                console.log(res?.data);
+                toast.success("Siz manzilga yetib keldingiz!!!");
+            })
+        } catch (e) {
+            console.log(e)
+            toast.error(e.response.data.data)
+        }
+    }
+
+
     return (
         <div className="space-y-6 animate-fade-in">
             <div className="text-center">
@@ -361,8 +374,9 @@ const OrdersPage = () => {
                                         Baholash
                                     </Button>
                                 )}
-                                {order.status === "stopped"  && (
-                                    <Button className="flex-1 gap-2">
+                                {order.status === "stopped" && (
+                                    <Button className="flex-1 gap-2"
+                                            onClick={confirmCompleteOrder.bind(this, order.id)}>
                                         <CircleCheck className="h-4 w-4"/>
                                         Yetib keldim
                                     </Button>
