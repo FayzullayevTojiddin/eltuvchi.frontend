@@ -26,6 +26,14 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(false)
 
 
+    // format price
+    const formatPrice = (price: string | number) => {
+        return Number(price)
+            .toFixed(0) // butun son qoldiradi
+            .replace(/\B(?=(\d{3})+(?!\d))/g, " "); // har 3 xonadan keyin bo'sh joy
+    };
+
+
     useEffect(() => {
         try {
             if (window?.Telegram?.WebApp) {
@@ -146,7 +154,7 @@ const Dashboard = () => {
                                 <CircleDollarSign className="h-6 w-6 text-green-600"/>
                             </div>
                             <div>
-                                <p className="text-2xl font-bold">{dashboardData?.balance || "0"} so'm</p>
+                                <p className="text-2xl font-bold">{formatPrice(dashboardData?.balance) || "0"} so'm</p>
                                 <p className="text-sm text-muted-foreground">To'lov</p>
                             </div>
                         </div>
