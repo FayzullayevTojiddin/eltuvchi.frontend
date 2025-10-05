@@ -20,7 +20,7 @@ import {
     Star,
     Phone,
     Filter,
-    Eye
+    Eye, Play, CircleCheck
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "@/lib/api.ts";
@@ -362,8 +362,8 @@ const OrdersPage = () => {
                                     </Button>
                                 )}
                                 {order.status === "stopped"  && (
-                                    <Button variant="outline" size="sm">
-                                        <Star className="h-3 w-3 mr-1"/>
+                                    <Button className="flex-1 gap-2">
+                                        <CircleCheck className="h-4 w-4"/>
                                         Yetib keldim
                                     </Button>
                                 )}
