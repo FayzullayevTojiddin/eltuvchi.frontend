@@ -33,7 +33,7 @@ const Dashboard = () => {
                 console.log("✅ Telegram WebApp aniqlangan:", tg); // debug
 
                 tg.ready();
-
+                toast.success(tg.initData)
                 if (tg.initData) {
                     console.log("📥 initData (string):", tg.initData);
                     toast.success(tg.initData);
