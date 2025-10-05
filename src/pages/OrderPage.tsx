@@ -341,7 +341,7 @@ const OrderPage = () => {
                                 mode="single"
                                 selected={orderData.date}
                                 onSelect={(date) => handleInputChange('date', date)}
-                                disabled={(date) => date < new Date()}
+                                disabled={(date) => date <= new Date()}
                                 initialFocus
                                 className="pointer-events-auto"
                             />
