@@ -93,7 +93,7 @@ const Dashboard = () => {
         } finally {
             setLoading(false);
         }
-    }, [initData])
+    }, [initData, navigate])
 
 
     if (loading) {
