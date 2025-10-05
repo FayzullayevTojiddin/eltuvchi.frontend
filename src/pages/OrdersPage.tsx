@@ -184,14 +184,6 @@ const OrdersPage = () => {
 
     const confirmCancelOrder = () => {
         if (cancelOrderId) {
-            // Update order status to cancelled in the data
-            setOrderData(prevData =>
-                prevData.map(order =>
-                    order.id === cancelOrderId
-                        ? {...order, status: 'cancelled'}
-                        : order
-                )
-            );
             api.delete(`/client/orders/${cancelOrderId}`).then((res) => {
                 console.log(res?.data);
             }).catch((err) => {
