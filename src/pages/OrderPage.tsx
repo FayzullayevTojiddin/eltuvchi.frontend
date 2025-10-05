@@ -199,7 +199,7 @@ const OrderPage = () => {
                 }
             }).catch((err) => {
                 console.log(err)
-                toast.error(err.data)
+                toast.error(err?.data?.message)
             })
             // setShowPaymentModal(true)
         } catch (e) {
