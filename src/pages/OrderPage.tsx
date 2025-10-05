@@ -201,7 +201,7 @@ const OrderPage = () => {
             }).catch((err) => {
                 console.log(err)
                 toast.error("Xatolik yuz berdi!")
-                toast.error(err?.data?.message)
+                toast.error(err?.response?.data?.data)
             })
             // setShowPaymentModal(true)
         } catch (e) {
