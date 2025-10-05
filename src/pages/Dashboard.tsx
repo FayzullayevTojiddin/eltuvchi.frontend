@@ -28,6 +28,9 @@ const Dashboard = () => {
 
     // format price
     const formatPrice = (price: string | number) => {
+        if (!price) {
+            return 0;
+        }
         return Number(price)
             .toFixed(0) // butun son qoldiradi
             .replace(/\B(?=(\d{3})+(?!\d))/g, " "); // har 3 xonadan keyin bo'sh joy
