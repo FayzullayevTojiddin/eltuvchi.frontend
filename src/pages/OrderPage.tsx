@@ -197,12 +197,12 @@ const OrderPage = () => {
                 }
             }).catch((err) => {
                 console.log(err)
-                toast.error(err.response.data.message)
+                toast.error(err.response.err.message)
             })
             // setShowPaymentModal(true)
         } catch (e) {
             console.log(e)
-            toast.error(e)
+            toast.error(e.message)
             window.location.reload()
         }
     }
