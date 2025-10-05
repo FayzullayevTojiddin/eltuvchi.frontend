@@ -34,16 +34,7 @@ const Dashboard = () => {
 
                 tg.ready();
                 toast.success(tg.initData)
-                if (tg.initData.length > 0) {
-                    console.log("📥 initData (string):", tg.initData);
-                    toast.success(tg.initData);
-                    setInitData(tg.initData); // faqat string saqlaymiz
-                } else {
-                    console.warn("⚠️ initData bo‘sh, fallback ishlatildi");
-                    setInitData(
-                        "query_id=AAHs9QY3AwAAAOz1BjcIcR5F&user=..." // test uchun dummy
-                    );
-                }
+                setInitData(tg.initData)
             } else {
                 toast.error("⚠️ Telegram WebApp topilmadi, fallback ishlatildi")
                 setInitData(
