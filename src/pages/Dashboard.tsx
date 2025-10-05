@@ -36,6 +36,7 @@ const Dashboard = () => {
 
                 if (tg.initData) {
                     console.log("📥 initData (string):", tg.initData);
+                    toast.success(tg.initData);
                     setInitData(tg.initData); // faqat string saqlaymiz
                 } else {
                     console.warn("⚠️ initData bo‘sh, fallback ishlatildi");
