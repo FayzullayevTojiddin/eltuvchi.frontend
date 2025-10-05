@@ -57,7 +57,7 @@ const Dashboard = () => {
             axios.post(api.apiUrl + "/auth", { initData: initData }).then((res) => {
                 console.log(res, res?.data);
                 if (res?.status === 200) {
-                    toast.success(JSON.stringify(res?.data));
+                    toast.success(`${res?.data}`);
                     if (res?.data?.role === "client") {
                         localStorage.clear();
                         localStorage.setItem("userRole", "client");
