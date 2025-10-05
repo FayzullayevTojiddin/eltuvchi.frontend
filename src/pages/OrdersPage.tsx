@@ -359,7 +359,7 @@ const OrdersPage = () => {
                             </div>
 
                             {/* Action Buttons */}
-                            <div className="gap-2 pt-2">
+                            <div className="flex gap-2 pt-2">
                                 {(order.status === "active" || order.status === "created" || order.status === "accepted") && (
                                     <>
                                         <Button
@@ -378,7 +378,7 @@ const OrdersPage = () => {
                                     </Button>
                                 )}
                                 {order.status === "stopped" && (
-                                    <Button className="flex-1 gap-2 bg-green-500 text-white"
+                                    <Button className="flex-1 gap-2 bg-green-500 text-white hover:bg-green-600"
                                             onClick={confirmCompleteOrder.bind(this, order.id)}>
                                         <CircleCheck className="h-4 w-4 text-white"/>
                                         Yetib keldim
