@@ -153,7 +153,7 @@ function AppContent() {
                         </Routes>
 
                         <Toaster
-                            position="bottom-center"
+                            position="top-center"
                             reverseOrder={false}
                         />
 
