@@ -1,41 +1,35 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://mtaxi.uz/api';
+const BASE_URL = 'http://127.0.0.1:8000/api';
 
 export class ApiSettings {
     public apiUrl: string;
     private headers: Record<string, string>;
 
     constructor() {
-        // Set API URL based on environment (default to development)
         this.apiUrl = BASE_URL || 'http://localhost:8000/api';
 
-        // Set default headers
         this.headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
         };
 
-        // Get token from localStorage if available
         const token = localStorage.getItem('token');
         if (token) {
             this.headers['Authorization'] = `Bearer ${token}`;
         }
     }
 
-    // Set authentication token
     setToken(token: string) {
         this.headers['Authorization'] = `Bearer ${token}`;
         localStorage.setItem('auth-token', token);
     }
 
-    // Clear authentication token
     clearToken() {
         delete this.headers['Authorization'];
         localStorage.removeItem('auth-token');
     }
 
-    // GET request
     async get(endpoint: string, params: Record<string, any> = {}) {
         try {
             const response = await axios.get(`${this.apiUrl}${endpoint}`, {

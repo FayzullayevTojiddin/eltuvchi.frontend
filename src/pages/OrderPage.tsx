@@ -362,6 +362,7 @@ const OrderPage = () => {
                                     <SelectItem value="2">2 kishi</SelectItem>
                                     <SelectItem value="3">3 kishi</SelectItem>
                                     <SelectItem value="4">4 kishi</SelectItem>
+                                    <SelectItem value='0.25'>Pochta</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
