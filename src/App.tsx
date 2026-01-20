@@ -69,14 +69,13 @@ function AppContent() {
                     return
                 }
 
-                const response = await fetch(`${BASE_URL}/api/auth/telegram`, {
+                const response = await fetch(`${BASE_URL}/api/auth`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
                         initData: initData,
-                        user: (tg as any).initDataUnsafe?.user
                     })
                 })
 

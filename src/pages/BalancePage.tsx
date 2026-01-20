@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
 import { Wallet, Plus, ArrowUpDown, Clock, CheckCircle, XCircle, DollarSign, Minus } from "lucide-react"
 import { toast } from "sonner"
 import api from "@/lib/api.ts"
@@ -19,11 +17,9 @@ const BalancePage = () => {
     try {
       setLoading(true)
       
-      // Balans tarixini olish
       const historyRes = await api.get('/balance-history')
       setTransactions(historyRes.data || [])
       
-      // Profil ma'lumotlaridan balansni olish
       const profileRes = await api.get('/client/me')
       setCurrentBalance(profileRes.data?.balance || 0)
       
@@ -63,7 +59,6 @@ const BalancePage = () => {
         <p className="text-muted-foreground">Moliyaviy operatsiyalaringizni ko'ring</p>
       </div>
 
-      {/* Balance Card */}
       <Card className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground border-0">
         <CardContent className="p-4 md:p-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -81,7 +76,6 @@ const BalancePage = () => {
         </CardContent>
       </Card>
 
-      {/* Transaction History */}
       <Card className="bg-gradient-card border-0 shadow-card-custom">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
