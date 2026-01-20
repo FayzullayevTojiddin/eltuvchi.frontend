@@ -1,4 +1,4 @@
-import {useEffect} from 'react'
+import {useEffect, useState} from 'react'
 import {
     BrowserRouter as Router,
     Route,
@@ -33,14 +33,70 @@ import {Toaster} from "react-hot-toast";
 import InactivePage from './pages/InActivePage'
 import RequireRole from './components/RequireRole'
 import BlockedPage from './pages/BlockedPage'
+import { BASE_URL } from '../env'
 
 function AppContent() {
     const location = useLocation()
+
+    const [isAuthenticated, setIsAuthenticated] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
+
     const userRole = localStorage.getItem('userRole')
 
     useEffect(() => {
         if (!localStorage.getItem('userRole')) {
             localStorage.setItem('userRole', 'client')
+        }
+
+        const authenticateUser = async () => {
+            try {
+                const tg = window.Telegram?.WebApp
+
+                if (!tg) {
+                    console.error('Telegram WebApp topilmadi')
+                    setIsLoading(false)
+                    return
+                }
+
+                (tg as any).ready()
+                (tg as any).expand()
+
+                const initData = (tg as any).initData
+
+                if (!initData) {
+                    console.error('InitData topilmadi')
+                    setIsLoading(false)
+                    return
+                }
+
+                const response = await fetch(`${BASE_URL}/api/auth/telegram`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        initData: initData,
+                        user: (tg as any).initDataUnsafe?.user
+                    })
+                })
+
+                const data = await response.json()
+
+                localStorage.setItem('token', data.token)
+                localStorage.setItem('userId', data.user.id)
+                localStorage.setItem('userRole', data.user.role || 'client')
+
+                setIsAuthenticated(true)
+
+            } catch (error) {
+                console.error('Auth xatolik:', error)
+                if (!localStorage.getItem('userRole')) {
+                    localStorage.setItem('userRole', 'client')
+                }
+                setIsAuthenticated(true)
+            } finally {
+                setIsLoading(false)
+            }
         }
     }, [])
 

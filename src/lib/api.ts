@@ -1,13 +1,12 @@
 import axios from 'axios';
-
-const BASE_URL = 'http://127.0.0.1:8000/api';
+import {BASE_URL} from '../../env'
 
 export class ApiSettings {
     public apiUrl: string;
     private headers: Record<string, string>;
 
     constructor() {
-        this.apiUrl = BASE_URL || 'http://localhost:8000/api';
+        this.apiUrl = BASE_URL;
 
         this.headers = {
             'Content-Type': 'application/json',
