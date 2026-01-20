@@ -11,8 +11,6 @@ import api from "@/lib/api.ts";
 const TaxiDashboard = () => {
     const [loading, setLoading] = useState<boolean>(false)
     const [dashboardData, setDashboardData] = useState<any>(null)
-
-    // get dashboard data from API
     useEffect(() => {
         try {
             setLoading(true)

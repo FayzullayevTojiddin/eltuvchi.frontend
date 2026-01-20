@@ -23,15 +23,14 @@ import {
     DialogDescription,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from '@/components/ui/dialog'
-import {MapPin, Clock, Car, CreditCard, MessageSquare, CalendarIcon, Phone, Percent, CheckCircle} from 'lucide-react'
+import {MapPin, Clock, CreditCard, Calendar as CalendarIcon, Percent, CheckCircle} from 'lucide-react'
 import {useNavigate} from 'react-router-dom'
 import {format} from 'date-fns'
 import {cn} from '@/lib/utils'
-import api from "@/lib/api.ts";
-import {formatCurrency} from "@/utils/numberFormat.ts";
-import {Toaster, toast} from "react-hot-toast";
+import api from "@/lib/api.ts"
+import {formatCurrency} from "@/utils/numberFormat.ts"
+import {toast} from "react-hot-toast"
 
 const OrderPage = () => {
     const navigate = useNavigate()
@@ -46,111 +45,98 @@ const OrderPage = () => {
         phone: '',
         optional_phone: '',
         note: '',
-        client_deposit: undefined,
+        client_deposit: 0,
         route_id: undefined,
     })
     const [selectedDiscount, setSelectedDiscount] = useState<any>(null)
     const [showDiscountModal, setShowDiscountModal] = useState(false)
-    const [showPaymentModal, setShowPaymentModal] = useState(false)
     const [regionDatas, setRegionDatas] = useState([])
-    const [formDistrictDatas, setFromDistrictDatas] = useState([])
+    const [fromDistrictDatas, setFromDistrictDatas] = useState([])
     const [toDistrictDatas, setToDistrictDatas] = useState([])
-    const [routesData, setRoutesData] = useState(null)
+    const [routesData, setRoutesData] = useState<any>(null)
     const [discountDatas, setDiscountDatas] = useState([])
+    const [loading, setLoading] = useState(false)
 
+    // Regionlarni bir marta yuklash
     useEffect(() => {
-        if (orderData?.fromRegion && orderData?.fromDistrict && orderData?.toRegion && orderData?.toDistrict) {
+        const fetchRegions = async () => {
             try {
-                api.get(`/routes/check/${orderData?.fromDistrict}/${orderData?.toDistrict}`).then(res => {
-                    console.log(res.data)
-                    setRoutesData(res.data)
-                }).catch(error => {
-                    console.log(error)
-                    toast.error("Xatolik yuz berdi!")
-                    window.location.reload()
-                })
-            } catch (e) {
-                console.log(e)
-                toast.error(e)
-                window.location.reload()
+                const response = await api.get('/regions/')
+                setRegionDatas(response?.data)
+            } catch (error: any) {
+                toast.error(error.response?.data?.message || "Regionlarni yuklashda xatolik")
             }
         }
-    }, [orderData]);
+        fetchRegions()
+    }, [])
 
-
+    // From region tanlanganda uning taxoparklarini yuklash
     useEffect(() => {
-        try {
-            api.get('/client/my_discounts').then((res) => {
-                console.log('discount', res.data)
+        const fetchFromDistricts = async () => {
+            if (orderData.fromRegion) {
+                try {
+                    const res = await api.get(`/regions/${orderData.fromRegion}`)
+                    setFromDistrictDatas(res.data?.taxoparks || [])
+                } catch (err: any) {
+                    toast.error("Tumanlarni yuklashda xatolik")
+                }
+            } else {
+                setFromDistrictDatas([])
+            }
+        }
+        fetchFromDistricts()
+    }, [orderData.fromRegion])
+
+    // To region tanlanganda uning taxoparklarini yuklash
+    useEffect(() => {
+        const fetchToDistricts = async () => {
+            if (orderData.toRegion) {
+                try {
+                    const res = await api.get(`/regions/${orderData.toRegion}`)
+                    setToDistrictDatas(res.data?.taxoparks || [])
+                } catch (err: any) {
+                    toast.error("Tumanlarni yuklashda xatolik")
+                }
+            } else {
+                setToDistrictDatas([])
+            }
+        }
+        fetchToDistricts()
+    }, [orderData.toRegion])
+
+    // From va To taxopark tanlanganda route ma'lumotlarini yuklash
+    useEffect(() => {
+        const fetchRouteData = async () => {
+            if (orderData.fromDistrict && orderData.toDistrict) {
+                try {
+                    setLoading(true)
+                    const res = await api.get(`/routes/check/${orderData.fromDistrict}/${orderData.toDistrict}`)
+                    setRoutesData(res.data)
+                } catch (error: any) {
+                    toast.error("Marshrut ma'lumotlarini yuklashda xatolik")
+                    setRoutesData(null)
+                } finally {
+                    setLoading(false)
+                }
+            } else {
+                setRoutesData(null)
+            }
+        }
+        fetchRouteData()
+    }, [orderData.fromDistrict, orderData.toDistrict])
+
+    // Chegirmalarni yuklash
+    useEffect(() => {
+        const fetchDiscounts = async () => {
+            try {
+                const res = await api.get('/client/my_discounts')
                 setDiscountDatas(res.data)
-            }).catch((err) => {
-                console.log(err)
-                toast.error("Xatolik yuz berdi!")
-                window.location.reload()
-            })
-        } catch (e) {
-            console.log(e)
-            toast.error(e)
+            } catch (err: any) {
+                console.log("Chegirmalarni yuklashda xatolik:", err)
+            }
         }
-    }, []);
-
-    // get regions data from API
-    useEffect(() => {
-        api.get('/regions/').then(response => {
-            console.log(response?.data)
-            setRegionDatas(response?.data)
-        }).catch(error => {
-            toast.error(error.response.data.message)
-        })
-    }, []);
-
-    // get districts data from API by region
-    useEffect(() => {
-        if (orderData?.fromRegion) {
-            api.get(`/regions/${orderData?.fromRegion}`).then((res) => {
-                console.log(res.data?.taxoparks)
-                setFromDistrictDatas(res.data?.taxoparks)
-            }).catch((err) => {
-                console.log(err)
-                toast.error(err.message)
-            })
-        }
-
-        if (orderData?.toRegion) {
-            api.get(`/regions/${orderData?.toRegion}`).then((res) => {
-                console.log(res.data?.taxoparks)
-                setToDistrictDatas(res.data?.taxoparks)
-            }).catch((err) => {
-                console.log(err)
-                toast.error(err.message)
-            })
-        }
-    }, [orderData]);
-
-    // Mock payment cards
-    const paymentCards = [
-        {
-            id: "1",
-            number: "**** **** **** 1234",
-            type: "Visa",
-            bank: "Ipoteka Bank"
-        },
-        {
-            id: "2",
-            number: "**** **** **** 5678",
-            type: "UzCard",
-            bank: "NBU"
-        },
-        {
-            id: "3",
-            number: "**** **** **** 9012",
-            type: "Humo",
-            bank: "Agrobank"
-        }
-    ]
-
-    const [selectedCard, setSelectedCard] = useState<any>(null)
-
+        fetchDiscounts()
+    }, [])
 
     const handleInputChange = (field: string, value: string | Date | undefined) => {
         setOrderData(prev => ({
@@ -161,17 +147,42 @@ const OrderPage = () => {
         }))
     }
 
+    // Narxlarni hisoblash
     const calculatePrice = () => {
-        const basePrice = 50000
-        const discountAmount = selectedDiscount ? (basePrice * selectedDiscount.percentage / 100) : 0
-        const finalPrice = basePrice - discountAmount
-        const prepayment = finalPrice * 0.3 // 30% oldindan to'lov
+        if (!routesData) {
+            return {
+                basePrice: 0,
+                discountAmount: 0,
+                finalPrice: 0,
+                prepayment: 0,
+                totalPrice: 0
+            }
+        }
+
+        const passengers = parseFloat(orderData.passengers)
+        const basePrice = routesData.price_in || 0
+        const depositPerPerson = routesData.deposit_client || 0
+
+        // Umumiy narx (yo'lovchilar soni * asosiy narx)
+        const totalPrice = basePrice * passengers
+
+        // Chegirma miqdori
+        const discountAmount = selectedDiscount 
+            ? (totalPrice * selectedDiscount.value / 100) 
+            : 0
+
+        // Yakuniy narx (chegirma qo'llangandan keyin)
+        const finalPrice = totalPrice - discountAmount
+
+        // Oldindan to'lov (yo'lovchilar soni * har bir yo'lovchi uchun depozit)
+        const prepayment = depositPerPerson * passengers
 
         return {
             basePrice,
             discountAmount,
             finalPrice,
-            prepayment
+            prepayment,
+            totalPrice
         }
     }
 
@@ -180,41 +191,54 @@ const OrderPage = () => {
         setShowDiscountModal(false)
     }
 
-    const handleOrderSubmit = () => {
+    const handleOrderSubmit = async () => {
         try {
-            toast.success("Bosildi!!!")
-            if (!orderData.fromRegion || !orderData.fromDistrict || !orderData.toRegion || !orderData.toDistrict || !orderData.date || !orderData.time || !orderData.phone) {
-                toast.error("Barcha maydonlar to'ldirilishi shart!")
+            // Validatsiya
+            if (!orderData.fromRegion || !orderData.fromDistrict || 
+                !orderData.toRegion || !orderData.toDistrict || 
+                !orderData.date || !orderData.time || !orderData.phone) {
+                toast.error("Barcha majburiy maydonlarni to'ldiring!")
                 return
             }
-            orderData.route_id = routesData?.id
-            orderData.client_deposit = 0
-            api.post('/client/orders', orderData).then((res) => {
-                if (res && res?.success) {
-                    toast.success("Buyurtma yaratildi!")
-                    navigate('/orders')
-                } else {
-                    toast.error("Xatolik yuz berdi!")
-                }
-            }).catch((err) => {
-                console.log(err)
-                toast.error(err?.response?.data?.data)
-            })
-            // setShowPaymentModal(true)
-        } catch (e) {
-            console.log(e)
-            toast.error("Xatolik yuz berdi!")
-            window.location.reload()
-        }
-    }
 
-    const handlePaymentConfirm = () => {
-        if (!selectedCard) {
-            toast.error('Karta tanlang!')
-            return
+            if (!routesData) {
+                toast.error("Marshrut ma'lumotlari topilmadi!")
+                return
+            }
+
+            const priceInfo = calculatePrice()
+
+            // Buyurtma ma'lumotlarini tayyorlash
+            const orderPayload = {
+                ...orderData,
+                route_id: routesData.id,
+                client_deposit: priceInfo.prepayment,
+                discount_id: selectedDiscount?.id || null
+            }
+
+            setLoading(true)
+            const res = await api.post('/client/orders', orderPayload)
+            
+            if (res && res.data) {
+                toast.success("Buyurtma muvaffaqiyatli yaratildi!")
+                navigate('/orders')
+            } else {
+                toast.error("Buyurtma yaratishda xatolik!")
+            }
+        } catch (err: any) {
+            console.error(err)
+            // Backend'dan kelgan xatolik xabarini ko'rsatish
+            const errorMessage = err?.response?.data?.data || err?.response?.data?.message || "Xatolik yuz berdi!"
+            
+            // Maxsus xatolik xabarlari
+            if (errorMessage.includes("Balance is insufficient")) {
+                toast.error("Balansingizda yetarli mablag' mavjud emas!")
+            } else {
+                toast.error(errorMessage)
+            }
+        } finally {
+            setLoading(false)
         }
-        toast.success('Buyurtma muvaffaqiyatli berildi!')
-        navigate('/orders')
     }
 
     const priceInfo = calculatePrice()
@@ -225,6 +249,7 @@ const OrderPage = () => {
                 <h1 className="text-3xl font-bold mb-2">Buyurtma berish</h1>
                 <p className="text-muted-foreground">Shaharlaro safar uchun buyurtma yarating</p>
             </div>
+
             {/* Marshrutni tanlang */}
             <Card>
                 <CardHeader>
@@ -240,15 +265,20 @@ const OrderPage = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label>Viloyat</Label>
-                                <Select value={orderData.fromRegion}
-                                        onValueChange={(value) => handleInputChange('fromRegion', value)}>
+                                <Select 
+                                    value={orderData.fromRegion}
+                                    onValueChange={(value) => {
+                                        handleInputChange('fromRegion', value)
+                                        setOrderData(prev => ({...prev, fromDistrict: ''}))
+                                    }}
+                                >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Viloyatni tanlang"/>
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {regionDatas.map((region) => (
-                                            <SelectItem key={region?.id} value={region?.id}>
-                                                {region?.name}
+                                        {regionDatas.map((region: any) => (
+                                            <SelectItem key={region.id} value={region.id.toString()}>
+                                                {region.name}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -256,15 +286,18 @@ const OrderPage = () => {
                             </div>
                             <div className="space-y-2">
                                 <Label>Tuman/Shahar</Label>
-                                <Select value={orderData.fromDistrict}
-                                        onValueChange={(value) => handleInputChange('fromDistrict', value)}>
+                                <Select 
+                                    value={orderData.fromDistrict}
+                                    onValueChange={(value) => handleInputChange('fromDistrict', value)}
+                                    disabled={!orderData.fromRegion}
+                                >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Tumanni tanlang"/>
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {formDistrictDatas.map((district) => (
-                                            <SelectItem key={district?.id} value={district?.id}>
-                                                {district?.name}
+                                        {fromDistrictDatas.map((district: any) => (
+                                            <SelectItem key={district.id} value={district.id.toString()}>
+                                                {district.name}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -279,15 +312,20 @@ const OrderPage = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label>Viloyat</Label>
-                                <Select value={orderData.toRegion}
-                                        onValueChange={(value) => handleInputChange('toRegion', value)}>
+                                <Select 
+                                    value={orderData.toRegion}
+                                    onValueChange={(value) => {
+                                        handleInputChange('toRegion', value)
+                                        setOrderData(prev => ({...prev, toDistrict: ''}))
+                                    }}
+                                >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Viloyatni tanlang"/>
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {regionDatas.map((region) => (
-                                            <SelectItem key={region?.id} value={region?.id}>
-                                                {region?.name}
+                                        {regionDatas.map((region: any) => (
+                                            <SelectItem key={region.id} value={region.id.toString()}>
+                                                {region.name}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -295,15 +333,18 @@ const OrderPage = () => {
                             </div>
                             <div className="space-y-2">
                                 <Label>Tuman/Shahar</Label>
-                                <Select value={orderData.toDistrict}
-                                        onValueChange={(value) => handleInputChange('toDistrict', value)}>
+                                <Select 
+                                    value={orderData.toDistrict}
+                                    onValueChange={(value) => handleInputChange('toDistrict', value)}
+                                    disabled={!orderData.toRegion}
+                                >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Tumanni tanlang"/>
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {toDistrictDatas.map((district) => (
-                                            <SelectItem key={district?.id} value={district?.id}>
-                                                {district?.name}
+                                        {toDistrictDatas.map((district: any) => (
+                                            <SelectItem key={district.id} value={district.id.toString()}>
+                                                {district.name}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -334,17 +375,16 @@ const OrderPage = () => {
                                 )}
                             >
                                 <CalendarIcon className="mr-2 h-4 w-4"/>
-                                {orderData.date ? format(orderData.date, "yyyy-MM-dd") : "Sanani tanlang"}
+                                {orderData.date ? format(new Date(orderData.date), "yyyy-MM-dd") : "Sanani tanlang"}
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
                             <Calendar
                                 mode="single"
-                                selected={orderData.date}
+                                selected={orderData.date ? new Date(orderData.date) : undefined}
                                 onSelect={(date) => handleInputChange('date', date)}
                                 disabled={(date) => date < new Date()}
                                 initialFocus
-                                className="pointer-events-auto"
                             />
                         </PopoverContent>
                     </Popover>
@@ -352,8 +392,10 @@ const OrderPage = () => {
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>Yo'lovchilar soni</Label>
-                            <Select value={orderData.passengers}
-                                    onValueChange={(value) => handleInputChange('passengers', value)}>
+                            <Select 
+                                value={orderData.passengers}
+                                onValueChange={(value) => handleInputChange('passengers', value)}
+                            >
                                 <SelectTrigger>
                                     <SelectValue/>
                                 </SelectTrigger>
@@ -362,7 +404,7 @@ const OrderPage = () => {
                                     <SelectItem value="2">2 kishi</SelectItem>
                                     <SelectItem value="3">3 kishi</SelectItem>
                                     <SelectItem value="4">4 kishi</SelectItem>
-                                    <SelectItem value='0.25'>Pochta</SelectItem>
+                                    <SelectItem value="0.25">Pochta</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -408,119 +450,119 @@ const OrderPage = () => {
             </Card>
 
             {/* Chegirmadan foydalanish */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Percent className="h-5 w-5"/>
-                        Chegirmadan foydalanish
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    {selectedDiscount ? (
-                        <div className="border border-primary/20 bg-primary/5 rounded-lg p-4">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div
-                                        className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
-                                        <Percent className="h-5 w-5 text-primary"/>
+            {discountDatas.length > 0 && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Percent className="h-5 w-5"/>
+                            Chegirmadan foydalanish
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        {selectedDiscount ? (
+                            <div className="border border-primary/20 bg-primary/5 rounded-lg p-4">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
+                                            <Percent className="h-5 w-5 text-primary"/>
+                                        </div>
+                                        <div>
+                                            <p className="font-medium">{selectedDiscount.title}</p>
+                                            <p className="text-sm text-muted-foreground">-{selectedDiscount.value}%</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p className="font-medium">{selectedDiscount.title}</p>
-                                        <p className="text-sm text-muted-foreground">{selectedDiscount.description}</p>
-                                    </div>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setSelectedDiscount(null)}
+                                    >
+                                        Bekor qilish
+                                    </Button>
                                 </div>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setSelectedDiscount(null)}
-                                >
-                                    Bekor qilish
-                                </Button>
                             </div>
-                        </div>
-                    ) : (
-                        <Button
-                            variant="outline"
-                            className="w-full gap-2"
-                            onClick={() => setShowDiscountModal(true)}
-                        >
-                            <Percent className="h-4 w-4"/>
-                            Chegirma tanlash
-                        </Button>
-                    )}
-                </CardContent>
-            </Card>
+                        ) : (
+                            <Button
+                                variant="outline"
+                                className="w-full gap-2"
+                                onClick={() => setShowDiscountModal(true)}
+                            >
+                                <Percent className="h-4 w-4"/>
+                                Chegirma tanlash
+                            </Button>
+                        )}
+                    </CardContent>
+                </Card>
+            )}
 
             {/* Narx hisoblash */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <CreditCard className="h-5 w-5"/>
-                        Narx ma'lumotlari
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                            <span className="text-muted-foreground">Asosiy narx:</span>
-                            <span className="font-medium">
-                                {routesData?.price_in
-                                    ? formatCurrency(routesData.price_in)
-                                    : "-"}
-                            </span>
-                        </div>
-
-                        {selectedDiscount && (
-                            <div className="flex justify-between items-center text-green-600">
-                                <span>Chegirma (-{selectedDiscount.percentage}%):</span>
-                                <span className="font-medium">-{priceInfo.discountAmount.toLocaleString()} so'm</span>
-                            </div>
-                        )}
-
-                        <div className="border-t pt-3">
-                            <div className="flex justify-between items-center">
-                                <span className="text-muted-foreground">Jami narx:</span>
-                                <span
-                                    className="font-semibold text-lg">
-                                    {routesData?.price_in
-                                        ? formatCurrency(routesData.price_in)
-                                        : "-"}
-                                </span>
-                            </div>
+            {routesData && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <CreditCard className="h-5 w-5"/>
+                            Narx ma'lumotlari
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-3">
                             <div className="flex justify-between items-center">
                                 <span className="text-muted-foreground">Qayerdan:</span>
-                                <span
-                                    className="font-semibold text-lg">{routesData?.from.name || "-"}</span>
+                                <span className="font-medium">{routesData.from?.name || "-"}</span>
                             </div>
                             <div className="flex justify-between items-center">
                                 <span className="text-muted-foreground">Qayerga:</span>
-                                <span
-                                    className="font-semibold text-lg">{routesData?.to.name || "-"}</span>
+                                <span className="font-medium">{routesData.to?.name || "-"}</span>
                             </div>
                             <div className="flex justify-between items-center">
-                                <span className="text-muted-foreground">Jami masofa:</span>
-                                <span
-                                    className="font-semibold text-lg">
-                                     {routesData?.distance_km
-                                         ? formatCurrency(routesData.distance_km, 'km')
-                                         : "-"}
+                                <span className="text-muted-foreground">Masofa:</span>
+                                <span className="font-medium">
+                                    {routesData.distance_km ? `${routesData.distance_km} km` : "-"}
                                 </span>
                             </div>
-                            <div className="flex justify-between items-center mt-2">
-                                <span className="text-primary font-medium">Hozir to'lash kerak:</span>
-                                <span className="font-bold text-primary text-xl">
-                                  {routesData?.deposit_client
-                                      ? formatCurrency(routesData.deposit_client)
-                                      : "-"}
+                            <div className="flex justify-between items-center">
+                                <span className="text-muted-foreground">Bir kishi narxi:</span>
+                                <span className="font-medium">{formatCurrency(priceInfo.basePrice)}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-muted-foreground">Yo'lovchilar soni:</span>
+                                <span className="font-medium">
+                                    {orderData.passengers === '0.25' ? 'Pochta' : `${orderData.passengers} kishi`}
                                 </span>
+                            </div>
+
+                            {selectedDiscount && (
+                                <div className="flex justify-between items-center text-green-600">
+                                    <span>Chegirma (-{selectedDiscount.value}%):</span>
+                                    <span className="font-medium">-{formatCurrency(priceInfo.discountAmount)}</span>
+                                </div>
+                            )}
+
+                            <div className="border-t pt-3 space-y-2">
+                                <div className="flex justify-between items-center">
+                                    <span className="font-medium">Umumiy narx:</span>
+                                    <span className="font-semibold text-lg">
+                                        {formatCurrency(priceInfo.finalPrice)}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-primary font-medium">Oldindan to'lov:</span>
+                                    <span className="font-bold text-primary text-xl">
+                                        {formatCurrency(priceInfo.prepayment)}
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </CardContent>
-            </Card>
+                    </CardContent>
+                </Card>
+            )}
 
-            <Button onClick={handleOrderSubmit} className="w-full" size="lg">
-                Buyurtma berish
+            <Button 
+                onClick={handleOrderSubmit} 
+                className="w-full" 
+                size="lg"
+                disabled={loading || !routesData}
+            >
+                {loading ? "Yuklanmoqda..." : "Buyurtma berish"}
             </Button>
 
             {/* Discount Selection Modal */}
@@ -538,17 +580,16 @@ const OrderPage = () => {
 
                     <div className="space-y-3">
                         {discountDatas.length > 0 ? (
-                            discountDatas.map((discount) => (
+                            discountDatas.map((discount: any) => (
                                 <Card
                                     key={discount.id}
                                     className="cursor-pointer hover:bg-accent/50 transition-colors"
-                                    onClick={() => handleDiscountSelect(discount?.id)}
+                                    onClick={() => handleDiscountSelect(discount)}
                                 >
                                     <CardContent className="p-4">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3">
-                                                <div
-                                                    className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
+                                                <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
                                                     <Percent className="h-4 w-4 text-primary"/>
                                                 </div>
                                                 <div>
@@ -569,71 +610,6 @@ const OrderPage = () => {
                                 <p className="text-muted-foreground">Hozircha chegirmalaringiz yo'q</p>
                             </div>
                         )}
-                    </div>
-                </DialogContent>
-            </Dialog>
-
-            {/* Payment Card Selection Modal */}
-            <Dialog open={showPaymentModal} onOpenChange={setShowPaymentModal}>
-                <DialogContent className="max-w-md">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <CreditCard className="h-5 w-5"/>
-                            To'lov kartasini tanlang
-                        </DialogTitle>
-                        <DialogDescription>
-                            Ulangan kartalardan birini tanlang
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    <div className="space-y-3">
-                        {paymentCards.map((card) => (
-                            <Card
-                                key={card.id}
-                                className={cn(
-                                    "cursor-pointer transition-colors",
-                                    selectedCard?.id === card.id
-                                        ? "border-primary bg-primary/5"
-                                        : "hover:bg-accent/50"
-                                )}
-                                onClick={() => setSelectedCard(card)}
-                            >
-                                <CardContent className="p-4">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div
-                                                className="h-10 w-10 rounded-lg bg-primary/20 flex items-center justify-center">
-                                                <CreditCard className="h-5 w-5 text-primary"/>
-                                            </div>
-                                            <div>
-                                                <p className="font-medium">{card.number}</p>
-                                                <p className="text-sm text-muted-foreground">{card.bank} • {card.type}</p>
-                                            </div>
-                                        </div>
-                                        {selectedCard?.id === card.id && (
-                                            <CheckCircle className="h-5 w-5 text-primary"/>
-                                        )}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
-
-                    <div className="border-t pt-4 mt-4">
-                        <div className="flex justify-between items-center mb-4">
-                            <span className="font-medium">To'lanadigan summa:</span>
-                            <span className="font-bold text-primary text-lg">
-                {priceInfo.prepayment.toLocaleString()} so'm
-              </span>
-                        </div>
-                        <Button
-                            onClick={handlePaymentConfirm}
-                            className="w-full"
-                            size="lg"
-                            disabled={!selectedCard}
-                        >
-                            To'lovni tasdiqlash
-                        </Button>
                     </div>
                 </DialogContent>
             </Dialog>

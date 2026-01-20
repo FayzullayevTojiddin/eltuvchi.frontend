@@ -15,7 +15,6 @@ const LoginPage = () => {
     const [selectedRole, setSelectedRole] = useState("client")
     const navigate = useNavigate()
 
-    // Demo accounts
     const demoAccounts = {
         client: {
             email: "client@demo.uz",
@@ -51,7 +50,7 @@ const LoginPage = () => {
     const handleLogin = () => {
         try {
             axios.post(api.apiUrl + "/auth", {
-                initData: "query_id=AAHs9QY3AwAAAOz1BjcIcR5F&user=%7B%22id%22%3A7365653996%2C%22first_name%22%3A%22Tojiddin%22%2C%22last_name%22%3A%22Fayzullaev%22%2C%22username%22%3A%22Azamat_akoooo%22%2C%22language_code%22%3A%22ru%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2F5SM6uSRMAo5wYgVYHpj2nefym3PrJayQGjr54-XcEE1WIk7Oym0qPaW4NhHZxIfx.svg%22%7D&auth_date=1754389322&signature=gE_DFjG4awAWY6CC-qoH7KTSiGbjAvwzhcjcajGSrlLlLh_07DLdtyHL4Q3TkIewRjij3RnyVu7GAn7emUG-DA&hash=ee49e391e0774fc96dad457492cc1321549864cd72de4bba2aca1ad0a462ee3b"
+                initData: "query_id=AAHs9QY3AwAAAOz1BjcIcR5F&user=%7B%22id%22%3A7365653994%2C%22first_name%22%3A%22Tojiddin1%22%2C%22last_name%22%3A%22Fayzullaev%22%2C%22username%22%3A%22Azamat_akoooo%22%2C%22language_code%22%3A%22ru%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2F5SM6uSRMAo5wYgVYHpj2nefym3PrJayQGjr54-XcEE1WIk7Oym0qPaW4NhHZxIfx.svg%22%7D&auth_date=1754389322&signature=gE_DFjG4awAWY6CC-qoH7KTSiGbjAvwzhcjcajGSrlLlLh_07DLdtyHL4Q3TkIewRjij3RnyVu7GAn7emUG-DA&hash=ee49e391e0774fc96dad457492cc1321549864cd72de4bba2aca1ad0a462ee3b"
             }).then((res) => {
                 console.log(res, res?.data)
                 if (res?.status === 200) {

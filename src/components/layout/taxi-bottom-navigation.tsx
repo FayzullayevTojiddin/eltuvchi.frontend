@@ -6,7 +6,6 @@ export function TaxiBottomNavigation() {
   const currentPath = location.pathname
   const userRole = localStorage.getItem('userRole') || 'client'
 
-  // Sidebar dan olingan navigation items
   const navItems = [
     { title: "Dashboard", url: "/taxi", icon: LayoutDashboard },
     { title: "Buyurtmalar", url: "/taxi/orders", icon: ShoppingBag },
@@ -23,14 +22,12 @@ export function TaxiBottomNavigation() {
         : "text-muted-foreground hover:text-foreground"
     }`
 
-  // Only show for taxi/driver role
-  if (userRole !== 'taxi' && userRole !== 'driver') {
+  if (userRole !== 'driver') {
     return null
   }
 
   return (
     <>
-      {/* Bottom Navigation Bar - Fixed at bottom */}
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t md:hidden">
         <div className="flex h-16">
           {navItems.map((item) => (

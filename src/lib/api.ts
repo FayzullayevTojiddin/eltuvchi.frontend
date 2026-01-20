@@ -22,12 +22,12 @@ export class ApiSettings {
 
     setToken(token: string) {
         this.headers['Authorization'] = `Bearer ${token}`;
-        localStorage.setItem('auth-token', token);
+        localStorage.setItem('token', token);
     }
 
     clearToken() {
         delete this.headers['Authorization'];
-        localStorage.removeItem('auth-token');
+        localStorage.removeItem('token');
     }
 
     async get(endpoint: string, params: Record<string, any> = {}) {
@@ -44,12 +44,10 @@ export class ApiSettings {
         }
     }
 
-    // POST request
     async post(endpoint: string, data: any, isFormData: boolean = false) {
         try {
             const headers = {...this.headers};
 
-            // If sending form data, remove Content-Type to let browser set it
             if (isFormData) {
                 delete headers['Content-Type'];
             }
@@ -65,7 +63,6 @@ export class ApiSettings {
         }
     }
 
-    // PUT request
     async put(endpoint: string, data: any, isFormData: boolean = false) {
         try {
             const headers = {...this.headers};
@@ -85,7 +82,6 @@ export class ApiSettings {
         }
     }
 
-    // DELETE request
     async delete(endpoint: string) {
         try {
             const response = await axios.delete(`${this.apiUrl}${endpoint}`, {
@@ -99,19 +95,21 @@ export class ApiSettings {
         }
     }
 
-    // Handle API errors
     private handleApiError(error) {
-        // Check if error is network related (offline)
-        if (!navigator.onLine || error.message === 'Network Error') {
-            console.log('You are offline. Please check your internet connection.');
-            // You can display an offline notification or handle it as needed
-        }
-
-        // Handle other types of errors
         if (error.response) {
-            // Server responded with an error status
+
+            if (error.response.status === 403 &&
+                error.response.data?.message === 'Your account is not active') {
+                window.location.href = '/inactive';
+                return;
+            }
+
+            if(error.response.status === 301 && error.response.data?.message === 'Your account is blocked') {
+                window.location.href = '/blocked';
+                return;
+            }
+
             if (error.response.status === 401) {
-                // Unauthorized - clear token and redirect to login
                 this.clearToken();
                 window.location.href = '/login';
             }

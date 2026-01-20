@@ -346,8 +346,12 @@ const OrdersPage = () => {
                                 <span>Oldindan to'lov: {formatPrice(order.client_deposit)} so'm</span>
                             </div>
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <Car className="h-4 w-4"/>
-                                <span>Yo'lovchilar soni: {order.passengers}</span>
+                                <Car className="h-4 w-4" />
+                                <span>
+                                    {order.passengers === 0
+                                    ? "Pochta"
+                                    : `Yo'lovchilar soni: ${order.passengers}`}
+                                </span>
                             </div>
 
                             {/* Action Buttons */}

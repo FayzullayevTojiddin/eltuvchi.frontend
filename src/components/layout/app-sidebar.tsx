@@ -63,83 +63,30 @@ export const AppSidebar = () => {
   }
 
   const getNavigationItems = () => {
-    switch (userRole) {
-      case 'super-admin':
-        return [
-          { icon: LayoutDashboard, label: 'Dashboard', href: '/super-admin' },
-          { icon: Users, label: 'Foydalanuvchilar', href: '/super-admin/users' },
-          { icon: Car, label: 'Haydovchilar', href: '/super-admin/drivers' },
-          { icon: Building2, label: 'Takso Parklar', href: '/super-admin/taxi-parks' },
-          { icon: ShoppingBag, label: 'Buyurtmalar', href: '/super-admin/orders' },
-          { icon: Store, label: 'Market', href: '/super-admin/market' },
-        ]
-      case 'admin':
-        return [
-          { icon: LayoutDashboard, label: 'Dashboard', href: '/admin' },
-          { icon: Users, label: 'Foydalanuvchilar', href: '/admin/users' },
-          { icon: UserCheck, label: 'Dispatcherlar', href: '/admin/dispatchers' },
-          { icon: Building2, label: 'Takso parklar', href: '/admin/taxi-parks' },
-          { icon: ShoppingBag, label: 'Buyurtmalar', href: '/admin/orders' },
-          { icon: CreditCard, label: "To'lovlar", href: '/admin/payments' },
-          { icon: Store, label: 'Market', href: '/admin/market' },
-        ]
-      case 'dispatcher':
-        return [
-          { icon: LayoutDashboard, label: 'Dashboard', href: '/dispatcher' },
-          { icon: ShoppingBag, label: 'Buyurtmalar', href: '/dispatcher/orders' },
-          { icon: Users, label: 'Foydalanuvchilar', href: '/dispatcher/users' },
-        ]
-      // case 'taxi':
-      case 'driver':
-        return [
-          { icon: LayoutDashboard, label: 'Dashboard', href: '/taxi' },
-          { icon: ShoppingBag, label: 'Buyurtmalar', href: '/taxi/orders' },
-          { icon: Wallet, label: 'Daromad', href: '/taxi/earnings' },
-          { icon: Store, label: 'Market', href: '/taxi/market' },
-          // { icon: User, label: 'Profil', href: '/profile' },
-        ]
-      case 'taxiParkOwner':
-        return [
-          { icon: LayoutDashboard, label: 'Dashboard', href: '/taxi-park' },
-          { icon: Car, label: 'Haydovchilar', href: '/taxi-park/drivers' },
-          { icon: UserCheck, label: 'Dispatcherlar', href: '/taxi-park/dispatchers' },
-          { icon: ShoppingBag, label: 'Buyurtmalar', href: '/taxi-park/orders' },
-          { icon: DollarSign, label: 'Narxlar', href: '/taxi-park/pricing' },
-          { icon: BarChart3, label: 'Analitika', href: '/taxi-park/analytics' },
-        ]
-      case 'taxi-park-owner':
-        return [
-          { icon: LayoutDashboard, label: 'Dashboard', href: '/taxi-park-owner' },
-          { icon: Car, label: 'Haydovchilar', href: '/taxi-park-owner/drivers' },
-          { icon: UserCheck, label: 'Dispatcherlar', href: '/taxi-park-owner/dispatchers' },
-          { icon: DollarSign, label: 'Narxlar', href: '/taxi-park-owner/prices' },
-        ]
-      default:
-        return [
-          { icon: LayoutDashboard, label: 'Bosh sahifa', href: '/home' },
-          { icon: ShoppingBag, label: 'Buyurtma berish', href: '/order' },
-          { icon: Car, label: 'Buyurtmalarim', href: '/orders' },
-          { icon: CreditCard, label: 'Balans', href: '/balance' },
-          { icon: Percent, label: 'Chegirmalar', href: '/discounts' },
-          { icon: Gift, label: 'Referal', href: '/referral' },
-          { icon: Store, label: 'Market', href: '/market' },
-          { icon: User, label: 'Profil', href: '/profile' },
-          // { icon: HelpCircle, label: 'Yordam', href: '/help' },
-        ]
+    if (userRole === 'driver') {
+      return [
+        { icon: LayoutDashboard, label: 'Dashboard', href: '/taxi' },
+        { icon: ShoppingBag, label: 'Buyurtmalar', href: '/taxi/orders' },
+        { icon: Wallet, label: 'Daromad', href: '/taxi/earnings' },
+        { icon: Store, label: 'Market', href: '/taxi/market' },
+        { icon: User, label: 'Profil', href: '/profile' },
+      ]
     }
+
+    return [
+      { icon: LayoutDashboard, label: 'Bosh sahifa', href: '/' },
+      { icon: ShoppingBag, label: 'Buyurtma berish', href: '/order' },
+      { icon: Car, label: 'Buyurtmalarim', href: '/orders' },
+      { icon: CreditCard, label: 'Balans', href: '/balance' },
+      { icon: Percent, label: 'Chegirmalar', href: '/discounts' },
+      { icon: Gift, label: 'Referal', href: '/referral' },
+      { icon: Store, label: 'Market', href: '/market' },
+      { icon: User, label: 'Profil', href: '/profile' },
+    ]
   }
 
   const getSidebarTitle = () => {
-      console.log('user role:', userRole)
-    switch (userRole) {
-      case 'super-admin': return 'SuperAdmin Panel'
-      case 'admin': return 'Admin Panel'
-      case 'dispatcher': return 'Dispatcher Panel'
-      case 'driver': return 'Haydovchi Panel'
-      case 'taxiParkOwner': return 'Takso Park Panel'
-      case 'taxi-park-owner': return 'Takso Park Egasi Panel'
-      default: return 'Eltuvchi'
-    }
+    return userRole === 'driver' ? 'Haydovchi Panel' : 'Eltuvchi'
   }
 
   const navigationItems = getNavigationItems()

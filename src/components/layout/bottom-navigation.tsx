@@ -10,7 +10,6 @@ export function BottomNavigation() {
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false)
   const userRole = localStorage.getItem('userRole') || 'client'
 
-  // Main navigation items (shown in bottom bar)
   const mainNavItems = [
     { title: "Bosh sahifa", url: "/home", icon: Home },
     { title: "Buyurtma", url: "/order", icon: MapPin },
@@ -18,7 +17,6 @@ export function BottomNavigation() {
     { title: "Balans", url: "/balance", icon: CreditCard },
   ]
 
-  // Additional items (shown in drawer)
   const moreItems = [
     { title: "Market", url: "/market", icon: ShoppingBag },
     { title: "Chegirmalar", url: "/discounts", icon: Percent },
