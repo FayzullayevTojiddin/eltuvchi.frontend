@@ -11,8 +11,6 @@ import {SidebarProvider} from './components/ui/sidebar'
 import {AppSidebar} from './components/layout/app-sidebar'
 import AboutPage from './pages/AboutPage'
 import ContactPage from './pages/ContactPage'
-import LoginPage from './pages/LoginPage'
-import RegisterPage from './pages/RegisterPage'
 import ProfilePage from './pages/ProfilePage'
 import HelpPage from './pages/HelpPage'
 import TermsPage from './pages/TermsPage'
@@ -29,18 +27,16 @@ import {TaxiBottomNavigation} from './components/layout/taxi-bottom-navigation'
 import TaxiOrdersPage from './pages/TaxiOrdersPage'
 import TaxiEarningsPage from './pages/TaxiEarningsPage'
 import TaxiMarketPage from './pages/TaxiMarketPage'
-import {AdminBottomNavigation} from './components/layout/admin-bottom-navigation'
-import {DispatcherBottomNavigation} from './components/layout/dispatcher-bottom-navigation'
-import {TaxiParkBottomNavigation} from './components/layout/taxi-park-bottom-navigation'
 import OrderPage from './pages/OrderPage'
 import OrdersPage from './pages/OrdersPage'
 import {Toaster} from "react-hot-toast";
 import InactivePage from './pages/InActivePage'
 import RequireRole from './components/RequireRole'
+import BlockedPage from './pages/BlockedPage'
 
 function AppContent() {
     const location = useLocation()
-    const userRole = localStorage.getItem('userRole') || 'client'
+    const userRole = localStorage.getItem('userRole')
 
     useEffect(() => {
         if (!localStorage.getItem('userRole')) {
@@ -48,19 +44,16 @@ function AppContent() {
         }
     }, [])
 
-    const isLoginPage = location.pathname === '/login' || location.pathname === '/'
-    const isRegisterPage = location.pathname === '/register'
-
     const isInactivePage = location.pathname === '/inactive'
 
     return (
         <SidebarProvider>
 
             <div className="min-h-screen flex w-full">
-                {!isLoginPage && !isRegisterPage && <AppSidebar/>}
+                <AppSidebar/>
 
                 <div className="flex-1 flex flex-col">
-                    {!isLoginPage && !isRegisterPage && <SiteHeader/>}
+                    <SiteHeader/>
 
                     <main className="flex-1 p-6 pb-20 md:pb-6">
                         <ScrollToTop/>
@@ -147,6 +140,8 @@ function AppContent() {
                                 ))}
 
                                 <Route path="/inactive" element={<InactivePage/>}/>
+
+                                <Route path="/blocked" element={<BlockedPage/>}/>
 
                                 <Route path="*" element={<NotFoundPage/>}/>
 

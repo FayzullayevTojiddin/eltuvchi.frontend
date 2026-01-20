@@ -1,5 +1,5 @@
-import { Navigate } from 'react-router-dom'
 import { ReactNode } from 'react'
+import UnauthorizedPage from '@/pages/UnauthorizedPage'
 
 type Props = {
     allowed: string[]
@@ -7,10 +7,10 @@ type Props = {
 }
 
 export default function RequireRole({ allowed, children }: Props) {
-    const role = localStorage.getItem('userRole')
+    const role = localStorage.getItem('userRole') || 'client'
 
-    if (!role || !allowed.includes(role)) {
-        return <Navigate to="/dashboard" replace />
+    if (!allowed.includes(role)) {
+        return <UnauthorizedPage />
     }
 
     return <>{children}</>

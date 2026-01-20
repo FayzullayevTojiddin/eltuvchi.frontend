@@ -108,11 +108,6 @@ export class ApiSettings {
                 window.location.href = '/blocked';
                 return;
             }
-
-            if (error.response.status === 401) {
-                this.clearToken();
-                window.location.href = '/login';
-            }
         }
     }
 }

@@ -1,13 +1,14 @@
 export default function InactivePage() {
-
-    const price = 17200
-
     const goToBot = () => {
+        const botUrl = 'https://t.me/mEltuvchiBot'
+
         if (window.Telegram?.WebApp) {
+            (window.Telegram.WebApp as any).openTelegramLink(botUrl)
             window.Telegram.WebApp.close()
-        } else {
-            window.location.href = "https://t.me/mEltuvchiBot"
+            return
         }
+
+        window.location.href = botUrl
     }
 
     return (
@@ -21,13 +22,6 @@ export default function InactivePage() {
                 <p className="text-gray-600 mb-6">
                     Xizmatdan foydalanish uchun obuna faollashtirilishi kerak.
                 </p>
-
-                <div className="bg-blue-50 rounded-xl py-4 mb-6">
-                    <p className="text-sm text-gray-600">Faollashtirish narxi</p>
-                    <p className="text-3xl font-bold text-blue-600">
-                        {price.toLocaleString()} so‘m
-                    </p>
-                </div>
 
                 <button
                     onClick={goToBot}
