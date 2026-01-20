@@ -59,7 +59,7 @@ const LoginPage = () => {
                         localStorage.setItem('userRole', 'client')
                         localStorage.setItem('token', res?.data?.token)
                         toast.success("Muvaffaqiyatli kirdingiz!")
-                        navigate('/home')
+                        navigate('/dashboard')
                     } else if (res?.data?.role == "driver") {
                         localStorage.clear()
                         localStorage.setItem('userRole', 'driver')

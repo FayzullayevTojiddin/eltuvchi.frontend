@@ -11,7 +11,7 @@ export function BottomNavigation() {
   const userRole = localStorage.getItem('userRole') || 'client'
 
   const mainNavItems = [
-    { title: "Bosh sahifa", url: "/home", icon: Home },
+    { title: "Bosh sahifa", url: "/dashboard", icon: Home },
     { title: "Buyurtma", url: "/order", icon: MapPin },
     { title: "Buyurtmalar", url: "/orders", icon: Car },
     { title: "Balans", url: "/balance", icon: CreditCard },
