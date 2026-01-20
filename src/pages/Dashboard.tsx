@@ -43,74 +43,63 @@ const Dashboard = () => {
     useEffect(() => {
         const existingToken = localStorage.getItem("token")
         const userRole = localStorage.getItem("userRole")
-        
+
         if (existingToken && userRole === "client") {
             fetchDashboardData()
             setInitialLoad(false)
             return
         }
-        
-        try {
-            if (window?.Telegram?.WebApp) {
-                const tg = window.Telegram.WebApp
-                tg.ready()
-                
-                if (tg.initData) {
-                    setInitData(tg.initData)
-                } else {
-                    setInitData("query_id=AAHs9QY3AwAAAOz1BjcIcR5F&user=%7B%22id%22%3A123456789%2C%22first_name%22%3A%22Test%22%2C%22last_name%22%3A%22User%22%2C%22username%22%3A%22testuser%22%2C%22language_code%22%3A%22uz%22%2C%22allows_write_to_pm%22%3Atrue%7D&auth_date=1704067200&hash=test_hash_value")
-                }
-            } else {
-                setInitData("query_id=AAHs9QY3AwAAAOz1BjcIcR5F&user=%7B%22id%22%3A123456789%2C%22first_name%22%3A%22Test%22%2C%22last_name%22%3A%22User%22%2C%22username%22%3A%22testuser%22%2C%22language_code%22%3A%22uz%22%2C%22allows_write_to_pm%22%3Atrue%7D&auth_date=1704067200&hash=test_hash_value")
-            }
-        } catch (e: any) {
-            toast.error(e.message)
-            setInitData("query_id=AAHs9QY3AwAAAOz1BjcIcR5F&user=%7B%22id%22%3A123456789%2C%22first_name%22%3A%22Test%22%2C%22last_name%22%3A%22User%22%2C%22username%22%3A%22testuser%22%2C%22language_code%22%3A%22uz%22%2C%22allows_write_to_pm%22%3Atrue%7D&auth_date=1704067200&hash=test_hash_value")
+
+        if (!window?.Telegram?.WebApp) {
+            toast.error("Ilovani Telegram orqali oching")
+            setLoading(false)
+            return
         }
+
+        const tg = window.Telegram.WebApp
+        tg.ready()
+
+        if (!tg.initData) {
+            toast.error("Telegram initData topilmadi")
+            setLoading(false)
+            return
+        }
+
+        setInitData(tg.initData)
     }, [])
 
     useEffect(() => {
         if (!initData || !initialLoad) return
 
-        const existingToken = localStorage.getItem("token")
-        const userRole = localStorage.getItem("userRole")
-        
-        if (existingToken && userRole === "client") {
-            setLoading(false)
-            return
-        }
-
         const authenticateAndFetchData = async () => {
             try {
                 setLoading(true)
-                
-                const authRes = await axios.post(api.apiUrl + "/auth", { initData })
-                
-                if (authRes?.status === 200) {
-                    const { role, token } = authRes.data
-                    
-                    if (role === "client") {
-                        localStorage.clear()
-                        localStorage.setItem("userRole", "client")
-                        localStorage.setItem("token", token)
-                        toast.success("Muvaffaqiyatli kirdingiz!")
-                        
-                        const dashRes = await api.get("/client/dashboard")
-                        setDashboardData(dashRes.data)
-                        
-                    } else if (role === "driver") {
-                        localStorage.clear()
-                        localStorage.setItem("userRole", "driver")
-                        localStorage.setItem("token", token)
-                        toast.success("Tizimga muvaffaqiyatli kirdingiz!")
-                        navigate("/taxi")
-                        return
-                    } else {
-                        toast.error("Kirishda xatolik yuz berdi!")
-                    }
+
+                const authRes = await api.post("/auth", { initData })
+                const { role, token } = authRes.data
+
+                localStorage.clear()
+                localStorage.setItem("token", token)
+                localStorage.setItem("userRole", role)
+
+                if (role === "client") {
+                    toast.success("Muvaffaqiyatli kirdingiz!")
+
+                    const dashRes = await api.get("/client/dashboard")
+                    setDashboardData(dashRes.data)
+
+                } else if (role === "driver") {
+                    toast.success("Tizimga muvaffaqiyatli kirdingiz!")
+                    navigate("/taxi")
+
+                } else {
+                    toast.error("Noma'lum foydalanuvchi roli")
                 }
+
             } catch (err: any) {
-                toast.error(err?.response?.data?.message || "Xatolik yuz berdi")
+                toast.error(
+                    err?.response?.data?.message || "Avtorizatsiyada xatolik"
+                )
             } finally {
                 setLoading(false)
                 setInitialLoad(false)
@@ -118,7 +107,8 @@ const Dashboard = () => {
         }
 
         authenticateAndFetchData()
-    }, [initData, initialLoad, navigate])
+    }, [initData])
+
 
     if (loading && !dashboardData) {
         return (
