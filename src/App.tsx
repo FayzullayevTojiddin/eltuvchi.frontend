@@ -98,6 +98,8 @@ function AppContent() {
                 setIsLoading(false)
             }
         }
+
+        authenticateUser();
     }, [])
 
     const isInactivePage = location.pathname === '/inactive'
