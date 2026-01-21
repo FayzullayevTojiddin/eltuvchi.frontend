@@ -42,6 +42,7 @@ function AppContent() {
     const [isAuthenticated, setIsAuthenticated] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const [userRole, setUserRole] = useState<string | null>(null)
+    const [debugInfo, setDebugInfo] = useState<any>(null) // Debug uchun
 
     useEffect(() => {
         const authenticateUser = async () => {
@@ -50,6 +51,10 @@ function AppContent() {
 
                 if (!tg) {
                     console.error('Telegram WebApp topilmadi')
+                    setDebugInfo({
+                        error: 'Telegram WebApp topilmadi',
+                        window_telegram: window.Telegram ? 'Mavjud' : 'Yo\'q',
+                    })
                     toast.error('Telegram WebApp topilmadi')
                     setIsLoading(false)
                     return
@@ -62,10 +67,25 @@ function AppContent() {
 
                 if (!initData) {
                     console.error('InitData topilmadi')
+                    setDebugInfo({
+                        error: 'InitData bo\'sh',
+                        telegram_webapp: 'Mavjud',
+                        initData: initData || 'null/undefined',
+                        initData_length: 0,
+                        platform: (tg as any).platform,
+                        version: (tg as any).version,
+                    })
                     toast.error('Autentifikatsiya ma\'lumotlari topilmadi')
                     setIsLoading(false)
                     return
                 }
+
+                setDebugInfo({
+                    status: 'Fetch qilinmoqda...',
+                    initData: initData,
+                    initData_length: initData.length,
+                    url: `${BASE_URL}/api/auth`,
+                })
 
                 const response = await fetch(`${BASE_URL}/api/auth`, {
                     method: 'POST',
@@ -81,6 +101,13 @@ function AppContent() {
 
                 if (!response.ok || data.status === 'error') {
                     console.error('Auth xatolik:', data.message)
+                    setDebugInfo({
+                        error: 'Backend xatosi',
+                        response_status: response.status,
+                        response_ok: response.ok,
+                        data: data,
+                        initData: initData,
+                    })
                     toast.error(data.message || 'Autentifikatsiya muvaffaqiyatsiz')
                     setIsLoading(false)
                     return
@@ -88,6 +115,11 @@ function AppContent() {
 
                 if (!data.token || !data.user) {
                     console.error('Token yoki user ma\'lumotlari topilmadi')
+                    setDebugInfo({
+                        error: 'Token yoki user topilmadi',
+                        data: data,
+                        initData: initData,
+                    })
                     toast.error('Autentifikatsiya ma\'lumotlari noto\'g\'ri')
                     setIsLoading(false)
                     return
@@ -103,6 +135,11 @@ function AppContent() {
 
             } catch (error) {
                 console.error('Auth xatolik:', error)
+                setDebugInfo({
+                    error: 'Catch error',
+                    message: (error as Error).message,
+                    stack: (error as Error).stack,
+                })
                 toast.error('Autentifikatsiya jarayonida xatolik yuz berdi')
                 setIsAuthenticated(false)
             } finally {
@@ -127,11 +164,17 @@ function AppContent() {
     if (!isAuthenticated) {
         return (
             <div className="min-h-screen flex items-center justify-center p-6">
-                <div className="text-center max-w-md">
+                <div className="text-center max-w-2xl">
                     <h2 className="text-2xl font-bold mb-4">Autentifikatsiya xatosi</h2>
-                    <p className="text-muted-foreground mb-4">
-                        Iltimos, botni Telegram orqali qayta ishga tushiring
-                    </p>
+                    
+                    {/* Debug ma'lumotlari */}
+                    <div className="mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg text-left">
+                        <h3 className="font-bold mb-2">Debug ma'lumotlari:</h3>
+                        <pre className="text-xs overflow-auto max-h-96 whitespace-pre-wrap break-words">
+                            {JSON.stringify(debugInfo, null, 2)}
+                        </pre>
+                    </div>
+                    
                     <button 
                         onClick={() => window.location.reload()} 
                         className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
