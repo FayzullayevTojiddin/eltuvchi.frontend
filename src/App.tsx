@@ -49,6 +49,12 @@ function AppContent() {
             try {
                 const tg = window.Telegram?.WebApp
 
+                let attempts = 0
+                while (!window.Telegram?.WebApp && attempts < 20) {
+                    await new Promise(resolve => setTimeout(resolve, 100))
+                    attempts++
+                }
+
                 if (!tg) {
                     console.error('Telegram WebApp topilmadi')
                     setDebugInfo({
@@ -60,8 +66,8 @@ function AppContent() {
                     return
                 }
 
-                (tg as any).ready()
-                (tg as any).expand()
+                tg.ready()
+                tg.expand()
 
                 const initData = (tg as any).initData
 
@@ -72,8 +78,8 @@ function AppContent() {
                         telegram_webapp: 'Mavjud',
                         initData: initData || 'null/undefined',
                         initData_length: 0,
-                        platform: (tg as any).platform,
-                        version: (tg as any).version,
+                        platform: tg.platform,
+                        version: tg.version,
                     })
                     toast.error('Autentifikatsiya ma\'lumotlari topilmadi')
                     setIsLoading(false)
