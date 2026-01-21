@@ -35,6 +35,7 @@ import InactivePage from './pages/InActivePage'
 import RequireRole from './components/RequireRole'
 import BlockedPage from './pages/BlockedPage'
 import { BASE_URL } from '../env'
+import api from './lib/api'
 
 function AppContent() {
     const location = useLocation()
@@ -132,6 +133,9 @@ function AppContent() {
                 }
 
                 localStorage.setItem('token', data.token)
+
+                api.setToken(data.token)
+
                 localStorage.setItem('userId', data.user.id)
                 localStorage.setItem('userRole', data.role || 'client')
 

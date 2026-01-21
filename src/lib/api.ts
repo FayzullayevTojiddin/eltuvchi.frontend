@@ -97,7 +97,7 @@ export class ApiSettings {
     private handleApiError(error) {
         if (error.response) {
 
-            if (error.response.status === 403 &&
+            if (error.response.status === 401 &&
                 error.response.data?.message === 'Your account is not active') {
                 window.location.href = '/inactive';
                 return;
