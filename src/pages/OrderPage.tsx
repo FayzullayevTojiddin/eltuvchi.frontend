@@ -68,9 +68,13 @@ const OrderPage = () => {
                 const response = await api.get('/regions')
                 setRegionDatas(response?.data)
             } catch (error: any) {
-                toast.error(error.response?.data?.message || "Regionlarni yuklashda xatolik")
+                toast.error(
+                    error.response?.data?.message ||
+                    "Regionlarni yuklashda xatolik"
+                )
             }
         }
+
         fetchRegions()
     }, [])
 
