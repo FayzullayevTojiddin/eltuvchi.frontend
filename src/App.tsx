@@ -79,7 +79,6 @@ function AppContent() {
 
                 const data = await response.json()
 
-                // Xatolikni tekshirish
                 if (!response.ok || data.status === 'error') {
                     console.error('Auth xatolik:', data.message)
                     toast.error(data.message || 'Autentifikatsiya muvaffaqiyatsiz')
@@ -87,7 +86,6 @@ function AppContent() {
                     return
                 }
 
-                // Tokenni tekshirish
                 if (!data.token || !data.user) {
                     console.error('Token yoki user ma\'lumotlari topilmadi')
                     toast.error('Autentifikatsiya ma\'lumotlari noto\'g\'ri')
@@ -95,7 +93,6 @@ function AppContent() {
                     return
                 }
 
-                // Ma'lumotlarni saqlash
                 localStorage.setItem('token', data.token)
                 localStorage.setItem('userId', data.user.id)
                 localStorage.setItem('userRole', data.role || 'client')
@@ -116,7 +113,6 @@ function AppContent() {
         authenticateUser()
     }, [])
 
-    // Loading holatida
     if (isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -128,7 +124,6 @@ function AppContent() {
         )
     }
 
-    // Autentifikatsiya muvaffaqiyatsiz bo'lsa
     if (!isAuthenticated) {
         return (
             <div className="min-h-screen flex items-center justify-center p-6">
