@@ -44,18 +44,6 @@ function AppContent() {
     const userRole = localStorage.getItem('userRole')
 
     useEffect(() => {
-        if (import.meta.env.DEV) {
-            const script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/eruda';
-            document.body.appendChild(script);
-            
-            script.onload = () => {
-            (window as any).eruda.init();
-            };
-        }
-        }, []);
-
-    useEffect(() => {
         if (!localStorage.getItem('userRole')) {
             localStorage.setItem('userRole', 'client')
         }
