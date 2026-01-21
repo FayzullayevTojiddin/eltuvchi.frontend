@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Telegram Test</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <h1>Telegram WebApp Test</h1>
+    <div id="result"></div>
+    
+    <script>
+        setTimeout(() => {
+            const tg = window.Telegram?.WebApp;
+            const resultDiv = document.getElementById('result');
+            
+            if (!tg) {
+                resultDiv.innerHTML = '<p style="color: red;">❌ Telegram WebApp topilmadi</p>';
+                return;
+            }
+            
+            resultDiv.innerHTML = `
+                <p>✅ Telegram WebApp topildi!</p>
+                <p>Platform: ${tg.platform}</p>
+                <p>Version: ${tg.version}</p>
+                <p>ready type: ${typeof tg.ready}</p>
+                <p>expand type: ${typeof tg.expand}</p>
+                <p>InitData: ${tg.initData || 'Bo\'sh'}</p>
+            `;
+            
+            if (typeof tg.ready === 'function') {
+                tg.ready();
+                tg.expand();
+                resultDiv.innerHTML += '<p>✅ ready() va expand() ishga tushdi</p>';
+            }
+        }, 500);
+    </script>
+</body>
+</html>
