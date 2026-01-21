@@ -29,7 +29,8 @@ import TaxiEarningsPage from './pages/TaxiEarningsPage'
 import TaxiMarketPage from './pages/TaxiMarketPage'
 import OrderPage from './pages/OrderPage'
 import OrdersPage from './pages/OrdersPage'
-import {Toaster} from "react-hot-toast";
+import {Toaster} from "react-hot-toast"
+import toast from "react-hot-toast"
 import InactivePage from './pages/InActivePage'
 import RequireRole from './components/RequireRole'
 import BlockedPage from './pages/BlockedPage'
@@ -40,20 +41,16 @@ function AppContent() {
 
     const [isAuthenticated, setIsAuthenticated] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
-
-    const userRole = localStorage.getItem('userRole')
+    const [userRole, setUserRole] = useState<string | null>(null)
 
     useEffect(() => {
-        if (!localStorage.getItem('userRole')) {
-            localStorage.setItem('userRole', 'client')
-        }
-
         const authenticateUser = async () => {
             try {
                 const tg = window.Telegram?.WebApp
 
                 if (!tg) {
                     console.error('Telegram WebApp topilmadi')
+                    toast.error('Telegram WebApp topilmadi')
                     setIsLoading(false)
                     return
                 }
@@ -65,6 +62,7 @@ function AppContent() {
 
                 if (!initData) {
                     console.error('InitData topilmadi')
+                    toast.error('Autentifikatsiya ma\'lumotlari topilmadi')
                     setIsLoading(false)
                     return
                 }
@@ -81,31 +79,79 @@ function AppContent() {
 
                 const data = await response.json()
 
+                // Xatolikni tekshirish
+                if (!response.ok || data.status === 'error') {
+                    console.error('Auth xatolik:', data.message)
+                    toast.error(data.message || 'Autentifikatsiya muvaffaqiyatsiz')
+                    setIsLoading(false)
+                    return
+                }
+
+                // Tokenni tekshirish
+                if (!data.token || !data.user) {
+                    console.error('Token yoki user ma\'lumotlari topilmadi')
+                    toast.error('Autentifikatsiya ma\'lumotlari noto\'g\'ri')
+                    setIsLoading(false)
+                    return
+                }
+
+                // Ma'lumotlarni saqlash
                 localStorage.setItem('token', data.token)
                 localStorage.setItem('userId', data.user.id)
-                localStorage.setItem('userRole', data.user.role || 'client')
+                localStorage.setItem('userRole', data.role || 'client')
 
+                setUserRole(data.role || 'client')
                 setIsAuthenticated(true)
+                toast.success('Autentifikatsiya muvaffaqiyatli!')
 
             } catch (error) {
                 console.error('Auth xatolik:', error)
-                if (!localStorage.getItem('userRole')) {
-                    localStorage.setItem('userRole', 'client')
-                }
-                setIsAuthenticated(true)
+                toast.error('Autentifikatsiya jarayonida xatolik yuz berdi')
+                setIsAuthenticated(false)
             } finally {
                 setIsLoading(false)
             }
         }
 
-        authenticateUser();
+        authenticateUser()
     }, [])
+
+    // Loading holatida
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                    <p className="text-muted-foreground">Yuklanmoqda...</p>
+                </div>
+            </div>
+        )
+    }
+
+    // Autentifikatsiya muvaffaqiyatsiz bo'lsa
+    if (!isAuthenticated) {
+        return (
+            <div className="min-h-screen flex items-center justify-center p-6">
+                <div className="text-center max-w-md">
+                    <h2 className="text-2xl font-bold mb-4">Autentifikatsiya xatosi</h2>
+                    <p className="text-muted-foreground mb-4">
+                        Iltimos, botni Telegram orqali qayta ishga tushiring
+                    </p>
+                    <button 
+                        onClick={() => window.location.reload()} 
+                        className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+                    >
+                        Qayta urinish
+                    </button>
+                </div>
+            </div>
+        )
+    }
 
     const isInactivePage = location.pathname === '/inactive'
 
     return (
         <SidebarProvider>
-
             <div className="min-h-screen flex w-full">
                 <AppSidebar/>
 
@@ -115,98 +161,119 @@ function AppContent() {
                     <main className="flex-1 p-6 pb-20 md:pb-6">
                         <ScrollToTop/>
 
-                            <Routes>
-                                <Route path="/" element={
-                                    <RequireRole allowed={['client']}>
-                                        <Dashboard/>
+                        <Routes>
+                            <Route path="/" element={
+                                <RequireRole allowed={['client']}>
+                                    <Dashboard/>
+                                </RequireRole>
+                            }/>
+
+                            <Route path="/profile" element={
+                                <RequireRole allowed={['client']}>
+                                    <ProfilePage/>
+                                </RequireRole>
+                            }/>
+
+                            <Route path="/market" element={
+                                <RequireRole allowed={['client']}>
+                                    <MarketPage/>
+                                </RequireRole>
+                            }/>
+
+                            <Route path="/order" element={
+                                <RequireRole allowed={['client']}>
+                                    <OrderPage/>
+                                </RequireRole>
+                            }/>
+
+                            <Route path="/orders" element={
+                                <RequireRole allowed={['client']}>
+                                    <OrdersPage/>
+                                </RequireRole>
+                            }/>
+
+                            <Route path="/discounts" element={
+                                <RequireRole allowed={['client']}>
+                                    <DiscountsPage/>
+                                </RequireRole>
+                            }/>
+
+                            <Route path="/taxi" element={
+                                <RequireRole allowed={['driver']}>
+                                    <TaxiDashboard/>
+                                </RequireRole>
+                            }/>
+
+                            <Route path="/taxi/orders" element={
+                                <RequireRole allowed={['driver']}>
+                                    <TaxiOrdersPage/>
+                                </RequireRole>
+                            }/>
+
+                            <Route path="/taxi/earnings" element={
+                                <RequireRole allowed={['driver']}>
+                                    <TaxiEarningsPage/>
+                                </RequireRole>
+                            }/>
+
+                            <Route path="/taxi/market" element={
+                                <RequireRole allowed={['driver']}>
+                                    <TaxiMarketPage/>
+                                </RequireRole>
+                            }/>
+
+                            {[
+                                '/about',
+                                '/contact',
+                                '/help',
+                                '/terms',
+                                '/referral',
+                                '/balance',
+                            ].map(path => (
+                                <Route key={path} path={path} element={
+                                    <RequireRole allowed={['client','driver']}>
+                                        {path === '/about' && <AboutPage/>}
+                                        {path === '/contact' && <ContactPage/>}
+                                        {path === '/help' && <HelpPage/>}
+                                        {path === '/terms' && <TermsPage/>}
+                                        {path === '/referral' && <ReferralPage/>}
+                                        {path === '/balance' && <BalancePage/>}
                                     </RequireRole>
                                 }/>
+                            ))}
 
-                                <Route path="/profile" element={
-                                    <RequireRole allowed={['client']}>
-                                        <ProfilePage/>
-                                    </RequireRole>
-                                }/>
+                            <Route path="/inactive" element={<InactivePage/>}/>
 
-                                <Route path="/market" element={
-                                    <RequireRole allowed={['client']}>
-                                        <MarketPage/>
-                                    </RequireRole>
-                                }/>
+                            <Route path="/blocked" element={<BlockedPage/>}/>
 
-                                <Route path="/order" element={
-                                    <RequireRole allowed={['client']}>
-                                        <OrderPage/>
-                                    </RequireRole>
-                                }/>
+                            <Route path="*" element={<NotFoundPage/>}/>
 
-                                <Route path="/orders" element={
-                                    <RequireRole allowed={['client']}>
-                                        <OrdersPage/>
-                                    </RequireRole>
-                                }/>
-
-                                <Route path="/discounts" element={
-                                    <RequireRole allowed={['client']}>
-                                        <DiscountsPage/>
-                                    </RequireRole>
-                                }/>
-
-                                <Route path="/taxi" element={
-                                    <RequireRole allowed={['driver']}>
-                                        <TaxiDashboard/>
-                                    </RequireRole>
-                                }/>
-
-                                <Route path="/taxi/orders" element={
-                                    <RequireRole allowed={['driver']}>
-                                        <TaxiOrdersPage/>
-                                    </RequireRole>
-                                }/>
-
-                                <Route path="/taxi/earnings" element={
-                                    <RequireRole allowed={['driver']}>
-                                        <TaxiEarningsPage/>
-                                    </RequireRole>
-                                }/>
-
-                                <Route path="/taxi/market" element={
-                                    <RequireRole allowed={['driver']}>
-                                        <TaxiMarketPage/>
-                                    </RequireRole>
-                                }/>
-
-                                {[
-                                    '/about',
-                                    '/contact',
-                                    '/help',
-                                    '/terms',
-                                    '/referral',
-                                    '/balance',
-                                ].map(path => (
-                                    <Route key={path} path={path} element={
-                                        <RequireRole allowed={['client','driver']}>
-                                            {path === '/about' && <AboutPage/>}
-                                            {path === '/contact' && <ContactPage/>}
-                                            {path === '/help' && <HelpPage/>}
-                                            {path === '/terms' && <TermsPage/>}
-                                            {path === '/referral' && <ReferralPage/>}
-                                            {path === '/balance' && <BalancePage/>}
-                                        </RequireRole>
-                                    }/>
-                                ))}
-
-                                <Route path="/inactive" element={<InactivePage/>}/>
-
-                                <Route path="/blocked" element={<BlockedPage/>}/>
-
-                                <Route path="*" element={<NotFoundPage/>}/>
-
-                            </Routes>
+                        </Routes>
 
                         <Toaster
                             position="top-center"
                             reverseOrder={false}
+                            toastOptions={{
+                                duration: 3000,
+                                style: {
+                                    background: '#363636',
+                                    color: '#fff',
+                                },
+                                success: {
+                                    duration: 3000,
+                                    iconTheme: {
+                                        primary: '#4ade80',
+                                        secondary: '#fff',
+                                    },
+                                },
+                                error: {
+                                    duration: 4000,
+                                    iconTheme: {
+                                        primary: '#ef4444',
+                                        secondary: '#fff',
+                                    },
+                                },
+                            }}
                         />
 
                     </main>
@@ -215,7 +282,7 @@ function AppContent() {
             </div>
 
             {!isInactivePage && userRole === 'client' && <BottomNavigation/>}
-            {!isInactivePage && (userRole === 'driver') && <TaxiBottomNavigation/>}
+            {!isInactivePage && userRole === 'driver' && <TaxiBottomNavigation/>}
         </SidebarProvider>
     )
 }
