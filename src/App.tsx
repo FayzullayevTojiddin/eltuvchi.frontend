@@ -90,10 +90,10 @@ function AppContent() {
                     status: 'Fetch qilinmoqda...',
                     initData: initData,
                     initData_length: initData.length,
-                    url: `${BASE_URL}/api/auth`,
+                    url: `${BASE_URL}/auth`,
                 })
 
-                const response = await fetch(`${BASE_URL}/api/auth`, {
+                const response = await fetch(`${BASE_URL}/auth`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -173,7 +173,6 @@ function AppContent() {
                 <div className="text-center max-w-2xl">
                     <h2 className="text-2xl font-bold mb-4">Autentifikatsiya xatosi</h2>
                     
-                    {/* Debug ma'lumotlari */}
                     <div className="mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg text-left">
                         <h3 className="font-bold mb-2">Debug ma'lumotlari:</h3>
                         <pre className="text-xs overflow-auto max-h-96 whitespace-pre-wrap break-words">
