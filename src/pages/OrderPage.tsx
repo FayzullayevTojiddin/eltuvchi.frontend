@@ -57,11 +57,15 @@ const OrderPage = () => {
     const [discountDatas, setDiscountDatas] = useState([])
     const [loading, setLoading] = useState(false)
 
-    // Regionlarni bir marta yuklash
     useEffect(() => {
+        const token = localStorage.getItem('token')
+        if (!token) return
+
+        api.setToken(token)
+
         const fetchRegions = async () => {
             try {
-                const response = await api.get('/regions/')
+                const response = await api.get('/regions')
                 setRegionDatas(response?.data)
             } catch (error: any) {
                 toast.error(error.response?.data?.message || "Regionlarni yuklashda xatolik")
@@ -70,7 +74,6 @@ const OrderPage = () => {
         fetchRegions()
     }, [])
 
-    // From region tanlanganda uning taxoparklarini yuklash
     useEffect(() => {
         const fetchFromDistricts = async () => {
             if (orderData.fromRegion) {
