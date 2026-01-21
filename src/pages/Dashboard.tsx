@@ -98,7 +98,8 @@ const Dashboard = () => {
 
             } catch (err: any) {
                 toast.error(
-                    err?.response?.data?.message || "Avtorizatsiyada xatolik"
+                    // err?.response?.data?.message || "Avtorizatsiyada xatolik"
+                    initData
                 )
             } finally {
                 setLoading(false)
