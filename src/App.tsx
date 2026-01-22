@@ -81,6 +81,10 @@ function AppContent() {
                 tg.showAlert(`Token uzunligi: ${data.token.length}`)
 
                 api.setToken(data.token)
+
+                const savedToken = localStorage.getItem('token')
+                tg.showAlert(`Saqlandi: ${savedToken ? 'HA, uzunlik=' + savedToken.length : 'YO\'Q'}`)
+
                 localStorage.setItem('userId', data.user.id)
                 localStorage.setItem('userRole', data.role || 'client')
 
