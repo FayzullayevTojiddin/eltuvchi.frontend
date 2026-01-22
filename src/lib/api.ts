@@ -143,7 +143,7 @@ export class ApiSettings {
             return;
         }
 
-        if (status === 401) {
+        if (status === 404) {
             this.clearToken();
             return;
         }
