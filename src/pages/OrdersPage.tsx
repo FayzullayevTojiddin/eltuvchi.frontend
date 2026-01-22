@@ -69,29 +69,55 @@ const OrdersPage = () => {
             key: "eltuvchi-key",
             wsHost: "api.mtaxi.uz",
             wsPort: 8080,
-            forceTLS: false,
-            enabledTransports: ["ws"],
-            authEndpoint: "https://api.mtaxi.uz:8000/broadcasting/auth",
+            wssPort: 8080,
+            forceTLS: true,
+            enabledTransports: ["ws", "wss"],
+            encrypted: true,
+            disableStats: true,
+            authEndpoint: "https://api.mtaxi.uz/broadcasting/auth",
             auth: {
                 headers: {
                     Authorization: `Bearer ${token}`,
+                    Accept: "application/json",
                 },
             },
         });
 
         const channelName = `client.${clientId}.orders`;
+        
+        const connector = echo.connector as any;
+        
+        if (connector.pusher) {
+            connector.pusher.connection.bind('state_change', (states: any) => {
+                console.log('WebSocket holati:', states.current);
+            });
+
+            connector.pusher.connection.bind('connected', () => {
+                console.log('✅ WebSocket ulandi');
+            });
+
+            connector.pusher.connection.bind('error', (err: any) => {
+                console.error('❌ WebSocket xatosi:', err);
+            });
+        }
+
         const channel = echo.private(channelName);
 
         channel
             .listen(".order.created", (e: any) => {
-                console.log("🟢 order created", e.order);
-                setOrderData(prev => [...prev, e.order]);
+                console.log("🟢 Yangi buyurtma yaratildi", e.order);
+                setOrderData(prev => [e.order, ...prev]);
+                toast.success("Yangi buyurtma yaratildi!");
             })
             .listen(".order.updated", (e: any) => {
-                console.log("🟡 order updated", e.order);
+                console.log("🟡 Buyurtma yangilandi", e.order);
                 setOrderData(prev =>
                     prev.map(o => o.id === e.order.id ? e.order : o)
                 );
+                toast("Buyurtma holati yangilandi");
+            })
+            .error((error: any) => {
+                console.error('Channel xatosi:', error);
             });
 
         return () => {
@@ -119,7 +145,6 @@ const OrdersPage = () => {
         }
     };
 
-
     const getRatingStars = (rating: number) => {
         return Array.from({length: 5}, (_, i) => (
             <Star
@@ -131,14 +156,12 @@ const OrdersPage = () => {
         ));
     };
 
-    // format price
     const formatPrice = (price: string | number) => {
         return Number(price)
-            .toFixed(0) // butun son qoldiradi
-            .replace(/\B(?=(\d{3})+(?!\d))/g, " "); // har 3 xonadan keyin bo'sh joy
+            .toFixed(0)
+            .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
     };
 
-    // Handle order cancellation
     const handleCancelOrder = (orderId: number) => {
         setCancelOrderId(orderId);
         setShowCancelDialog(true);
@@ -147,7 +170,7 @@ const OrdersPage = () => {
     const confirmCancelOrder = () => {
         if (cancelOrderId) {
             api.delete(`/client/orders/${cancelOrderId}`).then((res) => {
-                console.log(res?.data);
+                toast.success("Buyurtma bekor qilindi");
             }).catch((err) => {
                 console.log(err);
                 toast.error("Bekor qilishda xatolik yuz berdi. Iltimos, qayta urinib ko'ring.");
@@ -157,22 +180,19 @@ const OrdersPage = () => {
         setCancelOrderId(null);
     };
 
-
     const confirmCompleteOrder = (orderId: number) => {
         try {
             api.post(`/client/orders/${orderId}/complete`, {orderId}).then((res) => {
-                console.log(res?.data);
                 toast.success("Siz manzilga yetib keldingiz!!!");
             }).catch((err) => {
                 console.log(err)
-                toast(err.response.data.data)
+                toast.error(err.response?.data?.data || 'Xatolik yuz berdi')
             })
         } catch (e) {
             console.log(e)
             toast.error('Xatolik yuz berdi!!!')
         }
     }
-
 
     return (
         <div className="space-y-6 animate-fade-in">
@@ -181,7 +201,6 @@ const OrdersPage = () => {
                 <p className="text-muted-foreground">Barcha buyurtmalar tarixi</p>
             </div>
 
-            {/* Filter */}
             <Card>
                 <CardHeader>
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -209,7 +228,6 @@ const OrdersPage = () => {
                 </CardHeader>
             </Card>
 
-            {/* Orders List */}
             <div className="space-y-4">
                 {orderData.length === 0 ? (
                     <Card>
@@ -240,13 +258,10 @@ const OrdersPage = () => {
                                 </div>
                                 <div className="flex items-center gap-3">
                                     {getStatusBadge(order.status)}
-                                    {/*<Badge variant="outline">{order.carType}</Badge>*/}
-                                    {/*<Badge variant="secondary">{order.price} so'm</Badge>*/}
                                 </div>
                             </div>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {/* Addresses */}
                             <div className="space-y-3">
                                 <div className="flex items-start gap-3">
                                     <div className="w-3 h-3 rounded-full bg-green-500 mt-1 flex-shrink-0"></div>
@@ -272,7 +287,6 @@ const OrdersPage = () => {
                                 </div>
                             </div>
 
-                            {/* Driver Info */}
                             {order.driver && (
                                 <div className="p-3 bg-muted/50 rounded-lg">
                                     <div className="flex items-center justify-between">
@@ -298,7 +312,6 @@ const OrdersPage = () => {
                                 </div>
                             )}
 
-                            {/* Payment Info */}
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <CreditCard className="h-4 w-4"/>
                                 <span>To'lov: {formatPrice(order.price_order)} so'm</span>
@@ -316,7 +329,6 @@ const OrdersPage = () => {
                                 </span>
                             </div>
 
-                            {/* Action Buttons */}
                             <div className="flex gap-2 pt-2">
                                 {(order.status === "active" || order.status === "created" || order.status === "accepted") && (
                                     <>
@@ -426,7 +438,6 @@ const OrdersPage = () => {
                 )))}
             </div>
 
-            {/* Cancel Order Confirmation Dialog */}
             <ConfirmActionDialog
                 open={showCancelDialog}
                 onOpenChange={setShowCancelDialog}

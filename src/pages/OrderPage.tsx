@@ -94,7 +94,6 @@ const OrderPage = () => {
         fetchFromDistricts()
     }, [orderData.fromRegion])
 
-    // To region tanlanganda uning taxoparklarini yuklash
     useEffect(() => {
         const fetchToDistricts = async () => {
             if (orderData.toRegion) {
@@ -111,7 +110,6 @@ const OrderPage = () => {
         fetchToDistricts()
     }, [orderData.toRegion])
 
-    // From va To taxopark tanlanganda route ma'lumotlarini yuklash
     useEffect(() => {
         const fetchRouteData = async () => {
             if (orderData.fromDistrict && orderData.toDistrict) {
@@ -132,7 +130,6 @@ const OrderPage = () => {
         fetchRouteData()
     }, [orderData.fromDistrict, orderData.toDistrict])
 
-    // Chegirmalarni yuklash
     useEffect(() => {
         const fetchDiscounts = async () => {
             try {
@@ -154,7 +151,6 @@ const OrderPage = () => {
         }))
     }
 
-    // Narxlarni hisoblash
     const calculatePrice = () => {
         if (!routesData) {
             return {
@@ -170,18 +166,14 @@ const OrderPage = () => {
         const basePrice = routesData.price_in || 0
         const depositPerPerson = routesData.deposit_client || 0
 
-        // Umumiy narx (yo'lovchilar soni * asosiy narx)
         const totalPrice = basePrice * passengers
 
-        // Chegirma miqdori
         const discountAmount = selectedDiscount 
             ? (totalPrice * selectedDiscount.value / 100) 
             : 0
 
-        // Yakuniy narx (chegirma qo'llangandan keyin)
         const finalPrice = totalPrice - discountAmount
 
-        // Oldindan to'lov (yo'lovchilar soni * har bir yo'lovchi uchun depozit)
         const prepayment = depositPerPerson * passengers
 
         return {
@@ -200,7 +192,6 @@ const OrderPage = () => {
 
     const handleOrderSubmit = async () => {
         try {
-            // Validatsiya
             if (!orderData.fromRegion || !orderData.fromDistrict || 
                 !orderData.toRegion || !orderData.toDistrict || 
                 !orderData.date || !orderData.time || !orderData.phone) {
@@ -215,7 +206,6 @@ const OrderPage = () => {
 
             const priceInfo = calculatePrice()
 
-            // Buyurtma ma'lumotlarini tayyorlash
             const orderPayload = {
                 ...orderData,
                 route_id: routesData.id,
@@ -234,10 +224,8 @@ const OrderPage = () => {
             }
         } catch (err: any) {
             console.error(err)
-            // Backend'dan kelgan xatolik xabarini ko'rsatish
             const errorMessage = err?.response?.data?.data || err?.response?.data?.message || "Xatolik yuz berdi!"
             
-            // Maxsus xatolik xabarlari
             if (errorMessage.includes("Balance is insufficient")) {
                 toast.error("Balansingizda yetarli mablag' mavjud emas!")
             } else {
@@ -257,7 +245,6 @@ const OrderPage = () => {
                 <p className="text-muted-foreground">Shaharlaro safar uchun buyurtma yarating</p>
             </div>
 
-            {/* Marshrutni tanlang */}
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -266,7 +253,6 @@ const OrderPage = () => {
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    {/* Qayerdan */}
                     <div className="space-y-4">
                         <Label className="text-base font-medium">Qayerdan</Label>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -313,7 +299,6 @@ const OrderPage = () => {
                         </div>
                     </div>
 
-                    {/* Qayerga */}
                     <div className="space-y-4">
                         <Label className="text-base font-medium">Qayerga</Label>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -362,7 +347,6 @@ const OrderPage = () => {
                 </CardContent>
             </Card>
 
-            {/* Sana va yo'lovchilar */}
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -456,7 +440,6 @@ const OrderPage = () => {
                 </CardContent>
             </Card>
 
-            {/* Chegirmadan foydalanish */}
             {discountDatas.length > 0 && (
                 <Card>
                     <CardHeader>
@@ -501,7 +484,6 @@ const OrderPage = () => {
                 </Card>
             )}
 
-            {/* Narx hisoblash */}
             {routesData && (
                 <Card>
                     <CardHeader>
@@ -572,7 +554,6 @@ const OrderPage = () => {
                 {loading ? "Yuklanmoqda..." : "Buyurtma berish"}
             </Button>
 
-            {/* Discount Selection Modal */}
             <Dialog open={showDiscountModal} onOpenChange={setShowDiscountModal}>
                 <DialogContent className="max-w-md">
                     <DialogHeader>
