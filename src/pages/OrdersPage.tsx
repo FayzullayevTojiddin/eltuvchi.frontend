@@ -57,64 +57,64 @@ const OrdersPage = () => {
             });
     }, [filterStatus]);
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        const user = JSON.parse(localStorage.getItem("user") || "{}");
-        const clientId = user?.client_id;
+    // useEffect(() => {
+    //     const token = localStorage.getItem("token");
+    //     const user = JSON.parse(localStorage.getItem("user") || "{}");
+    //     const clientId = user?.client_id;
 
-        if (!token || !clientId) return;
+    //     if (!token || !clientId) return;
 
-        let echo: any = null;
+    //     let echo: any = null;
 
-        const initWebSocket = async () => {
-            try {
-                (window as any).Pusher = Pusher;
+    //     const initWebSocket = async () => {
+    //         try {
+    //             (window as any).Pusher = Pusher;
 
-                echo = new Echo({
-                    broadcaster: "reverb",
-                    key: "eltuvchi-key",
-                    wsHost: "167.86.82.3",
-                    wsPort: 8080,
-                    forceTLS: false,
-                    enabledTransports: ["ws"],
-                    authEndpoint: "https://api.mtaxi.uz/broadcasting/auth",
-                    auth: {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            Accept: "application/json",
-                        },
-                    },
-                });
+    //             echo = new Echo({
+    //                 broadcaster: "reverb",
+    //                 key: "eltuvchi-key",
+    //                 wsHost: "167.86.82.3",
+    //                 wsPort: 8080,
+    //                 forceTLS: false,
+    //                 enabledTransports: ["ws"],
+    //                 authEndpoint: "https://api.mtaxi.uz/broadcasting/auth",
+    //                 auth: {
+    //                     headers: {
+    //                         Authorization: `Bearer ${token}`,
+    //                         Accept: "application/json",
+    //                     },
+    //                 },
+    //             });
 
-                const channelName = `client.${clientId}.orders`;
-                const channel = echo.private(channelName);
+    //             const channelName = `client.${clientId}.orders`;
+    //             const channel = echo.private(channelName);
 
-                channel
-                    .listen(".order.created", (e: any) => {
-                        setOrderData(prev => [e.order, ...prev]);
-                        toast.success("Yangi buyurtma yaratildi!");
-                    })
-                    .listen(".order.updated", (e: any) => {
-                        setOrderData(prev =>
-                            prev.map(o => o.id === e.order.id ? e.order : o)
-                        );
-                        toast("Buyurtma holati yangilandi");
-                    });
-            } catch (error) {
-                console.error("WebSocket xato:", error);
-            }
-        };
+    //             channel
+    //                 .listen(".order.created", (e: any) => {
+    //                     setOrderData(prev => [e.order, ...prev]);
+    //                     toast.success("Yangi buyurtma yaratildi!");
+    //                 })
+    //                 .listen(".order.updated", (e: any) => {
+    //                     setOrderData(prev =>
+    //                         prev.map(o => o.id === e.order.id ? e.order : o)
+    //                     );
+    //                     toast("Buyurtma holati yangilandi");
+    //                 });
+    //         } catch (error) {
+    //             console.error("WebSocket xato:", error);
+    //         }
+    //     };
 
-        setTimeout(() => initWebSocket(), 1000);
+    //     setTimeout(() => initWebSocket(), 1000);
 
-        return () => {
-            if (echo) {
-                try {
-                    echo.disconnect();
-                } catch (e) {}
-            }
-        };
-    }, []);
+    //     return () => {
+    //         if (echo) {
+    //             try {
+    //                 echo.disconnect();
+    //             } catch (e) {}
+    //         }
+    //     };
+    // }, []);
 
     const getStatusBadge = (status: string) => {
         switch (status) {
@@ -196,7 +196,7 @@ const OrdersPage = () => {
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                         <CardTitle className="flex items-center gap-2">
                             <Car className="h-5 w-5"/>
-                            Buyurtmalar ({orderData.length})
+                            Buyurtmalar ({orderData.length}) - User: {JSON.stringify(JSON.parse(localStorage.getItem('user') || '{}'))}
                         </CardTitle>
                         <div className="flex items-center gap-2">
                             <Filter className="h-4 w-4"/>
