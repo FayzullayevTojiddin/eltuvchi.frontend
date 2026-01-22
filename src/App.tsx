@@ -78,20 +78,7 @@ function AppContent() {
                     return
                 }
 
-                // tg.showAlert(`Token uzunligi: ${data.token.length}`)
-
                 api.setToken(data.token)
-
-                const savedToken = localStorage.getItem('token')
-
-                const checkSaved = localStorage.getItem('token')
-                const checkApiToken = api['token']
-                
-                tg.showAlert(
-                    `LocalStorage: ${checkSaved ? checkSaved.length + ' belgi' : 'YO\'Q'}\n` +
-                    `API class: ${checkApiToken ? checkApiToken.length + ' belgi' : 'YO\'Q'}`
-                )
-
                 localStorage.setItem('userId', data.user.id)
                 localStorage.setItem('userRole', data.role || 'client')
 

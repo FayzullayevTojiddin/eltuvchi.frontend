@@ -42,12 +42,33 @@ export class ApiSettings {
 
     async get(endpoint: string, params: Record<string, any> = {}) {
         try {
+            const headers = this.getHeaders();
+            
+            // DEBUG
+            window.Telegram?.WebApp?.showAlert(
+                `GET: ${endpoint}\n` +
+                `Token: ${this.token ? this.token.substring(0, 20) + '...' : 'YO\'Q'}\n` +
+                `Auth header: ${headers['Authorization'] ? 'BOR' : 'YO\'Q'}`
+            );
+            
             const response = await axios.get(`${this.apiUrl}${endpoint}`, {
-                headers: this.getHeaders(),
+                headers: headers,
                 params: params
             });
+            
+            // DEBUG
+            window.Telegram?.WebApp?.showAlert(`GET muvaffaqiyatli: ${endpoint}`);
+            
             return response.data;
         } catch (error) {
+            // DEBUG
+            const err = error as AxiosError;
+            window.Telegram?.WebApp?.showAlert(
+                `GET xato: ${endpoint}\n` +
+                `Status: ${err.response?.status}\n` +
+                `Message: ${err.response?.data?.message || 'Noma\'lum'}`
+            );
+            
             this.handleApiError(error as AxiosError);
             throw error;
         }
