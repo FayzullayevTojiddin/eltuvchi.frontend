@@ -1,5 +1,5 @@
-import axios from 'axios';
-import {BASE_URL} from '../../env'
+import axios, { AxiosError } from 'axios';
+import { BASE_URL } from '../../env';
 
 export class ApiSettings {
     public apiUrl: string;
@@ -7,12 +7,11 @@ export class ApiSettings {
 
     constructor() {
         this.apiUrl = BASE_URL;
-
         this.headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
         };
-
+        
         const token = localStorage.getItem('token');
         if (token) {
             this.headers['Authorization'] = `Bearer ${token}`;
@@ -37,16 +36,15 @@ export class ApiSettings {
             });
             return response.data;
         } catch (error) {
-            console.error('API GET Error:', error);
-            this.handleApiError(error);
+            this.handleApiError(error as AxiosError);
             throw error;
         }
     }
 
     async post(endpoint: string, data: any, isFormData: boolean = false) {
         try {
-            const headers = {...this.headers};
-
+            const headers = { ...this.headers };
+            
             if (isFormData) {
                 delete headers['Content-Type'];
             }
@@ -56,16 +54,15 @@ export class ApiSettings {
             });
             return response.data;
         } catch (error) {
-            console.error('API POST Error:', error);
-            this.handleApiError(error);
+            this.handleApiError(error as AxiosError);
             throw error;
         }
     }
 
     async put(endpoint: string, data: any, isFormData: boolean = false) {
         try {
-            const headers = {...this.headers};
-
+            const headers = { ...this.headers };
+            
             if (isFormData) {
                 delete headers['Content-Type'];
             }
@@ -75,8 +72,7 @@ export class ApiSettings {
             });
             return response.data;
         } catch (error) {
-            console.error('API PUT Error:', error);
-            this.handleApiError(error);
+            this.handleApiError(error as AxiosError);
             throw error;
         }
     }
@@ -89,24 +85,34 @@ export class ApiSettings {
             return response.data;
         } catch (error) {
             console.error('API DELETE Error:', error);
-            this.handleApiError(error);
+            this.handleApiError(error as AxiosError);
             throw error;
         }
     }
 
-    private handleApiError(error) {
-        if (error.response) {
+    private handleApiError(error: AxiosError<any>) {
+        if (!error.response) {
+            return;
+        }
 
-            if (error.response.status === 401 &&
-                error.response.data?.message === 'Your account is not active') {
-                window.location.href = '/inactive';
-                return;
-            }
+        const status = error.response.status;
+        const message = error.response.data?.message;
 
-            if(error.response.status === 301 && error.response.data?.message === 'Your account is blocked') {
-                window.location.href = '/blocked';
-                return;
-            }
+        if (status === 401 && message === 'Your account is not active') {
+            this.clearToken();
+            window.location.href = '/inactive';
+            return;
+        }
+
+        if (status === 403 && message === 'Your account is blocked') {
+            this.clearToken();
+            window.location.href = '/blocked';
+            return;
+        }
+
+        if (status === 401) {
+            this.clearToken();
+            return;
         }
     }
 }
