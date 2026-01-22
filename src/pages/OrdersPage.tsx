@@ -34,8 +34,6 @@ const OrdersPage = () => {
     const [orderData, setOrderData] = useState<any>([]);
     const [cancelOrderId, setCancelOrderId] = useState<number | null>(null);
     const [showCancelDialog, setShowCancelDialog] = useState(false);
-    const [wsStatus, setWsStatus] = useState<string>("Ulanmoqda...");
-    const [wsError, setWsError] = useState<string | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -64,11 +62,7 @@ const OrdersPage = () => {
         const user = JSON.parse(localStorage.getItem("user") || "{}");
         const clientId = user?.client_id;
 
-        if (!token || !clientId) {
-            setWsStatus("Token yoki clientId topilmadi");
-            setWsError("Autentifikatsiya ma'lumotlari yo'q");
-            return;
-        }
+        if (!token || !clientId) return;
 
         try {
             (window as any).Pusher = Pusher;
@@ -76,13 +70,10 @@ const OrdersPage = () => {
             const echo = new Echo({
                 broadcaster: "reverb",
                 key: "eltuvchi-key",
-                wsHost: "api.mtaxi.uz",
+                wsHost: "167.86.82.3",
                 wsPort: 8080,
-                wssPort: 8080,
-                forceTLS: true,
-                enabledTransports: ["ws", "wss"],
-                encrypted: true,
-                disableStats: true,
+                forceTLS: false,
+                enabledTransports: ["ws"],
                 authEndpoint: "https://api.mtaxi.uz/broadcasting/auth",
                 auth: {
                     headers: {
@@ -93,39 +84,6 @@ const OrdersPage = () => {
             });
 
             const channelName = `client.${clientId}.orders`;
-            
-            const connector = echo.connector as any;
-            
-            if (connector.pusher) {
-                connector.pusher.connection.bind('state_change', (states: any) => {
-                    setWsStatus(`Holat: ${states.current}`);
-                });
-
-                connector.pusher.connection.bind('connected', () => {
-                    setWsStatus("✅ Ulandi");
-                    setWsError(null);
-                });
-
-                connector.pusher.connection.bind('disconnected', () => {
-                    setWsStatus("⚠️ Uzilib qoldi");
-                });
-
-                connector.pusher.connection.bind('unavailable', () => {
-                    setWsStatus("❌ Mavjud emas");
-                    setWsError("WebSocket serverga ulanib bo'lmadi");
-                });
-
-                connector.pusher.connection.bind('failed', () => {
-                    setWsStatus("❌ Ulanish muvaffaqiyatsiz");
-                    setWsError("Ulanish rad etildi");
-                });
-
-                connector.pusher.connection.bind('error', (err: any) => {
-                    setWsStatus("❌ Xatolik");
-                    setWsError(err?.error?.data?.message || JSON.stringify(err));
-                });
-            }
-
             const channel = echo.private(channelName);
 
             channel
@@ -138,18 +96,14 @@ const OrdersPage = () => {
                         prev.map(o => o.id === e.order.id ? e.order : o)
                     );
                     toast("Buyurtma holati yangilandi");
-                })
-                .error((error: any) => {
-                    setWsError(`Channel xatosi: ${error.type || 'Noma\'lum'}`);
                 });
 
             return () => {
                 echo.leave(channelName);
                 echo.disconnect();
             };
-        } catch (error: any) {
-            setWsStatus("❌ Setup xatosi");
-            setWsError(error.message || "WebSocket sozlashda xatolik");
+        } catch (error) {
+            // Silent fail
         }
     }, []);
 
