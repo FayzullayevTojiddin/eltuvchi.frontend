@@ -4,30 +4,46 @@ import { BASE_URL } from '../../env';
 export class ApiSettings {
     public apiUrl: string;
     private token: string | null = null;
+    private axiosInstance;
 
     constructor() {
         this.apiUrl = BASE_URL;
         
+        // Axios instance yaratish
+        this.axiosInstance = axios.create({
+            baseURL: BASE_URL,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        });
+
+        // Request interceptor - har bir so'rovda token qo'shish
+        this.axiosInstance.interceptors.request.use(
+            (config) => {
+                if (this.token) {
+                    config.headers.Authorization = `Bearer ${this.token}`;
+                }
+                return config;
+            },
+            (error) => {
+                return Promise.reject(error);
+            }
+        );
+
+        // Response interceptor - xatolarni boshqarish
+        this.axiosInstance.interceptors.response.use(
+            (response) => response,
+            (error) => {
+                this.handleApiError(error);
+                return Promise.reject(error);
+            }
+        );
+
         const savedToken = localStorage.getItem('token');
         if (savedToken) {
             this.token = savedToken;
         }
-    }
-
-    private getHeaders(isFormData: boolean = false): Record<string, string> {
-        const headers: Record<string, string> = {
-            'Accept': 'application/json',
-        };
-
-        if (!isFormData) {
-            headers['Content-Type'] = 'application/json';
-        }
-
-        if (this.token) {
-            headers['Authorization'] = `Bearer ${this.token}`;
-        }
-
-        return headers;
     }
 
     setToken(token: string) {
@@ -41,73 +57,39 @@ export class ApiSettings {
     }
 
     async get(endpoint: string, params: Record<string, any> = {}) {
-        try {
-            const headers = this.getHeaders();
-            
-            // DEBUG
-            window.Telegram?.WebApp?.showAlert(
-                `GET: ${endpoint}\n` +
-                `Token: ${this.token ? this.token.substring(0, 20) + '...' : 'YO\'Q'}\n` +
-                `Auth header: ${headers['Authorization'] ? 'BOR' : 'YO\'Q'}`
-            );
-            
-            const response = await axios.get(`${this.apiUrl}${endpoint}`, {
-                headers: headers,
-                params: params
-            });
-            
-            // DEBUG
-            window.Telegram?.WebApp?.showAlert(`GET muvaffaqiyatli: ${endpoint}`);
-            
-            return response.data;
-        } catch (error) {
-            // DEBUG
-            const err = error as AxiosError;
-            window.Telegram?.WebApp?.showAlert(
-                `GET xato: ${endpoint}\n` +
-                `Status: ${err.response?.status}\n` +
-                `Message: ${err.response?.data?.message || 'Noma\'lum'}`
-            );
-            
-            this.handleApiError(error as AxiosError);
-            throw error;
-        }
+        const response = await this.axiosInstance.get(endpoint, { params });
+        return response.data;
     }
 
     async post(endpoint: string, data: any, isFormData: boolean = false) {
-        try {
-            const response = await axios.post(`${this.apiUrl}${endpoint}`, data, {
-                headers: this.getHeaders(isFormData)
-            });
-            return response.data;
-        } catch (error) {
-            this.handleApiError(error as AxiosError);
-            throw error;
+        const config: any = {};
+        
+        if (isFormData) {
+            config.headers = {
+                'Content-Type': 'multipart/form-data'
+            };
         }
+
+        const response = await this.axiosInstance.post(endpoint, data, config);
+        return response.data;
     }
 
     async put(endpoint: string, data: any, isFormData: boolean = false) {
-        try {
-            const response = await axios.put(`${this.apiUrl}${endpoint}`, data, {
-                headers: this.getHeaders(isFormData)
-            });
-            return response.data;
-        } catch (error) {
-            this.handleApiError(error as AxiosError);
-            throw error;
+        const config: any = {};
+        
+        if (isFormData) {
+            config.headers = {
+                'Content-Type': 'multipart/form-data'
+            };
         }
+
+        const response = await this.axiosInstance.put(endpoint, data, config);
+        return response.data;
     }
 
     async delete(endpoint: string) {
-        try {
-            const response = await axios.delete(`${this.apiUrl}${endpoint}`, {
-                headers: this.getHeaders()
-            });
-            return response.data;
-        } catch (error) {
-            this.handleApiError(error as AxiosError);
-            throw error;
-        }
+        const response = await this.axiosInstance.delete(endpoint);
+        return response.data;
     }
 
     private handleApiError(error: AxiosError<any>) {
