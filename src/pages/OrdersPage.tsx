@@ -57,64 +57,77 @@ const OrdersPage = () => {
             });
     }, [filterStatus]);
 
-    // useEffect(() => {
-    //     const token = localStorage.getItem("token");
-    //     const user = JSON.parse(localStorage.getItem("user") || "{}");
-    //     const clientId = user?.client_id;
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        const userStr = localStorage.getItem("user");
+        
+        if (!token || !userStr) return;
 
-    //     if (!token || !clientId) return;
+        let clientId: number;
+        try {
+            const user = JSON.parse(userStr);
+            clientId = user?.client_id;
+            if (!clientId) return;
+        } catch {
+            return;
+        }
 
-    //     let echo: any = null;
+        let echo: any = null;
 
-    //     const initWebSocket = async () => {
-    //         try {
-    //             (window as any).Pusher = Pusher;
+        const initWebSocket = () => {
+            try {
+                (window as any).Pusher = Pusher;
 
-    //             echo = new Echo({
-    //                 broadcaster: "reverb",
-    //                 key: "eltuvchi-key",
-    //                 wsHost: "167.86.82.3",
-    //                 wsPort: 8080,
-    //                 forceTLS: false,
-    //                 enabledTransports: ["ws"],
-    //                 authEndpoint: "https://api.mtaxi.uz/broadcasting/auth",
-    //                 auth: {
-    //                     headers: {
-    //                         Authorization: `Bearer ${token}`,
-    //                         Accept: "application/json",
-    //                     },
-    //                 },
-    //             });
+                echo = new Echo({
+                    broadcaster: "reverb",
+                    key: "eltuvchi-key",
+                    wsHost: "167.86.82.3",
+                    wsPort: 8080,
+                    forceTLS: false,
+                    enabledTransports: ["ws"],
+                    authEndpoint: "https://api.mtaxi.uz/broadcasting/auth",
+                    auth: {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            Accept: "application/json",
+                        },
+                    },
+                });
 
-    //             const channelName = `client.${clientId}.orders`;
-    //             const channel = echo.private(channelName);
+                const channelName = `client.${clientId}.orders`;
+                const channel = echo.private(channelName);
 
-    //             channel
-    //                 .listen(".order.created", (e: any) => {
-    //                     setOrderData(prev => [e.order, ...prev]);
-    //                     toast.success("Yangi buyurtma yaratildi!");
-    //                 })
-    //                 .listen(".order.updated", (e: any) => {
-    //                     setOrderData(prev =>
-    //                         prev.map(o => o.id === e.order.id ? e.order : o)
-    //                     );
-    //                     toast("Buyurtma holati yangilandi");
-    //                 });
-    //         } catch (error) {
-    //             console.error("WebSocket xato:", error);
-    //         }
-    //     };
+                channel
+                    .listen(".order.created", (e: any) => {
+                        if (e?.order) {
+                            setOrderData(prev => [e.order, ...prev]);
+                            toast.success("Yangi buyurtma yaratildi!");
+                        }
+                    })
+                    .listen(".order.updated", (e: any) => {
+                        if (e?.order) {
+                            setOrderData(prev =>
+                                prev.map(o => o.id === e.order.id ? e.order : o)
+                            );
+                            toast("Buyurtma holati yangilandi");
+                        }
+                    });
+            } catch (error) {
+                // Silent fail
+            }
+        };
 
-    //     setTimeout(() => initWebSocket(), 1000);
+        const timer = setTimeout(() => initWebSocket(), 1500);
 
-    //     return () => {
-    //         if (echo) {
-    //             try {
-    //                 echo.disconnect();
-    //             } catch (e) {}
-    //         }
-    //     };
-    // }, []);
+        return () => {
+            clearTimeout(timer);
+            if (echo) {
+                try {
+                    echo.disconnect();
+                } catch (e) {}
+            }
+        };
+    }, []);
 
     const getStatusBadge = (status: string) => {
         switch (status) {
