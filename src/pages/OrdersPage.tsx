@@ -162,7 +162,7 @@ const OrdersPage = () => {
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                         <CardTitle className="flex items-center gap-2">
                             <Car className="h-5 w-5"/>
-                            Buyurtmalar ({orderData.length}) - User: {JSON.stringify(JSON.parse(localStorage.getItem('user') || '{}'))}
+                            Buyurtmalar {orderData.length}
                         </CardTitle>
                         <div className="flex items-center gap-2">
                             <Filter className="h-4 w-4"/>
