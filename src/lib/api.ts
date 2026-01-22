@@ -4,42 +4,10 @@ import { BASE_URL } from '../../env';
 export class ApiSettings {
     public apiUrl: string;
     private token: string | null = null;
-    private axiosInstance;
 
     constructor() {
         this.apiUrl = BASE_URL;
         
-        // Axios instance yaratish
-        this.axiosInstance = axios.create({
-            baseURL: BASE_URL,
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            }
-        });
-
-        // Request interceptor - har bir so'rovda token qo'shish
-        this.axiosInstance.interceptors.request.use(
-            (config) => {
-                if (this.token) {
-                    config.headers.Authorization = `Bearer ${this.token}`;
-                }
-                return config;
-            },
-            (error) => {
-                return Promise.reject(error);
-            }
-        );
-
-        // Response interceptor - xatolarni boshqarish
-        this.axiosInstance.interceptors.response.use(
-            (response) => response,
-            (error) => {
-                this.handleApiError(error);
-                return Promise.reject(error);
-            }
-        );
-
         const savedToken = localStorage.getItem('token');
         if (savedToken) {
             this.token = savedToken;
@@ -57,39 +25,102 @@ export class ApiSettings {
     }
 
     async get(endpoint: string, params: Record<string, any> = {}) {
-        const response = await this.axiosInstance.get(endpoint, { params });
-        return response.data;
+        try {
+            const config: any = {
+                params: params
+            };
+
+            // Token borsa headers qo'shamiz
+            if (this.token) {
+                config.headers = {
+                    'Authorization': `Bearer ${this.token}`,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                };
+            }
+
+            const response = await axios.get(`${this.apiUrl}${endpoint}`, config);
+            return response.data;
+        } catch (error) {
+            this.handleApiError(error as AxiosError);
+            throw error;
+        }
     }
 
     async post(endpoint: string, data: any, isFormData: boolean = false) {
-        const config: any = {};
-        
-        if (isFormData) {
-            config.headers = {
-                'Content-Type': 'multipart/form-data'
-            };
-        }
+        try {
+            const config: any = {};
 
-        const response = await this.axiosInstance.post(endpoint, data, config);
-        return response.data;
+            if (this.token) {
+                config.headers = {
+                    'Authorization': `Bearer ${this.token}`,
+                    'Accept': 'application/json'
+                };
+
+                if (!isFormData) {
+                    config.headers['Content-Type'] = 'application/json';
+                }
+            } else if (!isFormData) {
+                config.headers = {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                };
+            }
+
+            const response = await axios.post(`${this.apiUrl}${endpoint}`, data, config);
+            return response.data;
+        } catch (error) {
+            this.handleApiError(error as AxiosError);
+            throw error;
+        }
     }
 
     async put(endpoint: string, data: any, isFormData: boolean = false) {
-        const config: any = {};
-        
-        if (isFormData) {
-            config.headers = {
-                'Content-Type': 'multipart/form-data'
-            };
-        }
+        try {
+            const config: any = {};
 
-        const response = await this.axiosInstance.put(endpoint, data, config);
-        return response.data;
+            if (this.token) {
+                config.headers = {
+                    'Authorization': `Bearer ${this.token}`,
+                    'Accept': 'application/json'
+                };
+
+                if (!isFormData) {
+                    config.headers['Content-Type'] = 'application/json';
+                }
+            } else if (!isFormData) {
+                config.headers = {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                };
+            }
+
+            const response = await axios.put(`${this.apiUrl}${endpoint}`, data, config);
+            return response.data;
+        } catch (error) {
+            this.handleApiError(error as AxiosError);
+            throw error;
+        }
     }
 
     async delete(endpoint: string) {
-        const response = await this.axiosInstance.delete(endpoint);
-        return response.data;
+        try {
+            const config: any = {};
+
+            if (this.token) {
+                config.headers = {
+                    'Authorization': `Bearer ${this.token}`,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                };
+            }
+
+            const response = await axios.delete(`${this.apiUrl}${endpoint}`, config);
+            return response.data;
+        } catch (error) {
+            this.handleApiError(error as AxiosError);
+            throw error;
+        }
     }
 
     private handleApiError(error: AxiosError<any>) {
