@@ -36,107 +36,69 @@ const OrdersPage = () => {
     const [showCancelDialog, setShowCancelDialog] = useState(false);
     const navigate = useNavigate();
 
-    // get data from server
-    // useEffect(() => {
-    //     try {
-    //         api.get('/client/orders').then((res) => {
-    //             if (!res?.success) {
-    //                 toast.error("Buyurtmalarni olishda xatolik yuz berdi. Iltimos, qayta urinib ko'ring.")
-    //                 navigate('/login')
-    //             }
-    //             setOrderData(res.data)
-    //             console.log(res?.data)
-    //         }).catch((err) => {
-    //             console.log(err)
-    //             toast.error("Xatolik yuz berdi. Iltimos, qayta urinib ko'ring.")
-    //         })
-    //     } catch (e) {
-    //         console.log(e)
-    //         toast.error("Xatolik yuz berdi. Iltimos, urinib ko'ring.")
-    //         window.location.reload()
-    //     }
-    // }, []);
-
     useEffect(() => {
-        let apiKey = '/client/orders'
+        let apiKey = '/client/orders';
 
-        if (filterStatus !== 'all' && filterStatus === 'created') {
-            apiKey = '/client/orders?status=created'
-        } else if (filterStatus !== 'all' && filterStatus === 'accepted') {
-            apiKey = '/client/orders?status=accepted'
-        } else if (filterStatus !== 'all' && filterStatus === 'started') {
-            apiKey = '/client/orders?status=started'
-        } else if (filterStatus !== 'all' && filterStatus === 'stopped') {
-            apiKey = '/client/orders?status=stopped'
-        } else if (filterStatus !== 'all' && filterStatus === 'completed') {
-            apiKey = '/client/orders?status=completed'
-        } else if (filterStatus !== 'all' && filterStatus === 'cancelled') {
-            apiKey = '/client/orders?status=cancelled'
+        if (filterStatus !== 'all') {
+            apiKey += `?status=${filterStatus}`;
         }
 
-        // 1. Eski buyurtmalarni olish
         api.get(apiKey)
-            .then((res) => {
+            .then(res => {
                 if (!res?.success) {
-                    toast.error("Buyurtmalarni olishda xatolik yuz berdi. Iltimos, qayta urinib ko'ring.");
+                    toast.error("Xatolik");
                     navigate('/login');
                     return;
                 }
                 setOrderData(res.data);
-                console.log("📦 Initial orders:", res.data);
             })
-            .catch((err) => {
-                console.error("❌ API error:", err);
-                toast.error("Xatolik yuz berdi. Iltimos, qayta urinib ko'ring.");
-            });
+            .catch(() => toast.error("Xatolik yuz berdi"));
+    }, [filterStatus]);
 
-        // 2. WebSocket ulanishi
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
+        const clientId = user?.client_id;
+
+        if (!token || !clientId) return;
+
         (window as any).Pusher = Pusher;
 
         const echo = new Echo({
             broadcaster: "reverb",
             key: "eltuvchi-key",
-            wsHost: "89.39.94.112",
+            wsHost: "api.mtaxi.uz",
             wsPort: 8080,
-            wssPort: 8080,
             forceTLS: false,
-            disableStats: true,
-            enabledTransports: ["ws", "wss"],
-            authEndpoint: "http://89.39.94.112:8000/broadcasting/auth",
+            enabledTransports: ["ws"],
+            authEndpoint: "https://api.mtaxi.uz:8000/broadcasting/auth",
             auth: {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+                    Authorization: `Bearer ${token}`,
                 },
             },
         });
 
-        const channel = echo.channel("client-orders");
+        const channelName = `client.${clientId}.orders`;
+        const channel = echo.private(channelName);
 
         channel
-            .listen("OrderCreated", (event: any) => {
-                console.log("✅ Yangi buyurtma:", event);
-                setOrderData((prev) => [...prev, event.order]);
+            .listen(".order.created", (e: any) => {
+                console.log("🟢 order created", e.order);
+                setOrderData(prev => [...prev, e.order]);
             })
-            .listen("OrderUpdated", (event: any) => {
-                console.log("♻️ Buyurtma yangilandi:", event);
-                setOrderData((prev) =>
-                    prev.map((o) => (o.id === event.order.id ? event.order : o))
+            .listen(".order.updated", (e: any) => {
+                console.log("🟡 order updated", e.order);
+                setOrderData(prev =>
+                    prev.map(o => o.id === e.order.id ? e.order : o)
                 );
-            })
-            .listen("OrderDeleted", (event: any) => {
-                console.log("🗑 Buyurtma o‘chirildi:", event);
-                setOrderData((prev) => prev.filter((o) => o.id !== event.order.id));
-            })
-            .error((err: any) => {
-                console.error("❌ WebSocket xatolik:", err);
-                toast.error("WebSocket ulanishida xatolik yuz berdi!");
             });
 
         return () => {
+            echo.leave(channelName);
             echo.disconnect();
         };
-    }, [navigate, filterStatus]);
-
+    }, []);
 
     const getStatusBadge = (status: string) => {
         switch (status) {
