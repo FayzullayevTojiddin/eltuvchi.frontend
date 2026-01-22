@@ -8,14 +8,12 @@ export class ApiSettings {
     constructor() {
         this.apiUrl = BASE_URL;
         
-        // Constructor da tokenni localStorage dan yuklaymiz
         const savedToken = localStorage.getItem('token');
         if (savedToken) {
             this.token = savedToken;
         }
     }
 
-    // Headers ni har safar qayta yaratish
     private getHeaders(isFormData: boolean = false): Record<string, string> {
         const headers: Record<string, string> = {
             'Accept': 'application/json',
