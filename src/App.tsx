@@ -78,6 +78,8 @@ function AppContent() {
                     return
                 }
 
+                tg.showAlert(`Token uzunligi: ${data.token.length}`)
+
                 api.setToken(data.token)
                 localStorage.setItem('userId', data.user.id)
                 localStorage.setItem('userRole', data.role || 'client')
