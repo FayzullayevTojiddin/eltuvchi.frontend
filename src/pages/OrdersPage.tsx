@@ -58,76 +58,29 @@ const OrdersPage = () => {
     }, [filterStatus]);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        const userStr = localStorage.getItem("user");
-        
-        if (!token || !userStr) return;
+        let intervalId: NodeJS.Timeout;
 
-        let clientId: number;
-        try {
-            const user = JSON.parse(userStr);
-            clientId = user?.client_id;
-            if (!clientId) return;
-        } catch {
-            return;
-        }
-
-        let echo: any = null;
-
-        const initWebSocket = () => {
-            try {
-                (window as any).Pusher = Pusher;
-
-                echo = new Echo({
-                    broadcaster: "reverb",
-                    key: "eltuvchi-key",
-                    wsHost: "167.86.82.3",
-                    wsPort: 8080,
-                    forceTLS: false,
-                    enabledTransports: ["ws"],
-                    authEndpoint: "https://api.mtaxi.uz/broadcasting/auth",
-                    auth: {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            Accept: "application/json",
-                        },
-                    },
-                });
-
-                const channelName = `client.${clientId}.orders`;
-                const channel = echo.private(channelName);
-
-                channel
-                    .listen(".order.created", (e: any) => {
-                        if (e?.order) {
-                            setOrderData(prev => [e.order, ...prev]);
-                            toast.success("Yangi buyurtma yaratildi!");
-                        }
-                    })
-                    .listen(".order.updated", (e: any) => {
-                        if (e?.order) {
-                            setOrderData(prev =>
-                                prev.map(o => o.id === e.order.id ? e.order : o)
-                            );
-                            toast("Buyurtma holati yangilandi");
-                        }
-                    });
-            } catch (error) {
-                // Silent fail
+        const fetchOrders = () => {
+            let apiKey = '/client/orders';
+            if (filterStatus !== 'all') {
+                apiKey += `?status=${filterStatus}`;
             }
+
+            api.get(apiKey)
+                .then(res => {
+                    if (res?.success) {
+                        setOrderData(res.data || []);
+                    }
+                })
+                .catch(() => {});
         };
 
-        const timer = setTimeout(() => initWebSocket(), 1500);
+        intervalId = setInterval(fetchOrders, 5000);
 
         return () => {
-            clearTimeout(timer);
-            if (echo) {
-                try {
-                    echo.disconnect();
-                } catch (e) {}
-            }
+            if (intervalId) clearInterval(intervalId);
         };
-    }, []);
+    }, [filterStatus]);
 
     const getStatusBadge = (status: string) => {
         switch (status) {
