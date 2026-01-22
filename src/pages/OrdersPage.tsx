@@ -64,47 +64,56 @@ const OrdersPage = () => {
 
         if (!token || !clientId) return;
 
-        try {
-            (window as any).Pusher = Pusher;
+        let echo: any = null;
 
-            const echo = new Echo({
-                broadcaster: "reverb",
-                key: "eltuvchi-key",
-                wsHost: "167.86.82.3",
-                wsPort: 8080,
-                forceTLS: false,
-                enabledTransports: ["ws"],
-                authEndpoint: "https://api.mtaxi.uz/broadcasting/auth",
-                auth: {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        Accept: "application/json",
+        const initWebSocket = async () => {
+            try {
+                (window as any).Pusher = Pusher;
+
+                echo = new Echo({
+                    broadcaster: "reverb",
+                    key: "eltuvchi-key",
+                    wsHost: "167.86.82.3",
+                    wsPort: 8080,
+                    forceTLS: false,
+                    enabledTransports: ["ws"],
+                    authEndpoint: "https://api.mtaxi.uz/broadcasting/auth",
+                    auth: {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            Accept: "application/json",
+                        },
                     },
-                },
-            });
-
-            const channelName = `client.${clientId}.orders`;
-            const channel = echo.private(channelName);
-
-            channel
-                .listen(".order.created", (e: any) => {
-                    setOrderData(prev => [e.order, ...prev]);
-                    toast.success("Yangi buyurtma yaratildi!");
-                })
-                .listen(".order.updated", (e: any) => {
-                    setOrderData(prev =>
-                        prev.map(o => o.id === e.order.id ? e.order : o)
-                    );
-                    toast("Buyurtma holati yangilandi");
                 });
 
-            return () => {
-                echo.leave(channelName);
-                echo.disconnect();
-            };
-        } catch (error) {
-            // Silent fail
-        }
+                const channelName = `client.${clientId}.orders`;
+                const channel = echo.private(channelName);
+
+                channel
+                    .listen(".order.created", (e: any) => {
+                        setOrderData(prev => [e.order, ...prev]);
+                        toast.success("Yangi buyurtma yaratildi!");
+                    })
+                    .listen(".order.updated", (e: any) => {
+                        setOrderData(prev =>
+                            prev.map(o => o.id === e.order.id ? e.order : o)
+                        );
+                        toast("Buyurtma holati yangilandi");
+                    });
+            } catch (error) {
+                console.error("WebSocket xato:", error);
+            }
+        };
+
+        setTimeout(() => initWebSocket(), 1000);
+
+        return () => {
+            if (echo) {
+                try {
+                    echo.disconnect();
+                } catch (e) {}
+            }
+        };
     }, []);
 
     const getStatusBadge = (status: string) => {
