@@ -79,8 +79,8 @@ function AppContent() {
                 }
 
                 api.setToken(data.token)
-                localStorage.setItem('user', data.user);
-                localStorage.setItem('userId', data.user.id)
+                localStorage.setItem('user', JSON.stringify(data.user)); // ✅ JSON.stringify qo'shing
+                localStorage.setItem('userId', String(data.user.id))     // ✅ String ga o'tkazing
                 localStorage.setItem('userRole', data.role || 'client')
 
                 setUserRole(data.role || 'client')
