@@ -29,6 +29,11 @@ const TaxiOrdersPage = () => {
   const [completedOrders, setCompletedOrders] = useState([])
   const [loading, setLoading] = useState(false)
   const [expandedHistories, setExpandedHistories] = useState({})
+  const [historyDialog, setHistoryDialog] = useState({
+    open: false,
+    histories: [],
+    orderId: null
+  })
 
   const [priceDialog, setPriceDialog] = useState({
     open: false,
@@ -332,11 +337,12 @@ const TaxiOrdersPage = () => {
     return parseFloat(price) * 0.1
   }
 
-  const toggleHistory = (orderId) => {
-    setExpandedHistories(prev => ({
-      ...prev,
-      [orderId]: !prev[orderId]
-    }))
+  const toggleHistory = (orderId, histories) => {
+    setHistoryDialog({
+      open: true,
+      histories: histories || [],
+      orderId: orderId
+    })
   }
 
   return (
@@ -391,7 +397,7 @@ const TaxiOrdersPage = () => {
                           </div>
                         </CardHeader>
                         <CardContent className="space-y-3 pt-4">
-                          <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                             <div className="flex items-center gap-2 text-slate-300">
                               <Clock className="w-4 h-4 text-slate-400"/>
                               <span>{formatDateTime(order.date, "date")} • {formatDateTime(order.time, "time")}</span>
@@ -449,10 +455,10 @@ const TaxiOrdersPage = () => {
               </TabsContent>
 
               <TabsContent value="my-orders" className="space-y-4 mt-6">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <h3 className="text-lg font-semibold text-white">Mening buyurtmalarim</h3>
                   <Select value={myOrderStatusFilter} onValueChange={setMyOrderStatusFilter}>
-                    <SelectTrigger className="w-[200px] bg-slate-800 border-slate-700 text-white">
+                    <SelectTrigger className="w-full sm:w-[200px] bg-slate-800 border-slate-700 text-white">
                       <SelectValue placeholder="Status tanlang" />
                     </SelectTrigger>
                     <SelectContent className="bg-slate-800 border-slate-700">
@@ -519,42 +525,21 @@ const TaxiOrdersPage = () => {
                           )}
 
                           {order.histories && order.histories.length > 0 && (
-                            <Collapsible open={expandedHistories[order.id]} onOpenChange={() => toggleHistory(order.id)}>
-                              <CollapsibleTrigger asChild>
-                                <Button variant="outline" className="w-full justify-between bg-slate-800 hover:bg-slate-700 border-slate-700 text-white">
-                                  <span className="flex items-center gap-2">
-                                    <History className="w-4 h-4"/>
-                                    Buyurtma tarixi ({order.histories.length})
-                                  </span>
-                                  <span className="text-xs text-slate-400">
-                                    {expandedHistories[order.id] ? "Yopish" : "Ko'rish"}
-                                  </span>
-                                </Button>
-                              </CollapsibleTrigger>
-                              <CollapsibleContent className="mt-2">
-                                <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700 max-h-64 overflow-y-auto">
-                                  <div className="space-y-3">
-                                    {order.histories.map((history) => (
-                                      <div key={history.id} className="flex gap-3 pb-3 border-b border-slate-700 last:border-0">
-                                        <div className="flex-shrink-0">
-                                          {getStatusBadge(history.status)}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                          <p className="text-sm text-slate-200 font-medium">{history.description}</p>
-                                          <p className="text-xs text-slate-400 mt-1">
-                                            {new Date(history.created_at).toLocaleString("uz-UZ")}
-                                          </p>
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              </CollapsibleContent>
-                            </Collapsible>
+                            <Button 
+                              onClick={() => toggleHistory(order.id, order.histories)}
+                              variant="outline" 
+                              className="w-full justify-between bg-slate-800 hover:bg-slate-700 border-slate-700 text-white"
+                            >
+                              <span className="flex items-center gap-2">
+                                <History className="w-4 h-4"/>
+                                Buyurtma tarixi ({order.histories.length})
+                              </span>
+                              <span className="text-xs text-slate-400">Ko'rish</span>
+                            </Button>
                           )}
 
                           {order.status !== "completed" && order.status !== "cancelled" && (
-                            <div className="flex gap-2 pt-2">
+                            <div className="flex flex-col sm:flex-row gap-2 pt-2">
                               {getActionButton(order)}
                               <Button
                                 onClick={() => openConfirmDialog("cancel", order.id)}
@@ -645,6 +630,58 @@ const TaxiOrdersPage = () => {
               >
                 <Check className="w-4 h-4 mr-2"/>
                 {loading ? "Kutilmoqda..." : "Qabul qilish"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={historyDialog.open} onOpenChange={(open) => setHistoryDialog({...historyDialog, open})}>
+          <DialogContent className="sm:max-w-2xl bg-slate-900 border-slate-700 max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-white flex items-center gap-2">
+                <History className="w-5 h-5"/>
+                Buyurtma tarixi
+              </DialogTitle>
+              <DialogDescription className="text-slate-400">
+                Buyurtma #{historyDialog.orderId} ning barcha o'zgarishlari
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-3 py-4">
+              {historyDialog.histories.length === 0 ? (
+                <div className="text-center py-8 text-slate-400">
+                  Tarix mavjud emas
+                </div>
+              ) : (
+                historyDialog.histories.map((history, index) => (
+                  <div key={history.id} className="flex gap-3 pb-3 border-b border-slate-700 last:border-0">
+                    <div className="flex-shrink-0 pt-1">
+                      {getStatusBadge(history.status)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-slate-200 font-medium">{history.description}</p>
+                      <p className="text-xs text-slate-400 mt-1">
+                        {new Date(history.created_at).toLocaleString("uz-UZ", {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <DialogFooter>
+              <Button 
+                variant="outline" 
+                onClick={() => setHistoryDialog({...historyDialog, open: false})}
+                className="bg-slate-800 border-slate-700 text-white hover:bg-slate-700"
+              >
+                Yopish
               </Button>
             </DialogFooter>
           </DialogContent>
