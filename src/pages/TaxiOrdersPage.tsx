@@ -29,6 +29,7 @@ const TaxiOrdersPage = () => {
   const [completedOrders, setCompletedOrders] = useState([])
   const [loading, setLoading] = useState(false)
   const [expandedHistories, setExpandedHistories] = useState({})
+  const [debugInfo, setDebugInfo] = useState(null) // Debug uchun
 
   const [priceDialog, setPriceDialog] = useState({
     open: false,
@@ -41,21 +42,49 @@ const TaxiOrdersPage = () => {
       queryParam = `?status=${myOrderStatusFilter}`
     }
 
+    // Mening buyurtmalarim
     api.get(`/driver/my_orders${queryParam}`)
       .then((res) => {
-        setCompletedOrders(res.data.data || [])
+        // API javobini tekshirish
+        let orders = []
+        
+        if (Array.isArray(res.data)) {
+          orders = res.data
+        } else if (res.data && Array.isArray(res.data.data)) {
+          orders = res.data.data
+        } else if (res.data && res.data.data && Array.isArray(res.data.data.data)) {
+          orders = res.data.data.data
+        }
+        
+        setCompletedOrders(orders)
+        setDebugInfo(prev => ({...prev, myOrders: {raw: res.data, parsed: orders}}))
       })
       .catch((err) => {
         console.log(err)
+        setDebugInfo(prev => ({...prev, myOrdersError: err.response?.data || err.message}))
         toast.error("Xatolik yuz berdi. Iltimos, qayta urinib ko'ring.")
       })
 
+    // Mavjud buyurtmalar
     api.get('/driver/orders')
       .then((res) => {
-        setOrderData(res.data.data || [])
+        // API javobini tekshirish
+        let orders = []
+        
+        if (Array.isArray(res.data)) {
+          orders = res.data
+        } else if (res.data && Array.isArray(res.data.data)) {
+          orders = res.data.data
+        } else if (res.data && res.data.data && Array.isArray(res.data.data.data)) {
+          orders = res.data.data.data
+        }
+        
+        setOrderData(orders)
+        setDebugInfo(prev => ({...prev, availableOrders: {raw: res.data, parsed: orders}}))
       })
       .catch((err) => {
         console.log(err)
+        setDebugInfo(prev => ({...prev, availableOrdersError: err.response?.data || err.message}))
         toast.error("Xatolik yuz berdi. Iltimos, qayta urinib ko'ring.")
       })
   }
@@ -81,7 +110,7 @@ const TaxiOrdersPage = () => {
     actionText: ""
   })
 
-  const openConfirmDialog = (type: string, orderId: string) => {
+  const openConfirmDialog = (type, orderId) => {
     let title = ""
     let description = ""
     let actionText = ""
@@ -139,7 +168,7 @@ const TaxiOrdersPage = () => {
     })
   }
 
-  const handleAcceptOrder = (orderId: string) => {
+  const handleAcceptOrder = (orderId) => {
     setLoading(true)
     setPriceDialog({...priceDialog, open: false})
     
@@ -161,7 +190,7 @@ const TaxiOrdersPage = () => {
       })
   }
 
-  const handleCancelOrder = (orderId: string) => {
+  const handleCancelOrder = (orderId) => {
     setLoading(true)
     
     api.delete(`/driver/orders/${orderId}`)
@@ -182,7 +211,7 @@ const TaxiOrdersPage = () => {
       })
   }
 
-  const handleStartOrder = (orderId: string) => {
+  const handleStartOrder = (orderId) => {
     setLoading(true)
     
     api.post(`/driver/orders/${orderId}/start`, {orderId})
@@ -203,7 +232,7 @@ const TaxiOrdersPage = () => {
       })
   }
 
-  const handleCompleteOrder = (orderId: string) => {
+  const handleCompleteOrder = (orderId) => {
     setLoading(true)
     
     api.post(`/driver/orders/${orderId}/stop`, { orderId })
@@ -220,7 +249,7 @@ const TaxiOrdersPage = () => {
       })
   }
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status) => {
     switch (status) {
       case "created":
         return <Badge className="bg-blue-500/20 text-blue-400 border border-blue-500/50 hover:bg-blue-500/30">Yaratilgan</Badge>
@@ -284,7 +313,7 @@ const TaxiOrdersPage = () => {
     }
   }
 
-  const formatDateTime = (dateString: string, type: "date" | "time") => {
+  const formatDateTime = (dateString, type) => {
     if (!dateString) return "-"
     const date = new Date(dateString)
 
@@ -318,6 +347,20 @@ const TaxiOrdersPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6">
       <div className="container mx-auto space-y-6">
+        {/* Debug ma'lumotlari - faqat development uchun */}
+        {debugInfo && (
+          <Card className="border-yellow-800 bg-yellow-900/20 backdrop-blur-sm">
+            <CardHeader className="border-b border-yellow-800">
+              <CardTitle className="text-sm text-yellow-400">Debug Ma'lumotlari</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <pre className="text-xs text-yellow-300 overflow-auto max-h-40 bg-slate-950/50 p-3 rounded">
+                {JSON.stringify(debugInfo, null, 2)}
+              </pre>
+            </CardContent>
+          </Card>
+        )}
+
         <Card className="border-slate-800 bg-slate-900/50 backdrop-blur-sm">
           <CardHeader className="border-b border-slate-800">
             <CardTitle className="text-2xl text-white">Buyurtmalar</CardTitle>
@@ -327,10 +370,10 @@ const TaxiOrdersPage = () => {
             <Tabs defaultValue="available" className="w-full">
               <TabsList className="grid w-full grid-cols-2 bg-slate-800/50 border border-slate-700">
                 <TabsTrigger value="available" className="data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400">
-                  Mavjud buyurtmalar
+                  Mavjud buyurtmalar ({orderData.length})
                 </TabsTrigger>
                 <TabsTrigger value="my-orders" className="data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400">
-                  Mening buyurtmalarim
+                  Mening buyurtmalarim ({completedOrders.length})
                 </TabsTrigger>
               </TabsList>
 
