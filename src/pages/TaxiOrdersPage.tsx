@@ -304,8 +304,8 @@ const TaxiOrdersPage = () => {
     }
   }
 
-  const calculateCommission = (price) => {
-    return parseFloat(price) * 0.1
+  const calculateCommission = (order) => {
+    return order.fee_per_client * order.passengers;
   }
 
   const toggleHistory = (orderId) => {
@@ -379,7 +379,7 @@ const TaxiOrdersPage = () => {
                             </span>
                           </div>
                           <div className="flex items-center justify-between pt-3 border-t border-emerald-200">
-                            <span className="text-sm text-emerald-700">Sizning komissiyangiz (10%):</span>
+                            <span className="text-sm text-emerald-700">Buyurtma uchun:</span>
                             <span className="text-lg font-semibold text-orange-600">
                               {formatCurrency(calculateCommission(order.price_order))} so'm
                             </span>
