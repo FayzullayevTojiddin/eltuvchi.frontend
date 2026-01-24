@@ -13,6 +13,7 @@ import {
     Coins
 } from 'lucide-react'
 import {toast} from 'react-hot-toast'
+import {ConfirmActionDialog} from '@/components/ConfirmActionDialog'
 import api from "@/lib/api.ts"
 import {
   Dialog,
@@ -184,47 +185,44 @@ const TaxiMarketPage = () => {
                                 ) : (
                                     myMarketData.map((item) => (
                                         <Card key={item.id} className="hover:shadow-md transition-shadow">
-                                            <CardContent className="p-4">
-                                                <div className="flex items-start justify-between gap-4">
-                                                    <div className="flex items-start gap-4 flex-1">
-                                                        <div className="w-16 h-16 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                            <Package className="h-8 w-8 text-slate-400"/>
-                                                        </div>
-                                                        <div className="flex-1 min-w-0">
-                                                            <h3 className="font-semibold text-lg mb-1">
-                                                                {item.title || "Mahsulot nomi"}
-                                                            </h3>
-                                                            <p className="text-sm text-muted-foreground mb-2">
-                                                                {item.description || "Ma'lumot yo'q"}
-                                                            </p>
-                                                            <div className="flex items-center gap-3 text-sm text-muted-foreground mb-2">
-                                                                <div className="flex items-center gap-1">
-                                                                    <Clock className="h-4 w-4"/>
-                                                                    <span>{formatDate(item.created_at)}</span>
-                                                                </div>
-                                                                <div className="flex items-center gap-1">
-                                                                    <Coins className="h-4 w-4 text-amber-500"/>
-                                                                    <span className="font-medium text-amber-600">
-                                                                        {item.points || "0"} COIN
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                            <Badge variant="outline" className="text-emerald-600 border-emerald-600">
-                                                                <CheckCircle className="h-3 w-3 mr-1"/>
-                                                                Yetkazildi
-                                                            </Badge>
-                                                        </div>
+                                            <CardContent className="p-4 space-y-4">
+                                                <div className="flex items-start gap-4">
+                                                    <div className="w-16 h-16 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                        <Package className="h-8 w-8 text-slate-400"/>
                                                     </div>
-                                                    <Button
-                                                        size="sm"
-                                                        variant="outline"
-                                                        onClick={() => reorderItem(item)}
-                                                        className="flex items-center gap-2 flex-shrink-0"
-                                                    >
-                                                        <RefreshCw className="h-4 w-4"/>
-                                                        Qayta sotib olish
-                                                    </Button>
+                                                    <div className="flex-1 min-w-0">
+                                                        <h3 className="font-semibold text-lg mb-1">
+                                                            {item.title || "Mahsulot nomi"}
+                                                        </h3>
+                                                        <p className="text-sm text-muted-foreground mb-2">
+                                                            {item.description || "Ma'lumot yo'q"}
+                                                        </p>
+                                                        <div className="flex items-center gap-3 text-sm text-muted-foreground mb-2">
+                                                            <div className="flex items-center gap-1">
+                                                                <Clock className="h-4 w-4"/>
+                                                                <span>{formatDate(item.created_at)}</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-1">
+                                                                <Coins className="h-4 w-4 text-amber-500"/>
+                                                                <span className="font-medium text-amber-600">
+                                                                    {item.points || "0"} COIN
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <Badge variant="outline" className="text-emerald-600 border-emerald-600">
+                                                            <CheckCircle className="h-3 w-3 mr-1"/>
+                                                            Yetkazildi
+                                                        </Badge>
+                                                    </div>
                                                 </div>
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={() => reorderItem(item)}
+                                                    className="w-full flex items-center justify-center gap-2"
+                                                >
+                                                    <RefreshCw className="h-4 w-4"/>
+                                                    Qayta sotib olish
+                                                </Button>
                                             </CardContent>
                                         </Card>
                                     ))
