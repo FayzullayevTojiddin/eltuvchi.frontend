@@ -349,11 +349,17 @@ const TaxiOrdersPage = () => {
           </CardHeader>
           <CardContent className="pt-6">
             <Tabs defaultValue="available" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-slate-800/50 border border-slate-700">
-                <TabsTrigger value="available" className="data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400">
+              <TabsList className="grid w-full grid-cols-1 gap-2 bg-transparent border-0 h-auto">
+                <TabsTrigger 
+                  value="available" 
+                  className="data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400 bg-slate-800/50 border border-slate-700 py-3"
+                >
                   Mavjud buyurtmalar ({orderData.length})
                 </TabsTrigger>
-                <TabsTrigger value="my-orders" className="data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400">
+                <TabsTrigger 
+                  value="my-orders" 
+                  className="data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400 bg-slate-800/50 border border-slate-700 py-3"
+                >
                   Mening buyurtmalarim ({completedOrders.length})
                 </TabsTrigger>
               </TabsList>
