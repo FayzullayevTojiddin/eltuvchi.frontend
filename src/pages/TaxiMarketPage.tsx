@@ -243,7 +243,7 @@ const TaxiMarketPage = () => {
             </Card>
 
             <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="sm:max-w-md bg-gradient-to-br from-slate-50 to-slate-100">
                     <DialogHeader>
                         <DialogTitle>Mahsulotni sotib olish</DialogTitle>
                         <DialogDescription>
@@ -253,7 +253,7 @@ const TaxiMarketPage = () => {
                     
                     {selectedProduct && (
                         <div className="space-y-4">
-                            <div className="bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 p-4 rounded-lg">
+                            <div className="bg-white/80 backdrop-blur-sm border border-slate-200 p-4 rounded-lg">
                                 <div className="flex items-center gap-3 mb-3">
                                     <div className="w-16 h-16 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg flex items-center justify-center">
                                         <Package className="h-8 w-8 text-slate-400"/>
@@ -281,7 +281,7 @@ const TaxiMarketPage = () => {
                                 </div>
                             </div>
 
-                            <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg">
+                            <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 p-3 rounded-lg">
                                 <p className="text-sm text-amber-900">
                                     <span className="font-medium">Diqqat:</span> Sotib olish uchun hisobingizdan 
                                     <strong> {selectedProduct.points} COIN</strong> yechib olinadi.
@@ -295,14 +295,14 @@ const TaxiMarketPage = () => {
                             variant="outline" 
                             onClick={() => setShowConfirmDialog(false)}
                             disabled={loading}
-                            className="flex-1"
+                            className="flex-1 bg-white/50 backdrop-blur-sm"
                         >
                             Bekor qilish
                         </Button>
                         <Button 
                             onClick={confirmPurchase}
                             disabled={loading}
-                            className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+                            className="flex-1 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800"
                         >
                             <ShoppingCart className="w-4 h-4 mr-2"/>
                             {loading ? "Kutilmoqda..." : "Sotib olish"}
