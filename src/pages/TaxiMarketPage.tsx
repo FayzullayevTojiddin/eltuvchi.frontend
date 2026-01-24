@@ -243,7 +243,7 @@ const TaxiMarketPage = () => {
             </Card>
 
             <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-                <DialogContent className="sm:max-w-md bg-white">
+                <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>Mahsulotni sotib olish</DialogTitle>
                         <DialogDescription>
@@ -253,9 +253,9 @@ const TaxiMarketPage = () => {
                     
                     {selectedProduct && (
                         <div className="space-y-4">
-                            <div className="bg-white border border-slate-200 p-4 rounded-lg">
+                            <div className="bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 p-4 rounded-lg">
                                 <div className="flex items-center gap-3 mb-3">
-                                    <div className="w-16 h-16 bg-slate-100 rounded-lg flex items-center justify-center">
+                                    <div className="w-16 h-16 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg flex items-center justify-center">
                                         <Package className="h-8 w-8 text-slate-400"/>
                                     </div>
                                     <div className="flex-1">
@@ -273,10 +273,10 @@ const TaxiMarketPage = () => {
                                     <span className="text-sm text-slate-600">Narx:</span>
                                     <div className="flex items-center gap-1">
                                         <Coins className="h-5 w-5 text-amber-500"/>
-                                        <span className="text-2xl font-bold text-slate-900">
+                                        <span className="text-2xl font-bold">
                                             {selectedProduct.points}
                                         </span>
-                                        <span className="text-sm text-slate-500">COIN</span>
+                                        <span className="text-sm text-slate-600">COIN</span>
                                     </div>
                                 </div>
                             </div>
@@ -302,7 +302,7 @@ const TaxiMarketPage = () => {
                         <Button 
                             onClick={confirmPurchase}
                             disabled={loading}
-                            className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+                            className="flex-1 bg-emerald-600 hover:bg-emerald-700"
                         >
                             <ShoppingCart className="w-4 h-4 mr-2"/>
                             {loading ? "Kutilmoqda..." : "Sotib olish"}
