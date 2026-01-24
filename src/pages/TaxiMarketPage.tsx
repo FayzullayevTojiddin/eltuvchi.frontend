@@ -243,7 +243,7 @@ const TaxiMarketPage = () => {
             </Card>
 
             <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="sm:max-w-md bg-white">
                     <DialogHeader>
                         <DialogTitle>Mahsulotni sotib olish</DialogTitle>
                         <DialogDescription>
@@ -253,32 +253,30 @@ const TaxiMarketPage = () => {
                     
                     {selectedProduct && (
                         <div className="space-y-4">
-                            <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-4 rounded-lg border border-slate-200">
+                            <div className="bg-white border border-slate-200 p-4 rounded-lg">
                                 <div className="flex items-center gap-3 mb-3">
-                                    <div className="w-12 h-12 bg-gradient-to-br from-slate-200 to-slate-300 rounded-lg flex items-center justify-center">
-                                        <Package className="h-6 w-6 text-slate-500"/>
+                                    <div className="w-16 h-16 bg-slate-100 rounded-lg flex items-center justify-center">
+                                        <Package className="h-8 w-8 text-slate-400"/>
                                     </div>
-                                    <div>
-                                        <h3 className="font-semibold text-lg">{selectedProduct.title}</h3>
-                                        <div className="flex items-center gap-1">
-                                            <Star className="h-3 w-3 fill-amber-400 text-amber-400"/>
-                                            <span className="text-xs text-muted-foreground">
-                                                {selectedProduct.rating || 4.5}
-                                            </span>
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <Star className="h-4 w-4 fill-amber-400 text-amber-400"/>
+                                            <span className="text-sm font-medium">{selectedProduct.rating || 4.5}</span>
                                         </div>
                                     </div>
                                 </div>
-                                <p className="text-sm text-muted-foreground mb-3">
+                                <h3 className="font-semibold text-lg mb-2">{selectedProduct.title}</h3>
+                                <p className="text-sm text-slate-600 mb-4">
                                     {selectedProduct.description || "Mahsulot haqida ma'lumot"}
                                 </p>
                                 <div className="flex items-center justify-between pt-3 border-t border-slate-200">
                                     <span className="text-sm text-slate-600">Narx:</span>
                                     <div className="flex items-center gap-1">
                                         <Coins className="h-5 w-5 text-amber-500"/>
-                                        <span className="text-2xl font-bold text-amber-600">
+                                        <span className="text-2xl font-bold text-slate-900">
                                             {selectedProduct.points}
                                         </span>
-                                        <span className="text-sm text-muted-foreground">COIN</span>
+                                        <span className="text-sm text-slate-500">COIN</span>
                                     </div>
                                 </div>
                             </div>
@@ -292,18 +290,19 @@ const TaxiMarketPage = () => {
                         </div>
                     )}
 
-                    <DialogFooter className="flex gap-2">
+                    <DialogFooter className="flex gap-2 sm:gap-2">
                         <Button 
                             variant="outline" 
                             onClick={() => setShowConfirmDialog(false)}
                             disabled={loading}
+                            className="flex-1"
                         >
                             Bekor qilish
                         </Button>
                         <Button 
                             onClick={confirmPurchase}
                             disabled={loading}
-                            className="bg-emerald-600 hover:bg-emerald-700"
+                            className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
                         >
                             <ShoppingCart className="w-4 h-4 mr-2"/>
                             {loading ? "Kutilmoqda..." : "Sotib olish"}
