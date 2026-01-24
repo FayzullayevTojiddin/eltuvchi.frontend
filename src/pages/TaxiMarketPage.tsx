@@ -360,15 +360,15 @@ const TaxiOrdersPage = () => {
                           </div>
                         </div>
 
-                        <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 p-4 rounded-lg">
+                        <div className="bg-slate-800/80 backdrop-blur-sm border border-slate-600 p-4 rounded-lg">
                           <div className="flex items-center justify-between mb-3">
-                            <span className="text-sm font-medium text-slate-300">Buyurtma narxi:</span>
-                            <span className="text-2xl font-bold text-emerald-400">
+                            <span className="text-sm font-medium text-slate-200">Buyurtma narxi:</span>
+                            <span className="text-2xl font-bold text-green-400">
                               {formatCurrency(order.price_order)} so'm
                             </span>
                           </div>
-                          <div className="flex items-center justify-between pt-3 border-t border-slate-700">
-                            <span className="text-sm text-slate-400">Sizning komissiyangiz (10%):</span>
+                          <div className="flex items-center justify-between pt-3 border-t border-slate-600">
+                            <span className="text-sm text-slate-300">Sizning komissiyangiz (10%):</span>
                             <span className="text-lg font-semibold text-orange-400">
                               {formatCurrency(calculateCommission(order.price_order))} so'm
                             </span>
@@ -382,9 +382,9 @@ const TaxiOrdersPage = () => {
                           </div>
                         )}
 
-                        <div className="bg-amber-900/30 border border-amber-800/50 p-3 rounded-lg flex items-start gap-2">
-                          <AlertCircle className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
-                          <p className="text-sm text-amber-200">
+                        <div className="bg-amber-900/40 border border-amber-700/50 p-3 rounded-lg flex items-start gap-2">
+                          <AlertCircle className="w-4 h-4 text-amber-300 mt-0.5 flex-shrink-0" />
+                          <p className="text-sm text-amber-100">
                             Mijoz ma'lumotlari buyurtmani qabul qilganingizdan keyin ko'rinadi
                           </p>
                         </div>
@@ -522,9 +522,9 @@ const TaxiOrdersPage = () => {
           
           {priceDialog.order && (
             <div className="space-y-4">
-              <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 p-4 rounded-lg">
+              <div className="bg-slate-800/80 backdrop-blur-sm border border-slate-600 p-4 rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
-                  <MapPin className="w-5 h-5 text-slate-400"/>
+                  <MapPin className="w-5 h-5 text-blue-400"/>
                   <p className="font-medium text-white">
                     {priceDialog.order?.route?.from?.name || "Topilmadi"} → {priceDialog.order?.route?.to?.name || "Topilmadi"}
                   </p>
@@ -535,26 +535,26 @@ const TaxiOrdersPage = () => {
                 </div>
               </div>
 
-              <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 p-4 rounded-lg space-y-3">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-700">
-                  <span className="text-sm font-medium text-slate-400">Buyurtma narxi:</span>
-                  <span className="text-2xl font-bold text-emerald-400">
+              <div className="bg-slate-800/80 backdrop-blur-sm border border-slate-600 p-4 rounded-lg space-y-3">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-600">
+                  <span className="text-sm font-medium text-slate-200">Buyurtma narxi:</span>
+                  <span className="text-2xl font-bold text-green-400">
                     {formatCurrency(priceDialog.order.price_order)} so'm
                   </span>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-400">To'lov summasi (10%):</span>
+                  <span className="text-sm text-slate-300">To'lov summasi (10%):</span>
                   <span className="text-xl font-bold text-orange-400">
                     {formatCurrency(calculateCommission(priceDialog.order.price_order))} so'm
                   </span>
                 </div>
               </div>
 
-              <div className="bg-amber-900/30 border border-amber-800/50 p-3 rounded-lg">
+              <div className="bg-amber-900/40 border border-amber-700/50 p-3 rounded-lg">
                 <div className="flex items-start gap-2">
-                  <AlertCircle className="w-5 h-5 text-amber-400 mt-0.5 flex-shrink-0"/>
-                  <div className="text-sm text-amber-200">
+                  <AlertCircle className="w-5 h-5 text-amber-300 mt-0.5 flex-shrink-0"/>
+                  <div className="text-sm text-amber-100">
                     <p className="font-medium mb-1">Muhim:</p>
                     <p>Buyurtmani qabul qilish uchun hisobingizdan <strong>{formatCurrency(calculateCommission(priceDialog.order.price_order))} so'm</strong> yechib olinadi. Buyurtmani bekor qilsangiz, pul qaytarilmaydi.</p>
                   </div>
