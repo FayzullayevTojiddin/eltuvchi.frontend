@@ -209,10 +209,19 @@ const TaxiMarketPage = () => {
                                                                 </span>
                                                             </div>
                                                         </div>
-                                                        <Badge variant="outline" className="text-emerald-600 border-emerald-600">
-                                                            <CheckCircle className="h-3 w-3 mr-1"/>
-                                                            Yetkazildi
-                                                        </Badge>
+                                                        <div className="flex items-center gap-2">
+                                                            {item.status ? (
+                                                                <Badge variant="outline" className="text-emerald-600 border-emerald-600">
+                                                                    <CheckCircle className="h-3 w-3 mr-1"/>
+                                                                    Yetkazildi
+                                                                </Badge>
+                                                            ) : (
+                                                                <Badge variant="outline" className="text-amber-600 border-amber-600">
+                                                                    <Clock className="h-3 w-3 mr-1"/>
+                                                                    Kutilmoqda
+                                                                </Badge>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <Button
