@@ -29,7 +29,6 @@ const TaxiOrdersPage = () => {
   const [completedOrders, setCompletedOrders] = useState([])
   const [loading, setLoading] = useState(false)
   const [expandedHistories, setExpandedHistories] = useState({})
-  const [debugInfo, setDebugInfo] = useState(null) // Debug uchun
 
   const [priceDialog, setPriceDialog] = useState({
     open: false,
@@ -57,11 +56,9 @@ const TaxiOrdersPage = () => {
         }
         
         setCompletedOrders(orders)
-        setDebugInfo(prev => ({...prev, myOrders: {raw: res.data, parsed: orders}}))
       })
       .catch((err) => {
         console.log(err)
-        setDebugInfo(prev => ({...prev, myOrdersError: err.response?.data || err.message}))
         toast.error("Xatolik yuz berdi. Iltimos, qayta urinib ko'ring.")
       })
 
@@ -80,11 +77,9 @@ const TaxiOrdersPage = () => {
         }
         
         setOrderData(orders)
-        setDebugInfo(prev => ({...prev, availableOrders: {raw: res.data, parsed: orders}}))
       })
       .catch((err) => {
         console.log(err)
-        setDebugInfo(prev => ({...prev, availableOrdersError: err.response?.data || err.message}))
         toast.error("Xatolik yuz berdi. Iltimos, qayta urinib ko'ring.")
       })
   }
@@ -347,20 +342,6 @@ const TaxiOrdersPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6">
       <div className="container mx-auto space-y-6">
-        {/* Debug ma'lumotlari - faqat development uchun */}
-        {debugInfo && (
-          <Card className="border-yellow-800 bg-yellow-900/20 backdrop-blur-sm">
-            <CardHeader className="border-b border-yellow-800">
-              <CardTitle className="text-sm text-yellow-400">Debug Ma'lumotlari</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-4">
-              <pre className="text-xs text-yellow-300 overflow-auto max-h-40 bg-slate-950/50 p-3 rounded">
-                {JSON.stringify(debugInfo, null, 2)}
-              </pre>
-            </CardContent>
-          </Card>
-        )}
-
         <Card className="border-slate-800 bg-slate-900/50 backdrop-blur-sm">
           <CardHeader className="border-b border-slate-800">
             <CardTitle className="text-2xl text-white">Buyurtmalar</CardTitle>
