@@ -360,16 +360,16 @@ const TaxiOrdersPage = () => {
                           </div>
                         </div>
 
-                        <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-4 rounded-lg border border-slate-200">
+                        <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 p-4 rounded-lg">
                           <div className="flex items-center justify-between mb-3">
-                            <span className="text-sm font-medium text-slate-700">Buyurtma narxi:</span>
-                            <span className="text-2xl font-bold text-emerald-600">
+                            <span className="text-sm font-medium text-slate-300">Buyurtma narxi:</span>
+                            <span className="text-2xl font-bold text-emerald-400">
                               {formatCurrency(order.price_order)} so'm
                             </span>
                           </div>
-                          <div className="flex items-center justify-between pt-3 border-t border-slate-200">
-                            <span className="text-sm text-slate-600">Sizning komissiyangiz (10%):</span>
-                            <span className="text-lg font-semibold text-orange-600">
+                          <div className="flex items-center justify-between pt-3 border-t border-slate-700">
+                            <span className="text-sm text-slate-400">Sizning komissiyangiz (10%):</span>
+                            <span className="text-lg font-semibold text-orange-400">
                               {formatCurrency(calculateCommission(order.price_order))} so'm
                             </span>
                           </div>
@@ -382,9 +382,9 @@ const TaxiOrdersPage = () => {
                           </div>
                         )}
 
-                        <div className="bg-amber-50 p-3 rounded-lg flex items-start gap-2 border border-amber-200">
-                          <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-                          <p className="text-sm text-amber-900">
+                        <div className="bg-amber-900/30 border border-amber-800/50 p-3 rounded-lg flex items-start gap-2">
+                          <AlertCircle className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
+                          <p className="text-sm text-amber-200">
                             Mijoz ma'lumotlari buyurtmani qabul qilganingizdan keyin ko'rinadi
                           </p>
                         </div>
