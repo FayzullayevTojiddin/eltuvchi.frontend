@@ -360,16 +360,16 @@ const TaxiOrdersPage = () => {
                           </div>
                         </div>
 
-                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-lg border-2 border-green-200">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-green-900">Buyurtma narxi:</span>
-                            <span className="text-2xl font-bold text-green-600">
+                        <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-4 rounded-lg border border-slate-200">
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-sm font-medium text-slate-700">Buyurtma narxi:</span>
+                            <span className="text-2xl font-bold text-emerald-600">
                               {formatCurrency(order.price_order)} so'm
                             </span>
                           </div>
-                          <div className="flex items-center justify-between pt-2 border-t border-green-200">
-                            <span className="text-sm text-green-700">Sizning komissiyangiz (10%):</span>
-                            <span className="text-lg font-semibold text-green-600">
+                          <div className="flex items-center justify-between pt-3 border-t border-slate-200">
+                            <span className="text-sm text-slate-600">Sizning komissiyangiz (10%):</span>
+                            <span className="text-lg font-semibold text-orange-600">
                               {formatCurrency(calculateCommission(order.price_order))} so'm
                             </span>
                           </div>
@@ -382,9 +382,9 @@ const TaxiOrdersPage = () => {
                           </div>
                         )}
 
-                        <div className="bg-yellow-50 p-3 rounded-lg flex items-start gap-2">
-                          <AlertCircle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
-                          <p className="text-sm text-yellow-800">
+                        <div className="bg-amber-50 p-3 rounded-lg flex items-start gap-2 border border-amber-200">
+                          <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                          <p className="text-sm text-amber-900">
                             Mijoz ma'lumotlari buyurtmani qabul qilganingizdan keyin ko'rinadi
                           </p>
                         </div>
@@ -535,26 +535,26 @@ const TaxiOrdersPage = () => {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-lg border-2 border-green-300 space-y-3">
-                <div className="flex items-center justify-between pb-3 border-b border-green-200">
-                  <span className="text-sm font-medium text-green-900">Buyurtma narxi:</span>
-                  <span className="text-2xl font-bold text-green-600">
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-4 rounded-lg border border-slate-200 space-y-3">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+                  <span className="text-sm font-medium text-slate-700">Buyurtma narxi:</span>
+                  <span className="text-2xl font-bold text-emerald-600">
                     {formatCurrency(priceDialog.order.price_order)} so'm
                   </span>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-green-700">To'lov summasi (10%):</span>
+                  <span className="text-sm text-slate-600">To'lov summasi (10%):</span>
                   <span className="text-xl font-bold text-orange-600">
                     {formatCurrency(calculateCommission(priceDialog.order.price_order))} so'm
                   </span>
                 </div>
               </div>
 
-              <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg">
+              <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg">
                 <div className="flex items-start gap-2">
-                  <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0"/>
-                  <div className="text-sm text-yellow-800">
+                  <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0"/>
+                  <div className="text-sm text-amber-900">
                     <p className="font-medium mb-1">Muhim:</p>
                     <p>Buyurtmani qabul qilish uchun hisobingizdan <strong>{formatCurrency(calculateCommission(priceDialog.order.price_order))} so'm</strong> yechib olinadi. Buyurtmani bekor qilsangiz, pul qaytarilmaydi.</p>
                   </div>
