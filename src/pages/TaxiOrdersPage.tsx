@@ -393,9 +393,9 @@ const TaxiOrdersPage = () => {
                           </div>
                         )}
 
-                        <div className="bg-amber-50 p-3 rounded-lg flex items-start gap-2 border border-amber-200">
-                          <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-                          <p className="text-sm text-amber-900">
+                        <div className="bg-yellow-100 p-3 rounded-lg flex items-start gap-2 border-2 border-yellow-400">
+                          <AlertCircle className="w-5 h-5 text-yellow-700 mt-0.5 flex-shrink-0" />
+                          <p className="text-sm text-yellow-900 font-medium">
                             Mijoz ma'lumotlari buyurtmani qabul qilganingizdan keyin ko'rinadi
                           </p>
                         </div>
@@ -586,12 +586,12 @@ const TaxiOrdersPage = () => {
                 </div>
               </div>
 
-              <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg">
+              <div className="bg-yellow-100 border-2 border-yellow-400 p-4 rounded-lg">
                 <div className="flex items-start gap-2">
-                  <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0"/>
-                  <div className="text-sm text-amber-900">
-                    <p className="font-medium mb-1">Muhim:</p>
-                    <p>Buyurtmani qabul qilish uchun hisobingizdan <strong>{formatCurrency(calculateCommission(priceDialog.order.price_order))} so'm</strong> yechib olinadi. Buyurtmani bekor qilsangiz, pul qaytarilmaydi.</p>
+                  <AlertCircle className="w-6 h-6 text-yellow-700 mt-0.5 flex-shrink-0"/>
+                  <div className="text-sm text-yellow-900">
+                    <p className="font-bold mb-1 text-base">⚠️ Muhim:</p>
+                    <p className="font-medium">Buyurtmani qabul qilish uchun hisobingizdan <strong className="text-orange-700">{formatCurrency(calculateCommission(priceDialog.order.price_order))} so'm</strong> yechib olinadi. Buyurtmani bekor qilsangiz, pul qaytarilmaydi.</p>
                   </div>
                 </div>
               </div>
