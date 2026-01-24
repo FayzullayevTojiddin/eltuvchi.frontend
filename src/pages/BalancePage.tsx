@@ -25,7 +25,7 @@ const BalancePage = () => {
       if (userRole === 'client') {
         endpoint = '/client/me'
       } else if (userRole === 'driver') {
-        endpoint = '/driver/dashboard'
+        endpoint = '/driver/me'
       }
       const profileRes = await api.get(endpoint)
       setCurrentBalance(profileRes.data?.balance || 0)
