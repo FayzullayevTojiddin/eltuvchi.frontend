@@ -17,6 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@radix-ui/react-select"
 
 const TaxiOrdersPage = () => {
   const [myOrderStatusFilter, setMyOrderStatusFilter] = useState("all")
@@ -408,59 +409,23 @@ const TaxiOrdersPage = () => {
             <TabsContent value="my-orders" className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold">Mening buyurtmalarim</h3>
-                <p className="text-sm text-muted-foreground">Bajarilgan va jarayondagi buyurtmalar</p>
-              </div>
-
-              <div className="flex gap-2 flex-wrap">
-                <Button 
-                  variant={myOrderStatusFilter === "all" ? "default" : "outline"} 
-                  size="sm"
-                  onClick={() => setMyOrderStatusFilter("all")}
-                >
-                  Hammasi
-                </Button>
-                <Button 
-                  variant={myOrderStatusFilter === "created" ? "default" : "outline"} 
-                  size="sm"
-                  onClick={() => setMyOrderStatusFilter("created")}
-                >
-                  Yaratilgan
-                </Button>
-                <Button 
-                  variant={myOrderStatusFilter === "accepted" ? "default" : "outline"} 
-                  size="sm"
-                  onClick={() => setMyOrderStatusFilter("accepted")}
-                >
-                  Qabul qilingan
-                </Button>
-                <Button 
-                  variant={myOrderStatusFilter === "started" ? "default" : "outline"} 
-                  size="sm"
-                  onClick={() => setMyOrderStatusFilter("started")}
-                >
-                  Boshlangan
-                </Button>
-                <Button 
-                  variant={myOrderStatusFilter === "stopped" ? "default" : "outline"} 
-                  size="sm"
-                  onClick={() => setMyOrderStatusFilter("stopped")}
-                >
-                  Tugallangan
-                </Button>
-                <Button 
-                  variant={myOrderStatusFilter === "completed" ? "default" : "outline"} 
-                  size="sm"
-                  onClick={() => setMyOrderStatusFilter("completed")}
-                >
-                  Yakunlangan
-                </Button>
-                <Button 
-                  variant={myOrderStatusFilter === "cancelled" ? "default" : "outline"} 
-                  size="sm"
-                  onClick={() => setMyOrderStatusFilter("cancelled")}
-                >
-                  Bekor qilingan
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Filter className="w-4 h-4 text-muted-foreground" />
+                  <Select value={myOrderStatusFilter} onValueChange={setMyOrderStatusFilter}>
+                    <SelectTrigger className="w-[200px]">
+                      <SelectValue placeholder="Status tanlang" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Hammasi</SelectItem>
+                      <SelectItem value="created">Yaratilgan</SelectItem>
+                      <SelectItem value="accepted">Qabul qilingan</SelectItem>
+                      <SelectItem value="started">Boshlangan</SelectItem>
+                      <SelectItem value="stopped">Tugallangan</SelectItem>
+                      <SelectItem value="completed">Yakunlangan</SelectItem>
+                      <SelectItem value="cancelled">Bekor qilingan</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div className="space-y-4">
