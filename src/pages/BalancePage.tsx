@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Wallet, Plus, ArrowUpDown, Clock, CheckCircle, XCircle, DollarSign, Minus } from "lucide-react"
 import { toast } from "sonner"
 import api from "@/lib/api.ts"
+import { AsyncLocalStorage } from "async_hooks"
 
 const BalancePage = () => {
   const [currentBalance, setCurrentBalance] = useState(0)
@@ -19,8 +20,14 @@ const BalancePage = () => {
       
       const historyRes = await api.get('/balance-history')
       setTransactions(historyRes.data || [])
-      
-      const profileRes = await api.get('/client/me')
+      let endpoint = ''
+      const userRole = localStorage.getItem('userRole')
+      if (userRole === 'client') {
+        endpoint = '/client/me'
+      } else if (userRole === 'driver') {
+        endpoint = '/driver/dashboard'
+      }
+      const profileRes = await api.get(endpoint)
       setCurrentBalance(profileRes.data?.balance || 0)
       
     } catch (error) {
