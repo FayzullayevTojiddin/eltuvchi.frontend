@@ -2,53 +2,54 @@ import {Badge} from "@/components/ui/badge"
 import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
-import {Input} from "@/components/ui/input"
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import {useToast} from "@/hooks/use-toast"
-import {MapPin, Clock, User, Phone, Check, X, Eye, Filter, Play, Square, Ban} from "lucide-react"
+import {MapPin, Clock, User, Phone, Check, X, Eye, Filter, Play, Square, Ban, DollarSign, AlertCircle} from "lucide-react"
 import React, {useEffect, useState} from "react"
 import {ConfirmActionDialog} from "@/components/ConfirmActionDialog"
 import toast from "react-hot-toast"
 import api from "@/lib/api.ts"
 import {formatCurrency} from "@/utils/numberFormat.ts"
-import {useNavigate} from "react-router-dom"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 const TaxiOrdersPage = () => {
   const [myOrderStatusFilter, setMyOrderStatusFilter] = useState("all")
   const [orderData, setOrderData] = useState([])
   const [completedOrders, setCompletedOrders] = useState([])
-  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
+
+  // Buyurtma narxini ko'rsatish uchun dialog
+  const [priceDialog, setPriceDialog] = useState({
+    open: false,
+    order: null
+  })
 
   const fetchOrders = () => {
     let queryParam = ''
-    if (myOrderStatusFilter !== 'all' && myOrderStatusFilter === 'created') {
-      queryParam = '?status=created'
-    } else if (myOrderStatusFilter !== 'all' && myOrderStatusFilter === 'accepted') {
-      queryParam = '?status=accepted'
-    } else if (myOrderStatusFilter !== 'all' && myOrderStatusFilter === 'started') {
-      queryParam = '?status=started'
-    } else if (myOrderStatusFilter !== 'all' && myOrderStatusFilter === 'stopped') {
-      queryParam = '?status=stopped'
-    } else if (myOrderStatusFilter !== 'all' && myOrderStatusFilter === 'completed') {
-      queryParam = '?status=completed'
-    } else if (myOrderStatusFilter !== 'all' && myOrderStatusFilter === 'cancelled') {
-      queryParam = '?status=cancelled'
+    if (myOrderStatusFilter !== 'all') {
+      queryParam = `?status=${myOrderStatusFilter}`
     }
 
+    // Mening buyurtmalarimni olish
     api.get(`/driver/my_orders${queryParam}`)
       .then((res) => {
         setCompletedOrders(res.data)
-        console.log("my orders:", res.data)
       })
       .catch((err) => {
         console.log(err)
         toast.error("Xatolik yuz berdi. Iltimos, qayta urinib ko'ring.")
       })
 
+    // Mavjud buyurtmalarni olish
     api.get('/driver/orders')
       .then((res) => {
         setOrderData(res.data)
-        console.log("📦 Orders:", res.data)
       })
       .catch((err) => {
         console.log(err)
@@ -77,99 +78,12 @@ const TaxiOrdersPage = () => {
     actionText: ""
   })
 
-  const [orders, setOrders] = useState({
-    available: [
-      {
-        id: "001",
-        from: "Toshkent",
-        to: "Samarqand",
-        date: "2025-01-30",
-        time: "14:00",
-        passengers: 2,
-        price: 100000,
-        distance: "270 km",
-        client: {
-          name: "Akmal Karimov",
-          phone: "+998901234567",
-          rating: 4.8
-        }
-      },
-      {
-        id: "002",
-        from: "Andijon",
-        to: "Toshkent",
-        date: "2025-01-30",
-        time: "16:30",
-        passengers: 1,
-        price: 120000,
-        distance: "320 km",
-        client: {
-          name: "Dilshod Rahimov",
-          phone: "+998901234568",
-          rating: 4.9
-        }
-      }
-    ],
-    myOrders: [
-      {
-        id: "003",
-        from: "Buxoro",
-        to: "Toshkent",
-        date: "2025-01-25",
-        time: "09:00",
-        passengers: 1,
-        price: 80000,
-        status: "completed",
-        client: {
-          name: "Sarvar Nazarov",
-          phone: "+998901234569",
-          rating: 4.7
-        }
-      },
-      {
-        id: "004",
-        from: "Toshkent",
-        to: "Farg'ona",
-        date: "2025-01-28",
-        time: "10:30",
-        passengers: 3,
-        price: 150000,
-        status: "accepted",
-        client: {
-          name: "Oybek Toshmatov",
-          phone: "+998901234570",
-          rating: 4.6
-        }
-      },
-      {
-        id: "006",
-        from: "Toshkent",
-        to: "Namangan",
-        date: "2025-01-30",
-        time: "08:00",
-        passengers: 2,
-        price: 110000,
-        status: "in_progress",
-        client: {
-          name: "Madina Karimova",
-          phone: "+998901234571",
-          rating: 4.9
-        }
-      }
-    ]
-  })
-
   const openConfirmDialog = (type: string, orderId: string) => {
     let title = ""
     let description = ""
     let actionText = ""
 
     switch (type) {
-      case "accept":
-        title = "Buyurtmani qabul qilish"
-        description = "Bu buyurtmani qabul qilishni tasdiqlaysizmi? 5000 so'm to'lov olinadi."
-        actionText = "Qabul qilish"
-        break
       case "start":
         title = "Safarni boshlash"
         description = "Safarni boshlaganingizni tasdiqlaysizmi?"
@@ -201,9 +115,6 @@ const TaxiOrdersPage = () => {
     const {type, orderId} = confirmDialog
 
     switch (type) {
-      case "accept":
-        handleAcceptOrder(orderId)
-        break
       case "start":
         handleStartOrder(orderId)
         break
@@ -218,12 +129,25 @@ const TaxiOrdersPage = () => {
     setConfirmDialog({...confirmDialog, open: false})
   }
 
+  // Buyurtma narxini ko'rish
+  const showPriceDetails = (order) => {
+    setPriceDialog({
+      open: true,
+      order: order
+    })
+  }
+
+  // Buyurtmani qabul qilish (10% to'lov bilan)
   const handleAcceptOrder = (orderId: string) => {
-    try {
-      api.post(`/driver/orders/${orderId}`, {orderId}).then((res) => {
-        console.log(res.data)
+    setLoading(true)
+    setPriceDialog({...priceDialog, open: false})
+    
+    api.post(`/driver/orders/${orderId}`, {orderId})
+      .then((res) => {
+        toast.success("Buyurtma muvaffaqiyatli qabul qilindi!")
         fetchOrders()
-      }).catch(err => {
+      })
+      .catch(err => {
         console.log(err?.response)
         if (err?.response?.data?.message) {
           toast.error(err?.response?.data?.message)
@@ -231,38 +155,41 @@ const TaxiOrdersPage = () => {
           toast.error("Xatolik yuz berdi!")
         }
       })
-    } catch (e) {
-      console.log(e)
-      toast.error("Xatolik yuz berdi!")
-    }
+      .finally(() => {
+        setLoading(false)
+      })
   }
 
   const handleCancelOrder = (orderId: string) => {
-    try {
-      api.delete(`/driver/orders/${orderId}`).then((res) => {
-        console.log(res.data)
+    setLoading(true)
+    
+    api.delete(`/driver/orders/${orderId}`)
+      .then((res) => {
         toast.success("Buyurtma bekor qilindi!")
         fetchOrders()
-      }).catch(err => {
+      })
+      .catch(err => {
         console.log(err?.response?.data?.error)
         if (err?.response?.data?.error) {
           toast.error(err?.response?.data?.error)
+        } else {
+          toast.error("Xatolik yuz berdi!")
         }
       })
-    } catch (e) {
-      console.log(e)
-      toast.error("Xatolik yuz berdi!")
-    }
+      .finally(() => {
+        setLoading(false)
+      })
   }
 
   const handleStartOrder = (orderId: string) => {
-    try {
-      console.log(orderId)
-      api.post(`/driver/orders/${orderId}/start`, {orderId}).then((res) => {
-        console.log(res.data)
+    setLoading(true)
+    
+    api.post(`/driver/orders/${orderId}/start`, {orderId})
+      .then((res) => {
         toast.success("Buyurtma boshlandi!")
         fetchOrders()
-      }).catch(err => {
+      })
+      .catch(err => {
         console.log(err?.response?.data?.data)
         if (err?.response?.data?.data) {
           toast.error(err?.response?.data?.data)
@@ -270,26 +197,26 @@ const TaxiOrdersPage = () => {
           toast.error("Xatolik yuz berdi!")
         }
       })
-    } catch (e) {
-      console.log(e)
-      toast.error("Xatolik yuz berdi!")
-    }
+      .finally(() => {
+        setLoading(false)
+      })
   }
 
   const handleCompleteOrder = (orderId: string) => {
-    try {
-      api.post(`/driver/orders/${orderId}/stop`, { orderId }).then((res) => {
-        console.log(res.data)
+    setLoading(true)
+    
+    api.post(`/driver/orders/${orderId}/stop`, { orderId })
+      .then((res) => {
         toast.success("Buyurtma tugadi!")
         fetchOrders()
-      }).catch(err => {
+      })
+      .catch(err => {
         console.log(err)
         toast.error("Xatolik yuz berdi!")
       })
-    } catch (e) {
-      console.log(e)
-      toast.error("Xatolik yuz berdi!")
-    }
+      .finally(() => {
+        setLoading(false)
+      })
   }
 
   const getStatusBadge = (status: string) => {
@@ -314,6 +241,8 @@ const TaxiOrdersPage = () => {
         return <Badge className="bg-yellow-500">Tasdiq kutilmoqda</Badge>
       case "completed":
         return <Badge className="bg-gray-500">Yakunlandi</Badge>
+      case "cancelled":
+        return <Badge className="bg-red-500">Bekor qilingan</Badge>
       default:
         return <Badge className="bg-gray-400">Noma'lum</Badge>
     }
@@ -323,7 +252,7 @@ const TaxiOrdersPage = () => {
     switch (order.status) {
       case "accepted":
         return (
-          <Button onClick={() => openConfirmDialog("start", order.id)} className="flex-1 gap-2">
+          <Button onClick={() => openConfirmDialog("start", order.id)} className="flex-1 gap-2" disabled={loading}>
             <Play className="w-4 h-4"/>
             Boshlash
           </Button>
@@ -331,7 +260,7 @@ const TaxiOrdersPage = () => {
       case "started":
         return (
           <Button onClick={() => openConfirmDialog("complete", order.id)} className="flex-1 gap-2"
-                  variant="default">
+                  variant="default" disabled={loading}>
             <Square className="w-4 h-4"/>
             Tugatish
           </Button>
@@ -346,27 +275,6 @@ const TaxiOrdersPage = () => {
         return (
           <Badge className="bg-gray-500 flex-1 justify-center py-2">
             Yakunlangan
-          </Badge>
-        )
-      default:
-        return null
-    }
-  }
-
-  const getOrderStatus = (status) => {
-    switch (status) {
-      case "created":
-        return (
-          'Yangi'
-        )
-      case "in_progress":
-        return (
-          "Bajarilmoqda"
-        )
-      case "waiting_confirmation":
-        return (
-          <Badge className="bg-yellow-500 flex-1 justify-center py-2">
-            Mijoz tasdiqini kutmoqda...
           </Badge>
         )
       default:
@@ -392,6 +300,11 @@ const TaxiOrdersPage = () => {
         minute: "2-digit",
       })
     }
+  }
+
+  // 10% hisobini chiqarish
+  const calculateCommission = (price) => {
+    return parseFloat(price) * 0.1
   }
 
   return (
@@ -427,11 +340,11 @@ const TaxiOrdersPage = () => {
                           <div>
                             <CardTitle className="text-lg flex items-center gap-2">
                               <MapPin className="w-5 h-5"/>
-                              {order?.route?.from?.name} → {order?.route?.to?.name}
+                              {order?.route?.from?.name || "Topilmadi"} → {order?.route?.to?.name || "Topilmadi"}
                             </CardTitle>
                             <CardDescription>Buyurtma #{order.id}</CardDescription>
                           </div>
-                          {getOrderStatus(order?.status) || "Yangi"}
+                          <Badge className="bg-green-500">Yangi</Badge>
                         </div>
                       </CardHeader>
                       <CardContent className="space-y-3">
@@ -446,34 +359,43 @@ const TaxiOrdersPage = () => {
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between pt-2 border-t">
-                          <span className="text-lg font-bold text-green-600">
-                            {new Intl.NumberFormat("uz-UZ").format(parseFloat(order.client_deposit))} so'm
-                          </span>
+                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-lg border-2 border-green-200">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-green-900">Buyurtma narxi:</span>
+                            <span className="text-2xl font-bold text-green-600">
+                              {formatCurrency(order.price_order)} so'm
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between pt-2 border-t border-green-200">
+                            <span className="text-sm text-green-700">Sizning komissiyangiz (10%):</span>
+                            <span className="text-lg font-semibold text-green-600">
+                              {formatCurrency(calculateCommission(order.price_order))} so'm
+                            </span>
+                          </div>
                         </div>
 
-                        <div className="bg-blue-50 p-3 rounded-lg space-y-2">
-                          <p className="text-sm font-medium text-blue-900">Buyurtma ma'lumotlari:</p>
-                          <p className="text-sm text-blue-700">
-                            To'lov miqdori: {new Intl.NumberFormat("uz-UZ").format(parseFloat(order.price_order))} so'm
-                          </p>
-                          {!order.note || (
-                            <p className="text-sm text-blue-700">
-                              Qo'shimcha: {order.note || ""}
-                            </p>
-                          )}
-                        </div>
+                        {order.note && (
+                          <div className="bg-blue-50 p-3 rounded-lg">
+                            <p className="text-sm font-medium text-blue-900">Qo'shimcha ma'lumot:</p>
+                            <p className="text-sm text-blue-700">{order.note}</p>
+                          </div>
+                        )}
 
-                        <div className="bg-yellow-50 p-3 rounded-lg">
+                        <div className="bg-yellow-50 p-3 rounded-lg flex items-start gap-2">
+                          <AlertCircle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
                           <p className="text-sm text-yellow-800">
-                            Mijoz ma'lumotlari qabul qilganingizdan keyin ko'rinadi
+                            Mijoz ma'lumotlari buyurtmani qabul qilganingizdan keyin ko'rinadi
                           </p>
                         </div>
 
                         <div className="flex gap-2 pt-2">
-                          <Button onClick={() => openConfirmDialog("accept", order.id)} className="flex-1">
-                            <Check className="w-4 h-4 mr-2"/>
-                            Qabul qilish
+                          <Button 
+                            onClick={() => showPriceDetails(order)} 
+                            className="flex-1"
+                            disabled={loading}
+                          >
+                            <DollarSign className="w-4 h-4 mr-2"/>
+                            Narxni ko'rish va qabul qilish
                           </Button>
                         </div>
                       </CardContent>
@@ -489,14 +411,57 @@ const TaxiOrdersPage = () => {
                 <p className="text-sm text-muted-foreground">Bajarilgan va jarayondagi buyurtmalar</p>
               </div>
 
-              <TabsList className="grid w-full grid-cols-6">
-                <TabsTrigger value="all" onClick={() => setMyOrderStatusFilter("all")}>Hammasi</TabsTrigger>
-                <TabsTrigger value="created" onClick={() => setMyOrderStatusFilter("created")}>Yaratilgan</TabsTrigger>
-                <TabsTrigger value="completed" onClick={() => setMyOrderStatusFilter("completed")}>Yakunlangan</TabsTrigger>
-                <TabsTrigger value="accepted" onClick={() => setMyOrderStatusFilter("accepted")}>Qabul qilingan</TabsTrigger>
-                <TabsTrigger value="cancelled" onClick={() => setMyOrderStatusFilter("cancelled")}>Bekor qilingan</TabsTrigger>
-                <TabsTrigger value="stopped" onClick={() => setMyOrderStatusFilter("stopped")}>Tugallangan</TabsTrigger>
-              </TabsList>
+              <div className="flex gap-2 flex-wrap">
+                <Button 
+                  variant={myOrderStatusFilter === "all" ? "default" : "outline"} 
+                  size="sm"
+                  onClick={() => setMyOrderStatusFilter("all")}
+                >
+                  Hammasi
+                </Button>
+                <Button 
+                  variant={myOrderStatusFilter === "created" ? "default" : "outline"} 
+                  size="sm"
+                  onClick={() => setMyOrderStatusFilter("created")}
+                >
+                  Yaratilgan
+                </Button>
+                <Button 
+                  variant={myOrderStatusFilter === "accepted" ? "default" : "outline"} 
+                  size="sm"
+                  onClick={() => setMyOrderStatusFilter("accepted")}
+                >
+                  Qabul qilingan
+                </Button>
+                <Button 
+                  variant={myOrderStatusFilter === "started" ? "default" : "outline"} 
+                  size="sm"
+                  onClick={() => setMyOrderStatusFilter("started")}
+                >
+                  Boshlangan
+                </Button>
+                <Button 
+                  variant={myOrderStatusFilter === "stopped" ? "default" : "outline"} 
+                  size="sm"
+                  onClick={() => setMyOrderStatusFilter("stopped")}
+                >
+                  Tugallangan
+                </Button>
+                <Button 
+                  variant={myOrderStatusFilter === "completed" ? "default" : "outline"} 
+                  size="sm"
+                  onClick={() => setMyOrderStatusFilter("completed")}
+                >
+                  Yakunlangan
+                </Button>
+                <Button 
+                  variant={myOrderStatusFilter === "cancelled" ? "default" : "outline"} 
+                  size="sm"
+                  onClick={() => setMyOrderStatusFilter("cancelled")}
+                >
+                  Bekor qilingan
+                </Button>
+              </div>
 
               <div className="space-y-4">
                 {completedOrders.length === 0 ? (
@@ -511,7 +476,7 @@ const TaxiOrdersPage = () => {
                           <div>
                             <CardTitle className="text-lg flex items-center gap-2">
                               <MapPin className="w-5 h-5"/>
-                              {order.route.from.name || "Topilmadi"} → {order.route.to.name || "Topilmadi"}
+                              {order?.route?.from?.name || "Topilmadi"} → {order?.route?.to?.name || "Topilmadi"}
                             </CardTitle>
                             <CardDescription>Buyurtma #{order.id || "0"}</CardDescription>
                           </div>
@@ -531,8 +496,9 @@ const TaxiOrdersPage = () => {
                         </div>
 
                         <div className="flex items-center justify-between pt-2 border-t">
+                          <span className="text-sm text-muted-foreground">Buyurtma narxi:</span>
                           <span className="text-lg font-bold text-green-600">
-                            {formatCurrency(order?.client_deposit)} so'm
+                            {formatCurrency(order?.price_order)} so'm
                           </span>
                         </div>
 
@@ -555,28 +521,18 @@ const TaxiOrdersPage = () => {
                           </div>
                         )}
 
-                        {order.status !== "completed" && (
+                        {order.status !== "completed" && order.status !== "cancelled" && (
                           <div className="flex gap-2 pt-2">
                             {getActionButton(order)}
-                            {order?.client ? (
-                              <Button
-                                onClick={() => openConfirmDialog("cancel", order.id)}
-                                variant="destructive"
-                                className="flex-1"
-                              >
-                                <Ban className="w-4 h-4 mr-2"/>
-                                Bekor qilish
-                              </Button>
-                            ) : (
-                              <Button
-                                variant="outline"
-                                className="flex-1"
-                                onClick={() => navigate(`/orders/${order.id}`)}
-                              >
-                                <Eye className="w-4 h-4 mr-2"/>
-                                Ko'rish
-                              </Button>
-                            )}
+                            <Button
+                              onClick={() => openConfirmDialog("cancel", order.id)}
+                              variant="destructive"
+                              className="flex-1"
+                              disabled={loading}
+                            >
+                              <Ban className="w-4 h-4 mr-2"/>
+                              Bekor qilish
+                            </Button>
                           </div>
                         )}
                       </CardContent>
@@ -588,6 +544,79 @@ const TaxiOrdersPage = () => {
           </Tabs>
         </CardContent>
       </Card>
+
+      {/* Narx ko'rsatish va qabul qilish Dialog */}
+      <Dialog open={priceDialog.open} onOpenChange={(open) => setPriceDialog({...priceDialog, open})}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Buyurtma tafsilotlari</DialogTitle>
+            <DialogDescription>
+              Buyurtmani qabul qilish uchun to'lov ma'lumotlarini ko'rib chiqing
+            </DialogDescription>
+          </DialogHeader>
+          
+          {priceDialog.order && (
+            <div className="space-y-4">
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <MapPin className="w-5 h-5 text-blue-600"/>
+                  <p className="font-medium text-blue-900">
+                    {priceDialog.order?.route?.from?.name || "Topilmadi"} → {priceDialog.order?.route?.to?.name || "Topilmadi"}
+                  </p>
+                </div>
+                <div className="text-sm text-blue-700 space-y-1">
+                  <p>📅 {formatDateTime(priceDialog.order.date, "date")} • {formatDateTime(priceDialog.order.time, "time")}</p>
+                  <p>👥 {priceDialog.order.passengers} yo'lovchi</p>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-lg border-2 border-green-300 space-y-3">
+                <div className="flex items-center justify-between pb-3 border-b border-green-200">
+                  <span className="text-sm font-medium text-green-900">Buyurtma narxi:</span>
+                  <span className="text-2xl font-bold text-green-600">
+                    {formatCurrency(priceDialog.order.price_order)} so'm
+                  </span>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-green-700">To'lov summasi (10%):</span>
+                  <span className="text-xl font-bold text-orange-600">
+                    {formatCurrency(calculateCommission(priceDialog.order.price_order))} so'm
+                  </span>
+                </div>
+              </div>
+
+              <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0"/>
+                  <div className="text-sm text-yellow-800">
+                    <p className="font-medium mb-1">Muhim:</p>
+                    <p>Buyurtmani qabul qilish uchun hisobingizdan <strong>{formatCurrency(calculateCommission(priceDialog.order.price_order))} so'm</strong> yechib olinadi. Buyurtmani bekor qilsangiz, pul qaytarilmaydi.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="flex gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setPriceDialog({...priceDialog, open: false})}
+              disabled={loading}
+            >
+              Yopish
+            </Button>
+            <Button 
+              onClick={() => handleAcceptOrder(priceDialog.order?.id)}
+              disabled={loading}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              <Check className="w-4 h-4 mr-2"/>
+              {loading ? "Kutilmoqda..." : "Qabul qilish"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <ConfirmActionDialog
         open={confirmDialog.open}
