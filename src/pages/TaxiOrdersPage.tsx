@@ -2,8 +2,7 @@ import {Badge} from "@/components/ui/badge"
 import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
-import {useToast} from "@/hooks/use-toast"
-import {MapPin, Clock, User, Phone, Check, X, Eye, Filter, Play, Square, Ban, DollarSign, AlertCircle} from "lucide-react"
+import {MapPin, Clock, User, Phone, Check, Play, Square, Ban, DollarSign, AlertCircle, History} from "lucide-react"
 import React, {useEffect, useState} from "react"
 import {ConfirmActionDialog} from "@/components/ConfirmActionDialog"
 import toast from "react-hot-toast"
@@ -17,15 +16,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@radix-ui/react-select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 
 const TaxiOrdersPage = () => {
   const [myOrderStatusFilter, setMyOrderStatusFilter] = useState("all")
   const [orderData, setOrderData] = useState([])
   const [completedOrders, setCompletedOrders] = useState([])
   const [loading, setLoading] = useState(false)
+  const [expandedHistories, setExpandedHistories] = useState({})
 
-  // Buyurtma narxini ko'rsatish uchun dialog
   const [priceDialog, setPriceDialog] = useState({
     open: false,
     order: null
@@ -37,20 +41,18 @@ const TaxiOrdersPage = () => {
       queryParam = `?status=${myOrderStatusFilter}`
     }
 
-    // Mening buyurtmalarimni olish
     api.get(`/driver/my_orders${queryParam}`)
       .then((res) => {
-        setCompletedOrders(res.data)
+        setCompletedOrders(res.data.data || [])
       })
       .catch((err) => {
         console.log(err)
         toast.error("Xatolik yuz berdi. Iltimos, qayta urinib ko'ring.")
       })
 
-    // Mavjud buyurtmalarni olish
     api.get('/driver/orders')
       .then((res) => {
-        setOrderData(res.data)
+        setOrderData(res.data.data || [])
       })
       .catch((err) => {
         console.log(err)
@@ -130,7 +132,6 @@ const TaxiOrdersPage = () => {
     setConfirmDialog({...confirmDialog, open: false})
   }
 
-  // Buyurtma narxini ko'rish
   const showPriceDetails = (order) => {
     setPriceDialog({
       open: true,
@@ -138,7 +139,6 @@ const TaxiOrdersPage = () => {
     })
   }
 
-  // Buyurtmani qabul qilish (10% to'lov bilan)
   const handleAcceptOrder = (orderId: string) => {
     setLoading(true)
     setPriceDialog({...priceDialog, open: false})
@@ -222,30 +222,32 @@ const TaxiOrdersPage = () => {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
+      case "created":
+        return <Badge className="bg-blue-500 hover:bg-blue-600">Yaratilgan</Badge>
       case "accepted":
         return (
-          <Badge className="bg-blue-500">
+          <Badge className="bg-green-500 hover:bg-green-600">
             <Check className="w-3 h-3 mr-1"/>
             Qabul qilingan
           </Badge>
         )
       case "started":
         return (
-          <Badge className="bg-green-500">
+          <Badge className="bg-purple-500 hover:bg-purple-600">
             <Play className="w-3 h-3 mr-1"/>
             Boshlangan
           </Badge>
         )
-      case "in_progress":
-        return <Badge className="bg-green-500">Jarayonda</Badge>
+      case "stopped":
+        return <Badge className="bg-orange-500 hover:bg-orange-600">To'xtatilgan</Badge>
       case "waiting_confirmation":
-        return <Badge className="bg-yellow-500">Tasdiq kutilmoqda</Badge>
+        return <Badge className="bg-yellow-500 hover:bg-yellow-600">Tasdiq kutilmoqda</Badge>
       case "completed":
-        return <Badge className="bg-gray-500">Yakunlandi</Badge>
+        return <Badge className="bg-slate-500 hover:bg-slate-600">Yakunlandi</Badge>
       case "cancelled":
-        return <Badge className="bg-red-500">Bekor qilingan</Badge>
+        return <Badge className="bg-red-500 hover:bg-red-600">Bekor qilingan</Badge>
       default:
-        return <Badge className="bg-gray-400">Noma'lum</Badge>
+        return <Badge className="bg-gray-400 hover:bg-gray-500">Noma'lum</Badge>
     }
   }
 
@@ -253,28 +255,27 @@ const TaxiOrdersPage = () => {
     switch (order.status) {
       case "accepted":
         return (
-          <Button onClick={() => openConfirmDialog("start", order.id)} className="flex-1 gap-2" disabled={loading}>
+          <Button onClick={() => openConfirmDialog("start", order.id)} className="flex-1 gap-2 bg-purple-600 hover:bg-purple-700" disabled={loading}>
             <Play className="w-4 h-4"/>
             Boshlash
           </Button>
         )
       case "started":
         return (
-          <Button onClick={() => openConfirmDialog("complete", order.id)} className="flex-1 gap-2"
-                  variant="default" disabled={loading}>
+          <Button onClick={() => openConfirmDialog("complete", order.id)} className="flex-1 gap-2 bg-orange-600 hover:bg-orange-700" disabled={loading}>
             <Square className="w-4 h-4"/>
             Tugatish
           </Button>
         )
-      case "waiting_confirmation":
+      case "stopped":
         return (
-          <Badge className="bg-yellow-500 flex-1 justify-center py-2">
+          <Badge className="bg-orange-500 flex-1 justify-center py-2">
             Mijoz tasdiqini kutmoqda...
           </Badge>
         )
       case "completed":
         return (
-          <Badge className="bg-gray-500 flex-1 justify-center py-2">
+          <Badge className="bg-slate-500 flex-1 justify-center py-2">
             Yakunlangan
           </Badge>
         )
@@ -303,72 +304,82 @@ const TaxiOrdersPage = () => {
     }
   }
 
-  // 10% hisobini chiqarish
   const calculateCommission = (price) => {
     return parseFloat(price) * 0.1
   }
 
+  const toggleHistory = (orderId) => {
+    setExpandedHistories(prev => ({
+      ...prev,
+      [orderId]: !prev[orderId]
+    }))
+  }
+
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Buyurtmalar</CardTitle>
-          <CardDescription>Mavjud va bajarilgan buyurtmalarni boshqaring</CardDescription>
+      <Card className="border-slate-200 bg-white">
+        <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
+          <CardTitle className="text-2xl text-slate-800">Buyurtmalar</CardTitle>
+          <CardDescription className="text-slate-600">Mavjud va bajarilgan buyurtmalarni boshqaring</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <Tabs defaultValue="available" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="available">Mavjud buyurtmalar</TabsTrigger>
-              <TabsTrigger value="my-orders">Mening buyurtmalarim</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 bg-slate-100">
+              <TabsTrigger value="available" className="data-[state=active]:bg-white data-[state=active]:text-blue-600">
+                Mavjud buyurtmalar
+              </TabsTrigger>
+              <TabsTrigger value="my-orders" className="data-[state=active]:bg-white data-[state=active]:text-blue-600">
+                Mening buyurtmalarim
+              </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="available" className="space-y-4">
+            <TabsContent value="available" className="space-y-4 mt-6">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">Mavjud buyurtmalar</h3>
-                <p className="text-sm text-muted-foreground">Qabul qilish uchun mavjud buyurtmalar</p>
+                <h3 className="text-lg font-semibold text-slate-800">Mavjud buyurtmalar</h3>
+                <p className="text-sm text-slate-500">Qabul qilish uchun mavjud buyurtmalar</p>
               </div>
 
               <div className="space-y-4">
                 {orderData.length === 0 ? (
-                  <div className="text-center py-12 border rounded-lg">
-                    <p className="text-muted-foreground">Mavjud buyurtmalar yo'q</p>
+                  <div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-lg bg-slate-50">
+                    <p className="text-slate-400 text-lg">Mavjud buyurtmalar yo'q</p>
                   </div>
                 ) : (
                   orderData.map((order) => (
-                    <Card key={order.id} className="hover:shadow-md transition-shadow">
-                      <CardHeader className="pb-3">
+                    <Card key={order.id} className="hover:shadow-lg transition-all border-slate-200 bg-white">
+                      <CardHeader className="pb-3 bg-gradient-to-r from-green-50 to-emerald-50">
                         <div className="flex items-start justify-between">
                           <div>
-                            <CardTitle className="text-lg flex items-center gap-2">
-                              <MapPin className="w-5 h-5"/>
+                            <CardTitle className="text-lg flex items-center gap-2 text-slate-800">
+                              <MapPin className="w-5 h-5 text-green-600"/>
                               {order?.route?.from?.name || "Topilmadi"} → {order?.route?.to?.name || "Topilmadi"}
                             </CardTitle>
-                            <CardDescription>Buyurtma #{order.id}</CardDescription>
+                            <CardDescription className="text-slate-600">Buyurtma #{order.id}</CardDescription>
                           </div>
-                          <Badge className="bg-green-500">Yangi</Badge>
+                          <Badge className="bg-green-500 hover:bg-green-600 text-white">Yangi</Badge>
                         </div>
                       </CardHeader>
-                      <CardContent className="space-y-3">
+                      <CardContent className="space-y-3 pt-4">
                         <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-muted-foreground"/>
+                          <div className="flex items-center gap-2 text-slate-700">
+                            <Clock className="w-4 h-4 text-slate-500"/>
                             <span>{formatDateTime(order.date, "date")} • {formatDateTime(order.time, "time")}</span>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <User className="w-4 h-4 text-muted-foreground"/>
+                          <div className="flex items-center gap-2 text-slate-700">
+                            <User className="w-4 h-4 text-slate-500"/>
                             <span>{order.passengers} kishi</span>
                           </div>
                         </div>
 
-                        <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-4 rounded-lg border border-slate-200">
+                        <div className="bg-gradient-to-br from-emerald-50 to-green-50 p-4 rounded-lg border border-emerald-200">
                           <div className="flex items-center justify-between mb-3">
-                            <span className="text-sm font-medium text-slate-700">Buyurtma narxi:</span>
+                            <span className="text-sm font-medium text-emerald-800">Buyurtma narxi:</span>
                             <span className="text-2xl font-bold text-emerald-600">
                               {formatCurrency(order.price_order)} so'm
                             </span>
                           </div>
-                          <div className="flex items-center justify-between pt-3 border-t border-slate-200">
-                            <span className="text-sm text-slate-600">Sizning komissiyangiz (10%):</span>
+                          <div className="flex items-center justify-between pt-3 border-t border-emerald-200">
+                            <span className="text-sm text-emerald-700">Sizning komissiyangiz (10%):</span>
                             <span className="text-lg font-semibold text-orange-600">
                               {formatCurrency(calculateCommission(order.price_order))} so'm
                             </span>
@@ -376,7 +387,7 @@ const TaxiOrdersPage = () => {
                         </div>
 
                         {order.note && (
-                          <div className="bg-blue-50 p-3 rounded-lg">
+                          <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
                             <p className="text-sm font-medium text-blue-900">Qo'shimcha ma'lumot:</p>
                             <p className="text-sm text-blue-700">{order.note}</p>
                           </div>
@@ -392,7 +403,7 @@ const TaxiOrdersPage = () => {
                         <div className="flex gap-2 pt-2">
                           <Button 
                             onClick={() => showPriceDetails(order)} 
-                            className="flex-1"
+                            className="flex-1 bg-blue-600 hover:bg-blue-700"
                             disabled={loading}
                           >
                             <DollarSign className="w-4 h-4 mr-2"/>
@@ -406,84 +417,109 @@ const TaxiOrdersPage = () => {
               </div>
             </TabsContent>
 
-            <TabsContent value="my-orders" className="space-y-4">
+            <TabsContent value="my-orders" className="space-y-4 mt-6">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">Mening buyurtmalarim</h3>
-                <div className="flex items-center gap-2">
-                  <Filter className="w-4 h-4 text-muted-foreground" />
-                  <Select value={myOrderStatusFilter} onValueChange={setMyOrderStatusFilter}>
-                    <SelectTrigger className="w-[200px]">
-                      <SelectValue placeholder="Status tanlang" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Hammasi</SelectItem>
-                      <SelectItem value="created">Yaratilgan</SelectItem>
-                      <SelectItem value="accepted">Qabul qilingan</SelectItem>
-                      <SelectItem value="started">Boshlangan</SelectItem>
-                      <SelectItem value="stopped">Tugallangan</SelectItem>
-                      <SelectItem value="completed">Yakunlangan</SelectItem>
-                      <SelectItem value="cancelled">Bekor qilingan</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <h3 className="text-lg font-semibold text-slate-800">Mening buyurtmalarim</h3>
+                <Select value={myOrderStatusFilter} onValueChange={setMyOrderStatusFilter}>
+                  <SelectTrigger className="w-[200px] bg-white border-slate-300">
+                    <SelectValue placeholder="Status tanlang" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="all">Hammasi</SelectItem>
+                    <SelectItem value="created">Yaratilgan</SelectItem>
+                    <SelectItem value="accepted">Qabul qilingan</SelectItem>
+                    <SelectItem value="started">Boshlangan</SelectItem>
+                    <SelectItem value="stopped">To'xtatilgan</SelectItem>
+                    <SelectItem value="completed">Yakunlangan</SelectItem>
+                    <SelectItem value="cancelled">Bekor qilingan</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-4">
                 {completedOrders.length === 0 ? (
-                  <div className="text-center py-12 border rounded-lg">
-                    <p className="text-muted-foreground">Mavjud buyurtmalar yo'q</p>
+                  <div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-lg bg-slate-50">
+                    <p className="text-slate-400 text-lg">Mavjud buyurtmalar yo'q</p>
                   </div>
                 ) : (
                   completedOrders.map((order) => (
-                    <Card key={order.id} className="hover:shadow-md transition-shadow">
-                      <CardHeader className="pb-3">
+                    <Card key={order.id} className="hover:shadow-lg transition-all border-slate-200 bg-white">
+                      <CardHeader className="pb-3 bg-gradient-to-r from-blue-50 to-indigo-50">
                         <div className="flex items-start justify-between">
                           <div>
-                            <CardTitle className="text-lg flex items-center gap-2">
-                              <MapPin className="w-5 h-5"/>
+                            <CardTitle className="text-lg flex items-center gap-2 text-slate-800">
+                              <MapPin className="w-5 h-5 text-blue-600"/>
                               {order?.route?.from?.name || "Topilmadi"} → {order?.route?.to?.name || "Topilmadi"}
                             </CardTitle>
-                            <CardDescription>Buyurtma #{order.id || "0"}</CardDescription>
+                            <CardDescription className="text-slate-600">Buyurtma #{order.id || "0"}</CardDescription>
                           </div>
                           {getStatusBadge(order.status)}
                         </div>
                       </CardHeader>
-                      <CardContent className="space-y-3">
+                      <CardContent className="space-y-3 pt-4">
                         <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-muted-foreground"/>
+                          <div className="flex items-center gap-2 text-slate-700">
+                            <Clock className="w-4 h-4 text-slate-500"/>
                             <span>{formatDateTime(order.date, "date")} • {formatDateTime(order.time, "time")}</span>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <User className="w-4 h-4 text-muted-foreground"/>
+                          <div className="flex items-center gap-2 text-slate-700">
+                            <User className="w-4 h-4 text-slate-500"/>
                             <span>{order.passengers} kishi</span>
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between pt-2 border-t">
-                          <span className="text-sm text-muted-foreground">Buyurtma narxi:</span>
-                          <span className="text-lg font-bold text-green-600">
+                        <div className="flex items-center justify-between pt-2 border-t border-slate-200 bg-emerald-50 p-3 rounded-lg">
+                          <span className="text-sm text-emerald-800 font-medium">Buyurtma narxi:</span>
+                          <span className="text-lg font-bold text-emerald-600">
                             {formatCurrency(order?.price_order)} so'm
                           </span>
                         </div>
 
-                        {order.client && (
-                          <div className="bg-blue-50 p-3 rounded-lg space-y-2">
+                        {order.phone && (
+                          <div className="bg-blue-50 p-3 rounded-lg space-y-2 border border-blue-200">
                             <p className="text-sm font-medium text-blue-900">Mijoz ma'lumotlari:</p>
-                            {order.client.rating && (
-                              <p className="text-sm text-blue-700">
-                                Mijoz reytingi: ⭐ {order.client.rating}
-                              </p>
-                            )}
-                            {order.client.phone && (
-                              <div className="flex items-center gap-2">
-                                <Phone className="w-4 h-4 text-blue-600"/>
-                                <a href={`tel:${order.client.phone}`} className="text-sm text-blue-600 hover:underline">
-                                  {order.client.phone}
-                                </a>
-                              </div>
-                            )}
+                            <div className="flex items-center gap-2">
+                              <Phone className="w-4 h-4 text-blue-600"/>
+                              <a href={`tel:${order.phone}`} className="text-sm text-blue-600 hover:underline font-medium">
+                                {order.phone}
+                              </a>
+                            </div>
                           </div>
+                        )}
+
+                        {order.histories && order.histories.length > 0 && (
+                          <Collapsible open={expandedHistories[order.id]} onOpenChange={() => toggleHistory(order.id)}>
+                            <CollapsibleTrigger asChild>
+                              <Button variant="outline" className="w-full justify-between bg-slate-50 hover:bg-slate-100 border-slate-300">
+                                <span className="flex items-center gap-2">
+                                  <History className="w-4 h-4"/>
+                                  Buyurtma tarixi ({order.histories.length})
+                                </span>
+                                <span className="text-xs text-slate-500">
+                                  {expandedHistories[order.id] ? "Yopish" : "Ko'rish"}
+                                </span>
+                              </Button>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent className="mt-2">
+                              <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 max-h-64 overflow-y-auto">
+                                <div className="space-y-3">
+                                  {order.histories.map((history) => (
+                                    <div key={history.id} className="flex gap-3 pb-3 border-b border-slate-200 last:border-0">
+                                      <div className="flex-shrink-0">
+                                        {getStatusBadge(history.status)}
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <p className="text-sm text-slate-800 font-medium">{history.description}</p>
+                                        <p className="text-xs text-slate-500 mt-1">
+                                          {new Date(history.created_at).toLocaleString("uz-UZ")}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </CollapsibleContent>
+                          </Collapsible>
                         )}
 
                         {order.status !== "completed" && order.status !== "cancelled" && (
@@ -492,7 +528,7 @@ const TaxiOrdersPage = () => {
                             <Button
                               onClick={() => openConfirmDialog("cancel", order.id)}
                               variant="destructive"
-                              className="flex-1"
+                              className="flex-1 bg-red-600 hover:bg-red-700"
                               disabled={loading}
                             >
                               <Ban className="w-4 h-4 mr-2"/>
@@ -510,19 +546,18 @@ const TaxiOrdersPage = () => {
         </CardContent>
       </Card>
 
-      {/* Narx ko'rsatish va qabul qilish Dialog */}
       <Dialog open={priceDialog.open} onOpenChange={(open) => setPriceDialog({...priceDialog, open})}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-white">
           <DialogHeader>
-            <DialogTitle>Buyurtma tafsilotlari</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-slate-800">Buyurtma tafsilotlari</DialogTitle>
+            <DialogDescription className="text-slate-600">
               Buyurtmani qabul qilish uchun to'lov ma'lumotlarini ko'rib chiqing
             </DialogDescription>
           </DialogHeader>
           
           {priceDialog.order && (
             <div className="space-y-4">
-              <div className="bg-blue-50 p-4 rounded-lg">
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                 <div className="flex items-center gap-2 mb-2">
                   <MapPin className="w-5 h-5 text-blue-600"/>
                   <p className="font-medium text-blue-900">
@@ -535,16 +570,16 @@ const TaxiOrdersPage = () => {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-4 rounded-lg border border-slate-200 space-y-3">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-                  <span className="text-sm font-medium text-slate-700">Buyurtma narxi:</span>
+              <div className="bg-gradient-to-br from-emerald-50 to-green-50 p-4 rounded-lg border border-emerald-200 space-y-3">
+                <div className="flex items-center justify-between pb-3 border-b border-emerald-200">
+                  <span className="text-sm font-medium text-emerald-800">Buyurtma narxi:</span>
                   <span className="text-2xl font-bold text-emerald-600">
                     {formatCurrency(priceDialog.order.price_order)} so'm
                   </span>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-600">To'lov summasi (10%):</span>
+                  <span className="text-sm text-emerald-700">To'lov summasi (10%):</span>
                   <span className="text-xl font-bold text-orange-600">
                     {formatCurrency(calculateCommission(priceDialog.order.price_order))} so'm
                   </span>
@@ -568,6 +603,7 @@ const TaxiOrdersPage = () => {
               variant="outline" 
               onClick={() => setPriceDialog({...priceDialog, open: false})}
               disabled={loading}
+              className="border-slate-300 hover:bg-slate-50"
             >
               Yopish
             </Button>
