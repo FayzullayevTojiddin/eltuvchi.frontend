@@ -125,6 +125,17 @@ function AppContent() {
         )
     }
 
+    const RoleDashboard = () => {
+        const userRole = localStorage.getItem('userRole')
+        if (userRole === 'driver') {
+            return <TaxiDashboard />;
+        }
+        if (userRole === 'client') {
+            return <Dashboard />;
+        }
+        return null;
+    };
+
     const isInactivePage = location.pathname === '/inactive'
     const isBlockedPage = location.pathname === '/blocked'
 
@@ -141,8 +152,8 @@ function AppContent() {
 
                         <Routes>
                             <Route path="/" element={
-                                <RequireRole allowed={['client']}>
-                                    <Dashboard />
+                                <RequireRole allowed={['client', 'driver']}>
+                                    <RoleDashboard />
                                 </RequireRole>
                             } />
 
