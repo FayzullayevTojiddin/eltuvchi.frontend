@@ -243,46 +243,46 @@ const TaxiMarketPage = () => {
             </Card>
 
             <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-                <DialogContent className="sm:max-w-md bg-gradient-to-br from-slate-50 to-slate-100">
+                <DialogContent className="sm:max-w-md bg-[#0f172a] border-slate-700">
                     <DialogHeader>
-                        <DialogTitle>Mahsulotni sotib olish</DialogTitle>
-                        <DialogDescription>
+                        <DialogTitle className="text-white">Mahsulotni sotib olish</DialogTitle>
+                        <DialogDescription className="text-slate-400">
                             Mahsulot tafsilotlarini ko'rib chiqing
                         </DialogDescription>
                     </DialogHeader>
                     
                     {selectedProduct && (
                         <div className="space-y-4">
-                            <div className="bg-white/80 backdrop-blur-sm border border-slate-200 p-4 rounded-lg">
+                            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 p-4 rounded-lg">
                                 <div className="flex items-center gap-3 mb-3">
-                                    <div className="w-16 h-16 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg flex items-center justify-center">
+                                    <div className="w-16 h-16 bg-gradient-to-br from-slate-700 to-slate-800 rounded-lg flex items-center justify-center">
                                         <Package className="h-8 w-8 text-slate-400"/>
                                     </div>
                                     <div className="flex-1">
                                         <div className="flex items-center gap-2 mb-1">
                                             <Star className="h-4 w-4 fill-amber-400 text-amber-400"/>
-                                            <span className="text-sm font-medium">{selectedProduct.rating || 4.5}</span>
+                                            <span className="text-sm font-medium text-white">{selectedProduct.rating || 4.5}</span>
                                         </div>
                                     </div>
                                 </div>
-                                <h3 className="font-semibold text-lg mb-2">{selectedProduct.title}</h3>
-                                <p className="text-sm text-slate-600 mb-4">
+                                <h3 className="font-semibold text-lg mb-2 text-white">{selectedProduct.title}</h3>
+                                <p className="text-sm text-slate-300 mb-4">
                                     {selectedProduct.description || "Mahsulot haqida ma'lumot"}
                                 </p>
-                                <div className="flex items-center justify-between pt-3 border-t border-slate-200">
-                                    <span className="text-sm text-slate-600">Narx:</span>
+                                <div className="flex items-center justify-between pt-3 border-t border-slate-700">
+                                    <span className="text-sm text-slate-400">Narx:</span>
                                     <div className="flex items-center gap-1">
                                         <Coins className="h-5 w-5 text-amber-500"/>
-                                        <span className="text-2xl font-bold">
+                                        <span className="text-2xl font-bold text-white">
                                             {selectedProduct.points}
                                         </span>
-                                        <span className="text-sm text-slate-600">COIN</span>
+                                        <span className="text-sm text-slate-400">COIN</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 p-3 rounded-lg">
-                                <p className="text-sm text-amber-900">
+                            <div className="bg-amber-900/30 border border-amber-800/50 p-3 rounded-lg">
+                                <p className="text-sm text-amber-200">
                                     <span className="font-medium">Diqqat:</span> Sotib olish uchun hisobingizdan 
                                     <strong> {selectedProduct.points} COIN</strong> yechib olinadi.
                                 </p>
@@ -295,14 +295,14 @@ const TaxiMarketPage = () => {
                             variant="outline" 
                             onClick={() => setShowConfirmDialog(false)}
                             disabled={loading}
-                            className="flex-1 bg-white/50 backdrop-blur-sm"
+                            className="flex-1 bg-slate-800 border-slate-700 text-white hover:bg-slate-700"
                         >
                             Bekor qilish
                         </Button>
                         <Button 
                             onClick={confirmPurchase}
                             disabled={loading}
-                            className="flex-1 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800"
+                            className="flex-1 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white"
                         >
                             <ShoppingCart className="w-4 h-4 mr-2"/>
                             {loading ? "Kutilmoqda..." : "Sotib olish"}
