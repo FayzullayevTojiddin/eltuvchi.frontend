@@ -374,7 +374,11 @@ const TaxiOrdersPage = () => {
                             <div className="flex-1 min-w-0">
                               <CardTitle className="text-sm sm:text-base md:text-lg flex items-center gap-1 sm:gap-2 text-white">
                                 <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 flex-shrink-0"/>
-                                <span className="truncate text-xs sm:text-sm md:text-base">{order?.route?.from?.name || "Topilmadi"} → {order?.route?.to?.name || "Topilmadi"}</span>
+                                <span className="truncate text-xs sm:text-sm md:text-base">
+                                  <span className="inline sm:hidden">{(order?.route?.from?.name || "Topilmadi").slice(0, 10)}{(order?.route?.from?.name?.length > 10) ? '...' : ''} → {(order?.route?.to?.name || "Topilmadi").slice(0, 10)}{(order?.route?.to?.name?.length > 10) ? '...' : ''}</span>
+                                  <span className="hidden sm:inline md:hidden">{(order?.route?.from?.name || "Topilmadi").slice(0, 15)}{(order?.route?.from?.name?.length > 15) ? '...' : ''} → {(order?.route?.to?.name || "Topilmadi").slice(0, 15)}{(order?.route?.to?.name?.length > 15) ? '...' : ''}</span>
+                                  <span className="hidden md:inline">{order?.route?.from?.name || "Topilmadi"} → {order?.route?.to?.name || "Topilmadi"}</span>
+                                </span>
                               </CardTitle>
                               <CardDescription className="text-slate-400 text-xs mt-0.5">Buyurtma #{order.id}</CardDescription>
                             </div>
@@ -469,7 +473,11 @@ const TaxiOrdersPage = () => {
                             <div className="flex-1 min-w-0">
                               <CardTitle className="text-sm sm:text-base md:text-lg flex items-center gap-1 sm:gap-2 text-white">
                                 <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 flex-shrink-0"/>
-                                <span className="truncate text-xs sm:text-sm md:text-base">{order?.route?.from?.name || "Topilmadi"} → {order?.route?.to?.name || "Topilmadi"}</span>
+                                <span className="truncate text-xs sm:text-sm md:text-base">
+                                  <span className="inline sm:hidden">{(order?.route?.from?.name || "Topilmadi").slice(0, 10)}{(order?.route?.from?.name?.length > 10) ? '...' : ''} → {(order?.route?.to?.name || "Topilmadi").slice(0, 10)}{(order?.route?.to?.name?.length > 10) ? '...' : ''}</span>
+                                  <span className="hidden sm:inline md:hidden">{(order?.route?.from?.name || "Topilmadi").slice(0, 15)}{(order?.route?.from?.name?.length > 15) ? '...' : ''} → {(order?.route?.to?.name || "Topilmadi").slice(0, 15)}{(order?.route?.to?.name?.length > 15) ? '...' : ''}</span>
+                                  <span className="hidden md:inline">{order?.route?.from?.name || "Topilmadi"} → {order?.route?.to?.name || "Topilmadi"}</span>
+                                </span>
                               </CardTitle>
                               <CardDescription className="text-slate-400 text-xs mt-0.5">Buyurtma #{order.id || "0"}</CardDescription>
                             </div>
@@ -561,7 +569,8 @@ const TaxiOrdersPage = () => {
                   <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
                     <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 flex-shrink-0"/>
                     <p className="font-medium text-white text-xs sm:text-sm md:text-base break-words">
-                      {priceDialog.order?.route?.from?.name || "Topilmadi"} → {priceDialog.order?.route?.to?.name || "Topilmadi"}
+                      <span className="inline sm:hidden">{(priceDialog.order?.route?.from?.name || "Topilmadi").slice(0, 12)}{(priceDialog.order?.route?.from?.name?.length > 12) ? '...' : ''} → {(priceDialog.order?.route?.to?.name || "Topilmadi").slice(0, 12)}{(priceDialog.order?.route?.to?.name?.length > 12) ? '...' : ''}</span>
+                      <span className="hidden sm:inline">{priceDialog.order?.route?.from?.name || "Topilmadi"} → {priceDialog.order?.route?.to?.name || "Topilmadi"}</span>
                     </p>
                   </div>
                   <div className="text-xs sm:text-sm text-slate-300 space-y-0.5 sm:space-y-1">
