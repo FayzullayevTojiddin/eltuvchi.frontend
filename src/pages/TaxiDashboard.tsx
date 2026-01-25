@@ -173,9 +173,15 @@ const TaxiDashboard = () => {
                                                                 {trip.route?.from?.name || "?"} → {trip.route?.to?.name || "?"}
                                                             </span>
                                                         </p>
-                                                        <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
-                                                            #{trip.id} • {formatDate(trip.created_at)}
-                                                        </p>
+                                                        <div className="flex flex-wrap items-center gap-2 mt-1">
+                                                            <p className="text-xs sm:text-sm text-slate-400">
+                                                                #{trip.id}
+                                                            </p>
+                                                            <span className="text-slate-600">•</span>
+                                                            <p className="text-xs sm:text-sm text-slate-400">
+                                                                {formatDate(trip.created_at)}
+                                                            </p>
+                                                        </div>
                                                         <div className="mt-2">
                                                             {getStatusBadge(trip.status)}
                                                         </div>
