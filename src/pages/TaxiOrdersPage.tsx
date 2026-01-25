@@ -345,22 +345,24 @@ const TaxiOrdersPage = () => {
           </CardHeader>
           <CardContent className="p-2 sm:p-3 md:p-4">
             <Tabs defaultValue="available" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 gap-1 sm:gap-2 bg-slate-800/50 p-1 h-auto">
-                <TabsTrigger 
-                  value="available" 
-                  className="data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400 text-xs sm:text-sm py-1.5 sm:py-2"
-                >
-                  Mavjud ({orderData.length})
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="my-orders" 
-                  className="data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400 text-xs sm:text-sm py-1.5 sm:py-2"
-                >
-                  Mening ({completedOrders.length})
-                </TabsTrigger>
-              </TabsList>
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-3 sm:mb-4">
+                <TabsList className="grid w-full sm:w-auto grid-cols-2 gap-1 sm:gap-2 bg-slate-800/50 p-1 h-auto">
+                  <TabsTrigger 
+                    value="available" 
+                    className="data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400 text-xs sm:text-sm py-1.5 sm:py-2"
+                  >
+                    Mavjud ({orderData.length})
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="my-orders" 
+                    className="data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400 text-xs sm:text-sm py-1.5 sm:py-2"
+                  >
+                    Mening ({completedOrders.length})
+                  </TabsTrigger>
+                </TabsList>
+              </div>
 
-              <TabsContent value="available" className="space-y-2 sm:space-y-3 mt-2 sm:mt-3">
+              <TabsContent value="available" className="space-y-2 sm:space-y-3">
                 <div className="space-y-2 sm:space-y-3">
                   {orderData.length === 0 ? (
                     <div className="text-center py-6 sm:py-8 md:py-12 border-2 border-dashed border-slate-700 rounded-lg bg-slate-800/30">
@@ -437,7 +439,7 @@ const TaxiOrdersPage = () => {
                 </div>
               </TabsContent>
 
-              <TabsContent value="my-orders" className="space-y-2 sm:space-y-3 mt-2 sm:mt-3">
+              <TabsContent value="my-orders" className="space-y-2 sm:space-y-3">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3 px-0.5 sm:px-1">
                   <h3 className="text-base sm:text-lg font-semibold text-white">Mening buyurtmalarim</h3>
                   <Select value={myOrderStatusFilter} onValueChange={setMyOrderStatusFilter}>
