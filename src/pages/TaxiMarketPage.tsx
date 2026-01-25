@@ -98,7 +98,7 @@ const TaxiMarketPage = () => {
   }
 
   const getStatusBadge = (status) => {
-    if (status === 'active') {
+    if (status === true || status === 'active') {
       return <Badge className="bg-green-500/20 text-green-400 border border-green-500/50">Faol</Badge>
     }
     return <Badge className="bg-red-500/20 text-red-400 border border-red-500/50">Nofaol</Badge>
@@ -168,11 +168,11 @@ const TaxiMarketPage = () => {
                   ) : (
                     products.map((product) => (
                       <Card key={product.id} className="hover:shadow-xl transition-all border-slate-700 bg-slate-800/50 backdrop-blur-sm overflow-hidden group">
-                        {product.image && (
+                        {product.icon_type && (
                           <div className="relative h-48 bg-slate-900 overflow-hidden">
                             <img 
-                              src={product.image} 
-                              alt={product.name}
+                              src={product.icon_type} 
+                              alt={product.title || 'Mahsulot'}
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                             />
                             <div className="absolute top-3 right-3">
@@ -182,7 +182,7 @@ const TaxiMarketPage = () => {
                         )}
                         <CardHeader className="pb-3">
                           <CardTitle className="text-lg text-white flex items-start justify-between gap-2">
-                            <span className="line-clamp-2">{product.name}</span>
+                            <span className="line-clamp-2">{product.title || 'Mahsulot nomi'}</span>
                           </CardTitle>
                           {product.description && (
                             <CardDescription className="text-slate-400 line-clamp-3">
@@ -197,7 +197,7 @@ const TaxiMarketPage = () => {
                               <div className="flex items-center gap-2">
                                 <Star className="w-5 h-5 text-yellow-400 fill-yellow-400"/>
                                 <span className="text-2xl font-bold text-yellow-400">
-                                  {product.points}
+                                  {product.points || 0}
                                 </span>
                                 <span className="text-sm text-yellow-200">ball</span>
                               </div>
@@ -207,7 +207,7 @@ const TaxiMarketPage = () => {
                           <Button 
                             onClick={() => showPurchaseDialog(product)}
                             className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800"
-                            disabled={loading || product.status !== 'active'}
+                            disabled={loading || product.status !== true}
                           >
                             <Gift className="w-4 h-4 mr-2"/>
                             Sotib olish
@@ -242,7 +242,7 @@ const TaxiMarketPage = () => {
                               <div className="flex-1">
                                 <CardTitle className="text-lg text-white flex items-center gap-2">
                                   <Package className="w-5 h-5 text-blue-400"/>
-                                  {product.name}
+                                  {product.title || 'Mahsulot'}
                                 </CardTitle>
                                 {product.description && (
                                   <CardDescription className="text-slate-400 mt-1">
@@ -255,11 +255,11 @@ const TaxiMarketPage = () => {
                           </CardHeader>
                           <CardContent className="pt-4">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                              {product.image && (
+                              {product.icon_type && (
                                 <div className="relative h-32 bg-slate-900 rounded-lg overflow-hidden">
                                   <img 
-                                    src={product.image} 
-                                    alt={product.name}
+                                    src={product.icon_type} 
+                                    alt={product.title || 'Mahsulot'}
                                     className="w-full h-full object-cover"
                                   />
                                 </div>
@@ -271,7 +271,7 @@ const TaxiMarketPage = () => {
                                     <span className="text-sm text-yellow-200">Sarflangan ball:</span>
                                     <div className="flex items-center gap-1">
                                       <Star className="w-4 h-4 text-yellow-400 fill-yellow-400"/>
-                                      <span className="text-lg font-bold text-yellow-400">{product.points}</span>
+                                      <span className="text-lg font-bold text-yellow-400">{product.points || 0}</span>
                                     </div>
                                   </div>
                                 </div>
