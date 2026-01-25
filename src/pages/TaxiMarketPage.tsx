@@ -2,13 +2,10 @@ import {Badge} from "@/components/ui/badge"
 import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
-import {useToast} from "@/hooks/use-toast"
-import {MapPin, Clock, User, Phone, Check, X, Eye, Filter, Play, Square, Ban, DollarSign, AlertCircle} from "lucide-react"
+import {ShoppingCart, Package, Star, Check, Truck, AlertCircle, Gift} from "lucide-react"
 import React, {useEffect, useState} from "react"
-import {ConfirmActionDialog} from "@/components/ConfirmActionDialog"
 import toast from "react-hot-toast"
 import api from "@/lib/api.ts"
-import {formatCurrency} from "@/utils/numberFormat.ts"
 import {
   Dialog,
   DialogContent,
@@ -17,138 +14,77 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@radix-ui/react-select"
 
-const TaxiOrdersPage = () => {
-  const [myOrderStatusFilter, setMyOrderStatusFilter] = useState("all")
-  const [orderData, setOrderData] = useState([])
-  const [completedOrders, setCompletedOrders] = useState([])
+const TaxiMarketPage = () => {
+  const [products, setProducts] = useState([])
+  const [myProducts, setMyProducts] = useState([])
   const [loading, setLoading] = useState(false)
-
-  // Buyurtma narxini ko'rsatish uchun dialog
-  const [priceDialog, setPriceDialog] = useState({
+  const [purchaseDialog, setPurchaseDialog] = useState({
     open: false,
-    order: null
+    product: null
   })
 
-  const fetchOrders = () => {
-    let queryParam = ''
-    if (myOrderStatusFilter !== 'all') {
-      queryParam = `?status=${myOrderStatusFilter}`
-    }
-
-    // Mening buyurtmalarimni olish
-    api.get(`/driver/my_orders${queryParam}`)
+  const fetchMarketData = () => {
+    // Mavjud mahsulotlar
+    api.get('/driver/market')
       .then((res) => {
-        setCompletedOrders(res.data)
+        let productList = []
+        
+        if (Array.isArray(res.data)) {
+          productList = res.data
+        } else if (res.data && Array.isArray(res.data.data)) {
+          productList = res.data.data
+        }
+        
+        setProducts(productList)
       })
       .catch((err) => {
         console.log(err)
-        toast.error("Xatolik yuz berdi. Iltimos, qayta urinib ko'ring.")
+        toast.error("Mahsulotlarni yuklashda xatolik yuz berdi")
       })
 
-    // Mavjud buyurtmalarni olish
-    api.get('/driver/orders')
+    // Mening mahsulotlarim
+    api.get('/driver/my_products')
       .then((res) => {
-        setOrderData(res.data)
+        let myProductList = []
+        
+        if (Array.isArray(res.data)) {
+          myProductList = res.data
+        } else if (res.data && Array.isArray(res.data.data)) {
+          myProductList = res.data.data
+        }
+        
+        setMyProducts(myProductList)
       })
       .catch((err) => {
         console.log(err)
-        toast.error("Xatolik yuz berdi. Iltimos, qayta urinib ko'ring.")
+        toast.error("Sizning mahsulotlaringizni yuklashda xatolik")
       })
   }
 
   useEffect(() => {
-    fetchOrders()
+    fetchMarketData()
+  }, [])
 
-    const interval = setInterval(() => {
-      fetchOrders()
-    }, 5000)
-
-    return () => {
-      clearInterval(interval)
-    }
-  }, [myOrderStatusFilter])
-
-  const [confirmDialog, setConfirmDialog] = useState({
-    open: false,
-    type: "",
-    orderId: "",
-    title: "",
-    description: "",
-    actionText: ""
-  })
-
-  const openConfirmDialog = (type: string, orderId: string) => {
-    let title = ""
-    let description = ""
-    let actionText = ""
-
-    switch (type) {
-      case "start":
-        title = "Safarni boshlash"
-        description = "Safarni boshlaganingizni tasdiqlaysizmi?"
-        actionText = "Boshlash"
-        break
-      case "complete":
-        title = "Safarni tugatish"
-        description = "Safarni tugaganingizni tasdiqlaysizmi? Mijoz tasdiqini kutishingiz kerak."
-        actionText = "Tugatish"
-        break
-      case "cancel":
-        title = "Buyurtmani bekor qilish"
-        description = "Ushbu buyurtmani bekor qilishni tasdiqlaysizmi?"
-        actionText = "Buyurtmani bekor qilish"
-        break
-    }
-
-    setConfirmDialog({
+  const showPurchaseDialog = (product) => {
+    setPurchaseDialog({
       open: true,
-      type,
-      orderId,
-      title,
-      description,
-      actionText
+      product: product
     })
   }
 
-  const handleConfirmAction = () => {
-    const {type, orderId} = confirmDialog
+  const handlePurchaseProduct = () => {
+    if (!purchaseDialog.product) return
 
-    switch (type) {
-      case "start":
-        handleStartOrder(orderId)
-        break
-      case "complete":
-        handleCompleteOrder(orderId)
-        break
-      case "cancel":
-        handleCancelOrder(orderId)
-        break
-    }
-
-    setConfirmDialog({...confirmDialog, open: false})
-  }
-
-  // Buyurtma narxini ko'rish
-  const showPriceDetails = (order) => {
-    setPriceDialog({
-      open: true,
-      order: order
-    })
-  }
-
-  // Buyurtmani qabul qilish (10% to'lov bilan)
-  const handleAcceptOrder = (orderId: string) => {
     setLoading(true)
-    setPriceDialog({...priceDialog, open: false})
     
-    api.post(`/driver/orders/${orderId}`, {orderId})
+    api.post(`/driver/market/${purchaseDialog.product.id}`, {})
       .then((res) => {
-        toast.success("Buyurtma muvaffaqiyatli qabul qilindi!")
-        fetchOrders()
+        toast.success("Mahsulot muvaffaqiyatli sotib olindi!")
+        setPurchaseDialog({open: false, product: null})
+        fetchMarketData()
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err?.response)
         if (err?.response?.data?.message) {
           toast.error(err?.response?.data?.message)
@@ -161,439 +97,285 @@ const TaxiOrdersPage = () => {
       })
   }
 
-  const handleCancelOrder = (orderId: string) => {
-    setLoading(true)
-    
-    api.delete(`/driver/orders/${orderId}`)
-      .then((res) => {
-        toast.success("Buyurtma bekor qilindi!")
-        fetchOrders()
-      })
-      .catch(err => {
-        console.log(err?.response?.data?.error)
-        if (err?.response?.data?.error) {
-          toast.error(err?.response?.data?.error)
-        } else {
-          toast.error("Xatolik yuz berdi!")
-        }
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-  }
-
-  const handleStartOrder = (orderId: string) => {
-    setLoading(true)
-    
-    api.post(`/driver/orders/${orderId}/start`, {orderId})
-      .then((res) => {
-        toast.success("Buyurtma boshlandi!")
-        fetchOrders()
-      })
-      .catch(err => {
-        console.log(err?.response?.data?.data)
-        if (err?.response?.data?.data) {
-          toast.error(err?.response?.data?.data)
-        } else {
-          toast.error("Xatolik yuz berdi!")
-        }
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-  }
-
-  const handleCompleteOrder = (orderId: string) => {
-    setLoading(true)
-    
-    api.post(`/driver/orders/${orderId}/stop`, { orderId })
-      .then((res) => {
-        toast.success("Buyurtma tugadi!")
-        fetchOrders()
-      })
-      .catch(err => {
-        console.log(err)
-        toast.error("Xatolik yuz berdi!")
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-  }
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "accepted":
-        return (
-          <Badge className="bg-blue-500">
-            <Check className="w-3 h-3 mr-1"/>
-            Qabul qilingan
-          </Badge>
-        )
-      case "started":
-        return (
-          <Badge className="bg-green-500">
-            <Play className="w-3 h-3 mr-1"/>
-            Boshlangan
-          </Badge>
-        )
-      case "in_progress":
-        return <Badge className="bg-green-500">Jarayonda</Badge>
-      case "waiting_confirmation":
-        return <Badge className="bg-yellow-500">Tasdiq kutilmoqda</Badge>
-      case "completed":
-        return <Badge className="bg-gray-500">Yakunlandi</Badge>
-      case "cancelled":
-        return <Badge className="bg-red-500">Bekor qilingan</Badge>
-      default:
-        return <Badge className="bg-gray-400">Noma'lum</Badge>
+  const getStatusBadge = (status) => {
+    if (status === 'active') {
+      return <Badge className="bg-green-500/20 text-green-400 border border-green-500/50">Faol</Badge>
     }
+    return <Badge className="bg-red-500/20 text-red-400 border border-red-500/50">Nofaol</Badge>
   }
 
-  const getActionButton = (order) => {
-    switch (order.status) {
-      case "accepted":
-        return (
-          <Button onClick={() => openConfirmDialog("start", order.id)} className="flex-1 gap-2" disabled={loading}>
-            <Play className="w-4 h-4"/>
-            Boshlash
-          </Button>
-        )
-      case "started":
-        return (
-          <Button onClick={() => openConfirmDialog("complete", order.id)} className="flex-1 gap-2"
-                  variant="default" disabled={loading}>
-            <Square className="w-4 h-4"/>
-            Tugatish
-          </Button>
-        )
-      case "waiting_confirmation":
-        return (
-          <Badge className="bg-yellow-500 flex-1 justify-center py-2">
-            Mijoz tasdiqini kutmoqda...
-          </Badge>
-        )
-      case "completed":
-        return (
-          <Badge className="bg-gray-500 flex-1 justify-center py-2">
-            Yakunlangan
-          </Badge>
-        )
-      default:
-        return null
+  const getDeliveryBadge = (delivered) => {
+    if (delivered) {
+      return (
+        <Badge className="bg-green-500/20 text-green-400 border border-green-500/50">
+          <Check className="w-3 h-3 mr-1"/>
+          Yetkazilgan
+        </Badge>
+      )
     }
-  }
-
-  const formatDateTime = (dateString: string, type: "date" | "time") => {
-    if (!dateString) return "-"
-    const date = new Date(dateString)
-
-    if (type === "date") {
-      return date.toLocaleDateString("uz-UZ", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      })
-    }
-
-    if (type === "time") {
-      return date.toLocaleTimeString("uz-UZ", {
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    }
-  }
-
-  // 10% hisobini chiqarish
-  const calculateCommission = (price) => {
-    return parseFloat(price) * 0.1
+    return (
+      <Badge className="bg-orange-500/20 text-orange-400 border border-orange-500/50">
+        <Truck className="w-3 h-3 mr-1"/>
+        Yetkazilmoqda
+      </Badge>
+    )
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Buyurtmalar</CardTitle>
-          <CardDescription>Mavjud va bajarilgan buyurtmalarni boshqaring</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="available" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="available">Mavjud buyurtmalar</TabsTrigger>
-              <TabsTrigger value="my-orders">Mening buyurtmalarim</TabsTrigger>
-            </TabsList>
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6">
+      <div className="container mx-auto space-y-6">
+        <Card className="border-slate-800 bg-slate-900/50 backdrop-blur-sm">
+          <CardHeader className="border-b border-slate-800">
+            <CardTitle className="text-2xl text-white flex items-center gap-2">
+              <ShoppingCart className="w-6 h-6"/>
+              Market
+            </CardTitle>
+            <CardDescription className="text-slate-400">
+              Ball evaziga mahsulotlar sotib oling
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <Tabs defaultValue="market" className="w-full">
+              <TabsList className="grid w-full grid-cols-1 gap-2 bg-transparent border-0 h-auto">
+                <TabsTrigger 
+                  value="market" 
+                  className="data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400 bg-slate-800/50 border border-slate-700 py-3"
+                >
+                  <ShoppingCart className="w-4 h-4 mr-2"/>
+                  Mavjud mahsulotlar ({products.length})
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="my-products" 
+                  className="data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400 bg-slate-800/50 border border-slate-700 py-3"
+                >
+                  <Package className="w-4 h-4 mr-2"/>
+                  Mening mahsulotlarim ({myProducts.length})
+                </TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="available" className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">Mavjud buyurtmalar</h3>
-                <p className="text-sm text-muted-foreground">Qabul qilish uchun mavjud buyurtmalar</p>
-              </div>
+              <TabsContent value="market" className="space-y-4 mt-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <h3 className="text-lg font-semibold text-white">Mavjud mahsulotlar</h3>
+                  <p className="text-sm text-slate-400">Ball evaziga mahsulot sotib oling</p>
+                </div>
 
-              <div className="space-y-4">
-                {orderData.length === 0 ? (
-                  <div className="text-center py-12 border rounded-lg">
-                    <p className="text-muted-foreground">Mavjud buyurtmalar yo'q</p>
-                  </div>
-                ) : (
-                  orderData.map((order) => (
-                    <Card key={order.id} className="hover:shadow-md transition-shadow">
-                      <CardHeader className="pb-3">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <CardTitle className="text-lg flex items-center gap-2">
-                              <MapPin className="w-5 h-5"/>
-                              {order?.route?.from?.name || "Topilmadi"} → {order?.route?.to?.name || "Topilmadi"}
-                            </CardTitle>
-                            <CardDescription>Buyurtma #{order.id}</CardDescription>
-                          </div>
-                          <Badge className="bg-green-500">Yangi</Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-muted-foreground"/>
-                            <span>{formatDateTime(order.date, "date")} • {formatDateTime(order.time, "time")}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <User className="w-4 h-4 text-muted-foreground"/>
-                            <span>{order.passengers} kishi</span>
-                          </div>
-                        </div>
-
-                        <div className="bg-slate-800/80 backdrop-blur-sm border border-slate-600 p-4 rounded-lg">
-                          <div className="flex items-center justify-between mb-3">
-                            <span className="text-sm font-medium text-slate-200">Buyurtma narxi:</span>
-                            <span className="text-2xl font-bold text-green-400">
-                              {formatCurrency(order.price_order)} so'm
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between pt-3 border-t border-slate-600">
-                            <span className="text-sm text-slate-300">Sizning komissiyangiz (10%):</span>
-                            <span className="text-lg font-semibold text-orange-400">
-                              {formatCurrency(calculateCommission(order.price_order))} so'm
-                            </span>
-                          </div>
-                        </div>
-
-                        {order.note && (
-                          <div className="bg-blue-50 p-3 rounded-lg">
-                            <p className="text-sm font-medium text-blue-900">Qo'shimcha ma'lumot:</p>
-                            <p className="text-sm text-blue-700">{order.note}</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {products.length === 0 ? (
+                    <div className="col-span-full text-center py-12 border-2 border-dashed border-slate-700 rounded-lg bg-slate-800/30">
+                      <ShoppingCart className="w-12 h-12 text-slate-600 mx-auto mb-3"/>
+                      <p className="text-slate-400 text-lg">Hozircha mahsulotlar yo'q</p>
+                    </div>
+                  ) : (
+                    products.map((product) => (
+                      <Card key={product.id} className="hover:shadow-xl transition-all border-slate-700 bg-slate-800/50 backdrop-blur-sm overflow-hidden group">
+                        {product.image && (
+                          <div className="relative h-48 bg-slate-900 overflow-hidden">
+                            <img 
+                              src={product.image} 
+                              alt={product.name}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                            />
+                            <div className="absolute top-3 right-3">
+                              {getStatusBadge(product.status)}
+                            </div>
                           </div>
                         )}
-
-                        <div className="bg-amber-900/40 border border-amber-700/50 p-3 rounded-lg flex items-start gap-2">
-                          <AlertCircle className="w-4 h-4 text-amber-300 mt-0.5 flex-shrink-0" />
-                          <p className="text-sm text-amber-100">
-                            Mijoz ma'lumotlari buyurtmani qabul qilganingizdan keyin ko'rinadi
-                          </p>
-                        </div>
-
-                        <div className="flex gap-2 pt-2">
-                          <Button 
-                            onClick={() => showPriceDetails(order)} 
-                            className="flex-1"
-                            disabled={loading}
-                          >
-                            <DollarSign className="w-4 h-4 mr-2"/>
-                            Narxni ko'rish va qabul qilish
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))
-                )}
-              </div>
-            </TabsContent>
-
-            <TabsContent value="my-orders" className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">Mening buyurtmalarim</h3>
-                <div className="flex items-center gap-2">
-                  <Filter className="w-4 h-4 text-muted-foreground" />
-                  <Select value={myOrderStatusFilter} onValueChange={setMyOrderStatusFilter}>
-                    <SelectTrigger className="w-[200px]">
-                      <SelectValue placeholder="Status tanlang" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Hammasi</SelectItem>
-                      <SelectItem value="created">Yaratilgan</SelectItem>
-                      <SelectItem value="accepted">Qabul qilingan</SelectItem>
-                      <SelectItem value="started">Boshlangan</SelectItem>
-                      <SelectItem value="stopped">Tugallangan</SelectItem>
-                      <SelectItem value="completed">Yakunlangan</SelectItem>
-                      <SelectItem value="cancelled">Bekor qilingan</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                {completedOrders.length === 0 ? (
-                  <div className="text-center py-12 border rounded-lg">
-                    <p className="text-muted-foreground">Mavjud buyurtmalar yo'q</p>
-                  </div>
-                ) : (
-                  completedOrders.map((order) => (
-                    <Card key={order.id} className="hover:shadow-md transition-shadow">
-                      <CardHeader className="pb-3">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <CardTitle className="text-lg flex items-center gap-2">
-                              <MapPin className="w-5 h-5"/>
-                              {order?.route?.from?.name || "Topilmadi"} → {order?.route?.to?.name || "Topilmadi"}
-                            </CardTitle>
-                            <CardDescription>Buyurtma #{order.id || "0"}</CardDescription>
-                          </div>
-                          {getStatusBadge(order.status)}
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-muted-foreground"/>
-                            <span>{formatDateTime(order.date, "date")} • {formatDateTime(order.time, "time")}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <User className="w-4 h-4 text-muted-foreground"/>
-                            <span>{order.passengers} kishi</span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-between pt-2 border-t">
-                          <span className="text-sm text-muted-foreground">Buyurtma narxi:</span>
-                          <span className="text-lg font-bold text-green-600">
-                            {formatCurrency(order?.price_order)} so'm
-                          </span>
-                        </div>
-
-                        {order.client && (
-                          <div className="bg-blue-50 p-3 rounded-lg space-y-2">
-                            <p className="text-sm font-medium text-blue-900">Mijoz ma'lumotlari:</p>
-                            {order.client.rating && (
-                              <p className="text-sm text-blue-700">
-                                Mijoz reytingi: ⭐ {order.client.rating}
-                              </p>
-                            )}
-                            {order.client.phone && (
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-lg text-white flex items-start justify-between gap-2">
+                            <span className="line-clamp-2">{product.name}</span>
+                          </CardTitle>
+                          {product.description && (
+                            <CardDescription className="text-slate-400 line-clamp-3">
+                              {product.description}
+                            </CardDescription>
+                          )}
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          <div className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 p-4 rounded-lg">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-yellow-200">Narxi:</span>
                               <div className="flex items-center gap-2">
-                                <Phone className="w-4 h-4 text-blue-600"/>
-                                <a href={`tel:${order.client.phone}`} className="text-sm text-blue-600 hover:underline">
-                                  {order.client.phone}
-                                </a>
+                                <Star className="w-5 h-5 text-yellow-400 fill-yellow-400"/>
+                                <span className="text-2xl font-bold text-yellow-400">
+                                  {product.points}
+                                </span>
+                                <span className="text-sm text-yellow-200">ball</span>
                               </div>
-                            )}
+                            </div>
                           </div>
-                        )}
 
-                        {order.status !== "completed" && order.status !== "cancelled" && (
-                          <div className="flex gap-2 pt-2">
-                            {getActionButton(order)}
-                            <Button
-                              onClick={() => openConfirmDialog("cancel", order.id)}
-                              variant="destructive"
-                              className="flex-1"
-                              disabled={loading}
-                            >
-                              <Ban className="w-4 h-4 mr-2"/>
-                              Bekor qilish
-                            </Button>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))
+                          <Button 
+                            onClick={() => showPurchaseDialog(product)}
+                            className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800"
+                            disabled={loading || product.status !== 'active'}
+                          >
+                            <Gift className="w-4 h-4 mr-2"/>
+                            Sotib olish
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    ))
+                  )}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="my-products" className="space-y-4 mt-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <h3 className="text-lg font-semibold text-white">Mening mahsulotlarim</h3>
+                  <p className="text-sm text-slate-400">Sotib olingan mahsulotlar</p>
+                </div>
+
+                <div className="space-y-4">
+                  {myProducts.length === 0 ? (
+                    <div className="text-center py-12 border-2 border-dashed border-slate-700 rounded-lg bg-slate-800/30">
+                      <Package className="w-12 h-12 text-slate-600 mx-auto mb-3"/>
+                      <p className="text-slate-400 text-lg">Sizda hali mahsulotlar yo'q</p>
+                      <p className="text-slate-500 text-sm mt-2">Marketdan mahsulotlar sotib oling</p>
+                    </div>
+                  ) : (
+                    myProducts.map((item) => {
+                      const product = item.product || item
+                      return (
+                        <Card key={item.id} className="hover:shadow-xl transition-all border-slate-700 bg-slate-800/50 backdrop-blur-sm">
+                          <CardHeader className="pb-3 border-b border-slate-700">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <CardTitle className="text-lg text-white flex items-center gap-2">
+                                  <Package className="w-5 h-5 text-blue-400"/>
+                                  {product.name}
+                                </CardTitle>
+                                {product.description && (
+                                  <CardDescription className="text-slate-400 mt-1">
+                                    {product.description}
+                                  </CardDescription>
+                                )}
+                              </div>
+                              {item.delivered !== undefined && getDeliveryBadge(item.delivered)}
+                            </div>
+                          </CardHeader>
+                          <CardContent className="pt-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              {product.image && (
+                                <div className="relative h-32 bg-slate-900 rounded-lg overflow-hidden">
+                                  <img 
+                                    src={product.image} 
+                                    alt={product.name}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              )}
+                              
+                              <div className="space-y-3">
+                                <div className="bg-yellow-500/10 border border-yellow-500/30 p-3 rounded-lg">
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-sm text-yellow-200">Sarflangan ball:</span>
+                                    <div className="flex items-center gap-1">
+                                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400"/>
+                                      <span className="text-lg font-bold text-yellow-400">{product.points}</span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {item.created_at && (
+                                  <div className="text-xs text-slate-400">
+                                    Sotib olingan: {new Date(item.created_at).toLocaleDateString('uz-UZ', {
+                                      year: 'numeric',
+                                      month: '2-digit',
+                                      day: '2-digit',
+                                      hour: '2-digit',
+                                      minute: '2-digit'
+                                    })}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )
+                    })
+                  )}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+
+        <Dialog open={purchaseDialog.open} onOpenChange={(open) => setPurchaseDialog({...purchaseDialog, open})}>
+          <DialogContent className="sm:max-w-md bg-slate-900 border-slate-700">
+            <DialogHeader>
+              <DialogTitle className="text-white">Mahsulotni tasdiqlash</DialogTitle>
+              <DialogDescription className="text-slate-400">
+                Mahsulotni sotib olishni tasdiqlaysizmi?
+              </DialogDescription>
+            </DialogHeader>
+            
+            {purchaseDialog.product && (
+              <div className="space-y-4">
+                {purchaseDialog.product.image && (
+                  <div className="relative h-48 bg-slate-900 rounded-lg overflow-hidden">
+                    <img 
+                      src={purchaseDialog.product.image} 
+                      alt={purchaseDialog.product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 )}
-              </div>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
 
-      {/* Narx ko'rsatish va qabul qilish Dialog */}
-      <Dialog open={priceDialog.open} onOpenChange={(open) => setPriceDialog({...priceDialog, open})}>
-        <DialogContent className="sm:max-w-md bg-[#0f172a] border-slate-700">
-          <DialogHeader>
-            <DialogTitle className="text-white">Buyurtma tafsilotlari</DialogTitle>
-            <DialogDescription className="text-slate-400">
-              Buyurtmani qabul qilish uchun to'lov ma'lumotlarini ko'rib chiqing
-            </DialogDescription>
-          </DialogHeader>
-          
-          {priceDialog.order && (
-            <div className="space-y-4">
-              <div className="bg-slate-800/80 backdrop-blur-sm border border-slate-600 p-4 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <MapPin className="w-5 h-5 text-blue-400"/>
-                  <p className="font-medium text-white">
-                    {priceDialog.order?.route?.from?.name || "Topilmadi"} → {priceDialog.order?.route?.to?.name || "Topilmadi"}
-                  </p>
+                <div className="bg-slate-800/80 backdrop-blur-sm border border-slate-600 p-4 rounded-lg">
+                  <h3 className="font-medium text-white mb-2">{purchaseDialog.product.name}</h3>
+                  {purchaseDialog.product.description && (
+                    <p className="text-sm text-slate-300 mb-3">{purchaseDialog.product.description}</p>
+                  )}
+                  
+                  <div className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 p-3 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-yellow-200">Narxi:</span>
+                      <div className="flex items-center gap-2">
+                        <Star className="w-5 h-5 text-yellow-400 fill-yellow-400"/>
+                        <span className="text-2xl font-bold text-yellow-400">
+                          {purchaseDialog.product.points}
+                        </span>
+                        <span className="text-sm text-yellow-200">ball</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-sm text-slate-300 space-y-1">
-                  <p>📅 {formatDateTime(priceDialog.order.date, "date")} • {formatDateTime(priceDialog.order.time, "time")}</p>
-                  <p>👥 {priceDialog.order.passengers} yo'lovchi</p>
-                </div>
-              </div>
 
-              <div className="bg-slate-800/80 backdrop-blur-sm border border-slate-600 p-4 rounded-lg space-y-3">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-600">
-                  <span className="text-sm font-medium text-slate-200">Buyurtma narxi:</span>
-                  <span className="text-2xl font-bold text-green-400">
-                    {formatCurrency(priceDialog.order.price_order)} so'm
-                  </span>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-300">To'lov summasi (10%):</span>
-                  <span className="text-xl font-bold text-orange-400">
-                    {formatCurrency(calculateCommission(priceDialog.order.price_order))} so'm
-                  </span>
-                </div>
-              </div>
-
-              <div className="bg-amber-900/40 border border-amber-700/50 p-3 rounded-lg">
-                <div className="flex items-start gap-2">
-                  <AlertCircle className="w-5 h-5 text-amber-300 mt-0.5 flex-shrink-0"/>
-                  <div className="text-sm text-amber-100">
-                    <p className="font-medium mb-1">Muhim:</p>
-                    <p>Buyurtmani qabul qilish uchun hisobingizdan <strong>{formatCurrency(calculateCommission(priceDialog.order.price_order))} so'm</strong> yechib olinadi. Buyurtmani bekor qilsangiz, pul qaytarilmaydi.</p>
+                <div className="bg-amber-900/40 border border-amber-700/50 p-3 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <AlertCircle className="w-5 h-5 text-amber-300 mt-0.5 flex-shrink-0"/>
+                    <div className="text-sm text-amber-100">
+                      <p className="font-medium mb-1">Diqqat:</p>
+                      <p>Mahsulotni sotib olgandan keyin ballingizdan <strong>{purchaseDialog.product.points} ball</strong> yechib olinadi. Bu amalni bekor qilib bo'lmaydi.</p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          <DialogFooter className="flex gap-2">
-            <Button 
-              variant="outline" 
-              onClick={() => setPriceDialog({...priceDialog, open: false})}
-              disabled={loading}
-              className="bg-slate-800 border-slate-700 text-white hover:bg-slate-700"
-            >
-              Yopish
-            </Button>
-            <Button 
-              onClick={() => handleAcceptOrder(priceDialog.order?.id)}
-              disabled={loading}
-              className="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white"
-            >
-              <Check className="w-4 h-4 mr-2"/>
-              {loading ? "Kutilmoqda..." : "Qabul qilish"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <ConfirmActionDialog
-        open={confirmDialog.open}
-        onOpenChange={(open) => setConfirmDialog({...confirmDialog, open})}
-        title={confirmDialog.title}
-        description={confirmDialog.description}
-        actionText={confirmDialog.actionText}
-        onConfirm={handleConfirmAction}
-      />
+            <DialogFooter className="flex gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => setPurchaseDialog({...purchaseDialog, open: false})}
+                disabled={loading}
+                className="bg-slate-800 border-slate-700 text-white hover:bg-slate-700"
+              >
+                Bekor qilish
+              </Button>
+              <Button 
+                onClick={handlePurchaseProduct}
+                disabled={loading}
+                className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white"
+              >
+                <Check className="w-4 h-4 mr-2"/>
+                {loading ? "Kutilmoqda..." : "Sotib olish"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   )
 }
 
-export default TaxiOrdersPage
+export default TaxiMarketPage
