@@ -182,15 +182,15 @@ const TaxiDashboard = () => {
                                                                 {formatDate(trip.created_at)}
                                                             </p>
                                                         </div>
-                                                        <div className="mt-2">
-                                                            {getStatusBadge(trip.status)}
-                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div className="text-left sm:text-right flex-shrink-0">
-                                                    <p className="font-bold text-green-400 text-sm sm:text-base">
-                                                        {formatCurrency(trip.price_order)} so'm
-                                                    </p>
+                                                <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                                                    {getStatusBadge(trip.status)}
+                                                    <div className="text-right">
+                                                        <p className="font-bold text-green-400 text-sm sm:text-base whitespace-nowrap">
+                                                            {formatCurrency(trip.price_order)} so'm
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
