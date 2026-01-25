@@ -85,7 +85,7 @@ const MarketPage = () => {
             title: item.title || item.name,
             points: item.points || item.price,
             description: item.description,
-            icon_type: item.icon_type || item.icon
+            icon_type: item.icon
         })
         setShowConfirmDialog(true)
     }
