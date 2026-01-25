@@ -85,7 +85,7 @@ const MarketPage = () => {
             title: item.title || item.name,
             points: item.points || item.price,
             description: item.description,
-            icon_type: item.icon
+            icon: item.icon
         })
         setShowConfirmDialog(true)
     }
@@ -134,9 +134,9 @@ const MarketPage = () => {
                                     products.map((product) => (
                                         <Card key={product.id} className="overflow-hidden border-slate-700 bg-slate-800/50 backdrop-blur-sm hover:shadow-xl transition-all group">
                                             <div className="relative aspect-square bg-slate-900 overflow-hidden">
-                                                {product.icon_type || product.image ? (
+                                                {product.icon || product.image ? (
                                                     <img 
-                                                        src={product.icon_type || product.image} 
+                                                        src={product.icon || product.image} 
                                                         alt={product.title || 'Mahsulot'}
                                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                                                     />
@@ -194,9 +194,9 @@ const MarketPage = () => {
                                             <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                                                 <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
                                                     <div className="w-12 h-12 sm:w-16 sm:h-16 bg-slate-900 rounded-lg flex-shrink-0 overflow-hidden">
-                                                        {item.icon_type || item.image ? (
+                                                        {item.icon ? (
                                                             <img 
-                                                                src={item.icon_type || item.image} 
+                                                                src={item.icon} 
                                                                 alt={item.title || item.name}
                                                                 className="w-full h-full object-cover"
                                                             />
