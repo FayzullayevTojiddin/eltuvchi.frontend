@@ -469,19 +469,19 @@ const TaxiOrdersPage = () => {
                     completedOrders.map((order) => (
                       <Card key={order.id} className="border-slate-700 bg-slate-800/50">
                         <CardHeader className="pb-2 sm:pb-3 border-b border-slate-700 p-2 sm:p-3">
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex-1 min-w-0">
-                              <CardTitle className="text-sm sm:text-base md:text-lg flex items-center gap-1 sm:gap-2 text-white">
-                                <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 flex-shrink-0"/>
-                                <span className="truncate text-xs sm:text-sm md:text-base">
-                                  <span className="inline sm:hidden">{(order?.route?.from?.name || "Topilmadi").slice(0, 10)}{(order?.route?.from?.name?.length > 10) ? '...' : ''} → {(order?.route?.to?.name || "Topilmadi").slice(0, 10)}{(order?.route?.to?.name?.length > 10) ? '...' : ''}</span>
-                                  <span className="hidden sm:inline md:hidden">{(order?.route?.from?.name || "Topilmadi").slice(0, 15)}{(order?.route?.from?.name?.length > 15) ? '...' : ''} → {(order?.route?.to?.name || "Topilmadi").slice(0, 15)}{(order?.route?.to?.name?.length > 15) ? '...' : ''}</span>
-                                  <span className="hidden md:inline">{order?.route?.from?.name || "Topilmadi"} → {order?.route?.to?.name || "Topilmadi"}</span>
-                                </span>
-                              </CardTitle>
-                              <CardDescription className="text-slate-400 text-xs mt-0.5">Buyurtma #{order.id || "0"}</CardDescription>
+                          <div className="space-y-2">
+                            <CardTitle className="text-sm sm:text-base md:text-lg flex items-center gap-1 sm:gap-2 text-white">
+                              <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 flex-shrink-0"/>
+                              <span className="truncate text-xs sm:text-sm md:text-base">
+                                <span className="inline sm:hidden">{(order?.route?.from?.name || "Topilmadi").slice(0, 10)}{(order?.route?.from?.name?.length > 10) ? '...' : ''} → {(order?.route?.to?.name || "Topilmadi").slice(0, 10)}{(order?.route?.to?.name?.length > 10) ? '...' : ''}</span>
+                                <span className="hidden sm:inline md:hidden">{(order?.route?.from?.name || "Topilmadi").slice(0, 15)}{(order?.route?.from?.name?.length > 15) ? '...' : ''} → {(order?.route?.to?.name || "Topilmadi").slice(0, 15)}{(order?.route?.to?.name?.length > 15) ? '...' : ''}</span>
+                                <span className="hidden md:inline">{order?.route?.from?.name || "Topilmadi"} → {order?.route?.to?.name || "Topilmadi"}</span>
+                              </span>
+                            </CardTitle>
+                            <div className="flex items-center justify-between">
+                              <CardDescription className="text-slate-400 text-xs">Buyurtma #{order.id || "0"}</CardDescription>
+                              {getStatusBadge(order.status)}
                             </div>
-                            {getStatusBadge(order.status)}
                           </div>
                         </CardHeader>
                         <CardContent className="space-y-2 sm:space-y-3 pt-2 sm:pt-3 md:pt-4 p-2 sm:p-3">
