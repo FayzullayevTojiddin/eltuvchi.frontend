@@ -345,22 +345,20 @@ const TaxiOrdersPage = () => {
           </CardHeader>
           <CardContent className="p-2 sm:p-3 md:p-4">
             <Tabs defaultValue="available" className="w-full">
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-3 sm:mb-4">
-                <TabsList className="grid w-full sm:w-auto grid-cols-2 gap-1 sm:gap-2 bg-slate-800/50 p-1 h-auto">
-                  <TabsTrigger 
-                    value="available" 
-                    className="data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400 text-xs sm:text-sm py-1.5 sm:py-2"
-                  >
-                    Mavjud ({orderData.length})
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="my-orders" 
-                    className="data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400 text-xs sm:text-sm py-1.5 sm:py-2"
-                  >
-                    Mening ({completedOrders.length})
-                  </TabsTrigger>
-                </TabsList>
-              </div>
+              <TabsList className="grid grid-cols-1 gap-2 bg-slate-800/50 p-1 h-auto mb-3 sm:mb-4">
+                <TabsTrigger 
+                  value="available" 
+                  className="data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400 text-xs sm:text-sm py-2 sm:py-2.5"
+                >
+                  Mavjud ({orderData.length})
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="my-orders" 
+                  className="data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400 text-xs sm:text-sm py-2 sm:py-2.5"
+                >
+                  Mening ({completedOrders.length})
+                </TabsTrigger>
+              </TabsList>
 
               <TabsContent value="available" className="space-y-2 sm:space-y-3">
                 <div className="space-y-2 sm:space-y-3">
