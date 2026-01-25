@@ -336,14 +336,14 @@ const TaxiOrdersPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-3 sm:p-6">
-      <div className="container mx-auto space-y-4 sm:space-y-6">
-        <Card className="border-slate-800 bg-slate-900/50 backdrop-blur-sm">
-          <CardHeader className="border-b border-slate-800">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+      <div className="container mx-auto">
+        <Card className="border-slate-800 bg-slate-900/50 backdrop-blur-sm border-0 rounded-none">
+          <CardHeader className="border-b border-slate-800 p-4">
             <CardTitle className="text-xl sm:text-2xl text-white">Buyurtmalar</CardTitle>
             <CardDescription className="text-slate-400">Mavjud va bajarilgan buyurtmalarni boshqaring</CardDescription>
           </CardHeader>
-          <CardContent className="pt-4 sm:pt-6">
+          <CardContent className="p-3 sm:p-4">
             <Tabs defaultValue="available" className="w-full">
               <TabsList className="grid w-full grid-cols-2 gap-2 bg-slate-800/50 p-1">
                 <TabsTrigger 
@@ -360,8 +360,8 @@ const TaxiOrdersPage = () => {
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="available" className="space-y-4 mt-4 sm:mt-6">
-                <div className="space-y-3 sm:space-y-4">
+              <TabsContent value="available" className="space-y-3 mt-3">
+                <div className="space-y-3">
                   {orderData.length === 0 ? (
                     <div className="text-center py-8 sm:py-12 border-2 border-dashed border-slate-700 rounded-lg bg-slate-800/30">
                       <p className="text-slate-400">Mavjud buyurtmalar yo'q</p>
@@ -369,7 +369,7 @@ const TaxiOrdersPage = () => {
                   ) : (
                     orderData.map((order) => (
                       <Card key={order.id} className="border-slate-700 bg-slate-800/50">
-                        <CardHeader className="pb-3 border-b border-slate-700">
+                        <CardHeader className="pb-3 border-b border-slate-700 p-3">
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
                               <CardTitle className="text-base sm:text-lg flex items-center gap-2 text-white">
@@ -381,7 +381,7 @@ const TaxiOrdersPage = () => {
                             <Badge className="bg-green-500/20 text-green-400 border border-green-500/50 flex-shrink-0">Yangi</Badge>
                           </div>
                         </CardHeader>
-                        <CardContent className="space-y-3 pt-4">
+                        <CardContent className="space-y-3 pt-3 p-3">
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                             <div className="flex items-center gap-2 text-slate-300">
                               <Clock className="w-4 h-4 text-slate-400"/>
@@ -437,8 +437,8 @@ const TaxiOrdersPage = () => {
                 </div>
               </TabsContent>
 
-              <TabsContent value="my-orders" className="space-y-4 mt-4 sm:mt-6">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <TabsContent value="my-orders" className="space-y-3 mt-3">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-1">
                   <h3 className="text-lg font-semibold text-white">Mening buyurtmalarim</h3>
                   <Select value={myOrderStatusFilter} onValueChange={setMyOrderStatusFilter}>
                     <SelectTrigger className="w-full sm:w-[200px] bg-slate-800 border-slate-700 text-white">
@@ -456,9 +456,9 @@ const TaxiOrdersPage = () => {
                   </Select>
                 </div>
 
-                <div className="space-y-3 sm:space-y-4">
+                <div className="space-y-3">
                   {completedOrders.length === 0 ? (
-                    <div className="text-center py-8 sm:py-12 border-2 border-dashed border-slate-700 rounded-lg bg-slate-800/30">
+                    <div className="text-center py-8 border-2 border-dashed border-slate-700 rounded-lg bg-slate-800/30">
                       <p className="text-slate-400">Mavjud buyurtmalar yo'q</p>
                     </div>
                   ) : (
