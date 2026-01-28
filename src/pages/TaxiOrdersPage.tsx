@@ -169,8 +169,9 @@ const TaxiOrdersPage = () => {
       })
       .catch(err => {
         console.log(err?.response)
-        if (err?.response?.data?.message) {
-          toast.error(err?.response?.data?.message)
+        const errorMessage = err?.response?.data?.error || err?.response?.data?.error_message || err?.response?.data?.message
+        if (errorMessage) {
+          toast.error(errorMessage)
         } else {
           toast.error("Xatolik yuz berdi!")
         }
@@ -189,9 +190,10 @@ const TaxiOrdersPage = () => {
         fetchOrders()
       })
       .catch(err => {
-        console.log(err?.response?.data?.error)
-        if (err?.response?.data?.error) {
-          toast.error(err?.response?.data?.error)
+        console.log(err?.response?.data)
+        const errorMessage = err?.response?.data?.error || err?.response?.data?.error_message || err?.response?.data?.message
+        if (errorMessage) {
+          toast.error(errorMessage)
         } else {
           toast.error("Xatolik yuz berdi!")
         }
@@ -210,9 +212,10 @@ const TaxiOrdersPage = () => {
         fetchOrders()
       })
       .catch(err => {
-        console.log(err?.response?.data?.data)
-        if (err?.response?.data?.data) {
-          toast.error(err?.response?.data?.data)
+        console.log(err?.response?.data)
+        const errorMessage = err?.response?.data?.error || err?.response?.data?.error_message || err?.response?.data?.data || err?.response?.data?.message
+        if (errorMessage) {
+          toast.error(errorMessage)
         } else {
           toast.error("Xatolik yuz berdi!")
         }
@@ -231,8 +234,13 @@ const TaxiOrdersPage = () => {
         fetchOrders()
       })
       .catch(err => {
-        console.log(err)
-        toast.error("Xatolik yuz berdi!")
+        console.log(err?.response?.data)
+        const errorMessage = err?.response?.data?.error || err?.response?.data?.error_message || err?.response?.data?.message
+        if (errorMessage) {
+          toast.error(errorMessage)
+        } else {
+          toast.error("Xatolik yuz berdi!")
+        }
       })
       .finally(() => {
         setLoading(false)
