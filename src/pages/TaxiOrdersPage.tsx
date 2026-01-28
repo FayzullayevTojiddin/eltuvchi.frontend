@@ -324,7 +324,7 @@ const TaxiOrdersPage = () => {
   }
 
   const calculateCommission = (order) => {
-    return order.fee_per_client
+    return order.driver_payment
   }
 
   const toggleHistory = (orderId, histories) => {
