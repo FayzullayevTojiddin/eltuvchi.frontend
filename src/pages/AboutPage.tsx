@@ -39,7 +39,7 @@ const AboutPage = () => {
       <div className="text-center py-12 bg-gradient-hero rounded-2xl text-white shadow-glow">
         <Car className="h-16 w-16 mx-auto mb-6 opacity-80" />
         <h1 className="text-4xl md:text-5xl font-bold mb-4">
-          Eltuvchi haqida
+          O'rgimchak haqida
         </h1>
         <p className="text-xl opacity-90 max-w-2xl mx-auto">
           O'zbekistonda eng ishonchli shaharlararo taxi xizmati - xavfsiz, qulay va tejamkor
@@ -52,7 +52,7 @@ const AboutPage = () => {
           <div className="text-center">
             <h2 className="text-3xl font-bold mb-6">Bizning maqsadimiz</h2>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Eltuvchi - bu O'zbekiston bo'ylab shaharlararo yo'lovchi tashish xizmatlarini 
+              O'rgimchak - bu O'zbekiston bo'ylab shaharlararo yo'lovchi tashish xizmatlarini 
               raqamlashtirish va zamoniylashtirish maqsadida yaratilgan platforma. Biz har bir 
               safar xavfsiz, qulay va arzon bo'lishini ta'minlaymiz.
             </p>
@@ -79,7 +79,7 @@ const AboutPage = () => {
       {/* Features */}
       <Card className="bg-gradient-card border-0 shadow-card-custom">
         <CardHeader>
-          <CardTitle className="text-center text-2xl">Nima uchun Eltuvchi?</CardTitle>
+          <CardTitle className="text-center text-2xl">Nima uchun O'rgimchak?</CardTitle>
           <CardDescription className="text-center">
             Bizning afzalliklarimiz va xususiyatlarimiz
           </CardDescription>

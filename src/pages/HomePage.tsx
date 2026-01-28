@@ -9,7 +9,7 @@ const HomePage = () => {
     <div className="container mx-auto px-4 py-8 space-y-12">
       <section className="text-center py-20 bg-gradient-to-r from-primary/10 to-primary/5 rounded-3xl">
         <h1 className="text-4xl md:text-6xl font-bold mb-6">
-          Eltuvchi bilan xavfsiz safar
+          O'rgimchak bilan xavfsiz safar
         </h1>
         <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
           O'zbekiston bo'ylab shaharlararo yo'lovchi tashish xizmati - 

@@ -7,7 +7,7 @@ const TermsPage = () => {
     <div className="space-y-6 animate-fade-in max-w-4xl mx-auto">
       <div className="text-center">
         <h1 className="text-3xl font-bold mb-2">Ommaviy oferta shartlari</h1>
-        <p className="text-muted-foreground">Eltuvchi xizmati foydalanish qoidalari</p>
+        <p className="text-muted-foreground">O'rgimchak xizmati foydalanish qoidalari</p>
       </div>
 
       <Card className="bg-gradient-card border-0 shadow-card-custom">
@@ -19,14 +19,14 @@ const TermsPage = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm">
-            Ushbu ommaviy oferta (keyingi o'rinlarda "Oferta") "Eltuvchi" mobil ilovasi (keyingi o'rinlarda "Ilova") 
+            Ushbu ommaviy oferta (keyingi o'rinlarda "Oferta") "O'rgimchak" mobil ilovasi (keyingi o'rinlarda "Ilova") 
             orqali yo'lovchi tashish xizmatlaridan foydalanish shartlarini belgilaydi.
           </p>
           <p className="text-sm">
             Ilovadan foydalanish orqali siz ushbu shartlarni to'liq qabul qilasiz va rozi bo'lasiz.
           </p>
           <p className="text-sm">
-            Xizmat "Eltuvchi" MChJ tomonidan taqdim etiladi.
+            Xizmat "O'rgimchak" MChJ tomonidan taqdim etiladi.
           </p>
         </CardContent>
       </Card>

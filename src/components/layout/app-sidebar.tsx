@@ -86,7 +86,7 @@ export const AppSidebar = () => {
   }
 
   const getSidebarTitle = () => {
-    return userRole === 'driver' ? 'Haydovchi Panel' : 'Eltuvchi'
+    return userRole === 'driver' ? 'Haydovchi Panel' : "O'rgimchak"
   }
 
   const navigationItems = getNavigationItems()

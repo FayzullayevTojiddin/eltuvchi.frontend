@@ -1,6 +1,6 @@
 export default function InactivePage() {
     const goToBot = () => {
-        const botUrl = 'https://t.me/mEltuvchiBot'
+        const botUrl = 'https://t.me/urgumchakbot'
 
         if (window.Telegram?.WebApp) {
             (window.Telegram.WebApp as any).openTelegramLink(botUrl)

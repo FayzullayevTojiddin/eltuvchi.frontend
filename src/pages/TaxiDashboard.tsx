@@ -101,39 +101,39 @@ const TaxiDashboard = () => {
 
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-screen gap-4 animate-fade-in bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+            <div className="flex flex-col items-center justify-center min-h-screen gap-4 animate-fade-in bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
                 <div className="relative w-40 h-16">
                     <div className="absolute left-0 top-1/2 -translate-y-1/2 animate-[moveCar_3s_linear_infinite]">
                         <Car className="h-12 w-12 text-yellow-500"/>
                     </div>
-                    <div className="absolute bottom-0 w-full h-1 bg-gray-200 rounded">
+                    <div className="absolute bottom-0 w-full h-1 bg-slate-300 dark:bg-gray-700 rounded">
                         <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 opacity-50 animate-pulse"></div>
                     </div>
                 </div>
-                <p className="text-base sm:text-lg font-medium text-slate-400">Sayt yuklanmoqda...</p>
+                <p className="text-base sm:text-lg font-medium text-slate-700 dark:text-slate-400">Sayt yuklanmoqda...</p>
                 <Loader2 className="h-6 w-6 text-yellow-500 animate-spin"/>
             </div>
         )
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
             <div className="container mx-auto px-2 sm:px-4 max-w-7xl py-4 sm:py-6">
                 <div className="space-y-4 sm:space-y-6 animate-fade-in">
                     <div className="text-center space-y-1 sm:space-y-2">
-                        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Haydovchi Paneli</h1>
-                        <p className="text-xs sm:text-sm text-slate-400">Buyurtmalarni boshqaring va daromad qiling</p>
+                        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">Haydovchi Paneli</h1>
+                        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Buyurtmalarni boshqaring va daromad qiling</p>
                     </div>
 
                     {/* Stats Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                         {stats.map((stat, index) => (
-                            <Card key={index} className="bg-slate-800/50 backdrop-blur-sm border-slate-700">
+                            <Card key={index} className="bg-white dark:bg-slate-800/50 backdrop-blur-sm border-slate-300 dark:border-slate-700">
                                 <CardContent className="p-4 sm:p-6">
                                     <div className="flex items-center justify-between">
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-xs sm:text-sm font-medium text-slate-400 truncate">{stat.title}</p>
-                                            <p className="text-lg sm:text-xl md:text-2xl font-bold text-white mt-1 truncate">
+                                            <p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 truncate">{stat.title}</p>
+                                            <p className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-white mt-1 truncate">
                                                 {stat.value} <span className="text-sm sm:text-base">{stat.unit}</span>
                                             </p>
                                         </div>
@@ -145,10 +145,10 @@ const TaxiDashboard = () => {
                     </div>
 
                     {/* Recent Trips */}
-                    <Card className="bg-slate-800/50 backdrop-blur-sm border-slate-700">
+                    <Card className="bg-white dark:bg-slate-800/50 backdrop-blur-sm border-slate-300 dark:border-slate-700">
                         <CardHeader className="p-4 sm:p-6">
-                            <CardTitle className="text-base sm:text-lg md:text-xl text-white">So'nggi safarlar</CardTitle>
-                            <CardDescription className="text-xs sm:text-sm text-slate-400">Yaqinda bajarilgan buyurtmalar</CardDescription>
+                            <CardTitle className="text-base sm:text-lg md:text-xl text-slate-900 dark:text-white">So'nggi safarlar</CardTitle>
+                            <CardDescription className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Yaqinda bajarilgan buyurtmalar</CardDescription>
                         </CardHeader>
                         <CardContent className="p-3 sm:p-6">
                             <div className="space-y-3 sm:space-y-4">
@@ -156,13 +156,13 @@ const TaxiDashboard = () => {
                                     dashboardData.recent_orders.map((trip) => (
                                         <div
                                             key={trip.id}
-                                            className="p-3 sm:p-4 bg-slate-900/50 border border-slate-700 rounded-lg"
+                                            className="p-3 sm:p-4 bg-slate-100 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg"
                                         >
                                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                                 <div className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
-                                                    <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400 flex-shrink-0 mt-0.5"/>
+                                                    <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500 dark:text-blue-400 flex-shrink-0 mt-0.5"/>
                                                     <div className="flex-1 min-w-0">
-                                                        <p className="font-medium text-white text-sm sm:text-base break-words">
+                                                        <p className="font-medium text-slate-900 dark:text-white text-sm sm:text-base break-words">
                                                             <span className="inline sm:hidden">
                                                                 {truncateText(trip.route?.from?.name || "?", 10)} → {truncateText(trip.route?.to?.name || "?", 10)}
                                                             </span>
@@ -174,11 +174,11 @@ const TaxiDashboard = () => {
                                                             </span>
                                                         </p>
                                                         <div className="flex flex-wrap items-center gap-2 mt-1">
-                                                            <p className="text-xs sm:text-sm text-slate-400">
+                                                            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
                                                                 #{trip.id}
                                                             </p>
-                                                            <span className="text-slate-600">•</span>
-                                                            <p className="text-xs sm:text-sm text-slate-400">
+                                                            <span className="text-slate-400 dark:text-slate-600">•</span>
+                                                            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
                                                                 {formatDate(trip.created_at)}
                                                             </p>
                                                         </div>
@@ -187,7 +187,7 @@ const TaxiDashboard = () => {
                                                 <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                                                     {getStatusBadge(trip.status)}
                                                     <div className="text-right">
-                                                        <p className="font-bold text-green-400 text-sm sm:text-base whitespace-nowrap">
+                                                        <p className="font-bold text-green-600 dark:text-green-400 text-sm sm:text-base whitespace-nowrap">
                                                             {formatCurrency(trip.price_order)} so'm
                                                         </p>
                                                     </div>
@@ -196,8 +196,8 @@ const TaxiDashboard = () => {
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="text-center py-8 sm:py-12 border-2 border-dashed border-slate-700 rounded-lg">
-                                        <p className="text-slate-400 text-sm sm:text-base">Hech qanday safar topilmadi</p>
+                                    <div className="text-center py-8 sm:py-12 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg">
+                                        <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base">Hech qanday safar topilmadi</p>
                                     </div>
                                 )}
                             </div>

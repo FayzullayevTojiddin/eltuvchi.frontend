@@ -18,7 +18,7 @@ const Index = () => {
         
         <div className="relative z-10">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            Eltuvchi
+            O'rgimchak
           </h1>
           <p className="text-xl md:text-2xl mb-8 opacity-90">
             Shaharlararo Taxi Xizmati

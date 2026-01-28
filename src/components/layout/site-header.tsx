@@ -11,7 +11,7 @@ export function SiteHeader() {
       <div className="container flex h-full items-center justify-between px-4">
         <div className="flex items-center gap-4">
           <Link to="/" className="text-xl font-bold text-primary">
-            Eltuvchi
+            O'rgimchak
           </Link>
           {/*<div className="relative hidden md:block">*/}
           {/*  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />*/}
