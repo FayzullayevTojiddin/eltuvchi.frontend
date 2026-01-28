@@ -24,22 +24,17 @@ const MarketPage = () => {
     const [loading, setLoading] = useState(false)
 
     const fetchProducts = () => {
-        try {
-            setLoading(true)
-            api.get('/client/market').then((res) => {
-                console.log(res.data)
-                setProducts(res.data)
-            }).catch((err) => {
-                console.log(err)
-                toast.error('Xatolik yuz berdi!')
-            }).finally(() => {
-                setLoading(false)
-            })
-        } catch (e) {
-            console.log(e)
-            toast.error('Xatolik yuz berdi!')
+        setLoading(true)
+        api.get('/client/market').then((res) => {
+            console.log(res.data)
+            setProducts(res.data)
+        }).catch((err) => {
+            console.log(err.response?.data)
+            const errorMessage = err.response?.data?.error || err.response?.data?.error_message || err.response?.data?.message
+            toast.error(errorMessage || 'Xatolik yuz berdi!')
+        }).finally(() => {
             setLoading(false)
-        }
+        })
     }
 
     useEffect(() => {
@@ -52,30 +47,30 @@ const MarketPage = () => {
     }
 
     const confirmPurchase = () => {
-        try {
-            if (selectedProduct) {
-                const requestData = {
-                    discount_id: selectedProduct.id
-                }
-
-                setLoading(true)
-                api.post('/client/market', requestData).then((res) => {
-                    console.log(res.data)
-                    toast.success('Mahsulot muvaffaqiyatli sotib olindi!')
-                    fetchProducts()
-                }).catch((err) => {
-                    console.log(err.response?.data?.error)
-                    toast.error(err.response?.data?.error || 'Xatolik yuz berdi!')
-                }).finally(() => {
-                    setLoading(false)
-                })
+        if (selectedProduct) {
+            const requestData = {
+                discount_id: selectedProduct.id
             }
+
+            setLoading(true)
+            api.post('/client/market', requestData).then((res) => {
+                console.log(res.data)
+                toast.success('Mahsulot muvaffaqiyatli sotib olindi!')
+                setShowConfirmDialog(false)
+                setSelectedProduct(null)
+                fetchProducts()
+            }).catch((err) => {
+                console.log(err.response?.data)
+                const errorMessage = err.response?.data?.error || err.response?.data?.error_message || err.response?.data?.message
+                toast.error(errorMessage || 'Xatolik yuz berdi!')
+                setShowConfirmDialog(false)
+                setSelectedProduct(null)
+            }).finally(() => {
+                setLoading(false)
+            })
+        } else {
             setShowConfirmDialog(false)
             setSelectedProduct(null)
-        } catch (e) {
-            console.log(e)
-            toast.error('Xatolik yuz berdi!')
-            setLoading(false)
         }
     }
 
