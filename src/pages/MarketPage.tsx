@@ -60,8 +60,14 @@ const MarketPage = () => {
                 setSelectedProduct(null)
                 fetchProducts()
             }).catch((err) => {
-                console.log(err.response?.data)
-                const errorMessage = err.response?.data?.error || err.response?.data?.error_message || err.response?.data?.message
+                console.log('Full error:', err)
+                console.log('Error response:', err.response)
+                console.log('Error data:', err.response?.data)
+                
+                const errorData = err.response?.data
+                const errorMessage = errorData?.error || errorData?.error_message || errorData?.message || err.message
+                
+                console.log('Final error message:', errorMessage)
                 toast.error(errorMessage || 'Xatolik yuz berdi!')
                 setShowConfirmDialog(false)
                 setSelectedProduct(null)
