@@ -141,8 +141,8 @@ const MarketPage = () => {
                                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                                                     />
                                                 ) : (
-                                                    <div className="w-full h-full flex items-center justify-center">
-                                                        <Package className="h-12 w-12 sm:h-16 sm:w-16 text-slate-600"/>
+                                                    <div className="w-full h-full flex items-center justify-center bg-slate-800">
+                                                        <Package className="h-12 w-12 sm:h-16 sm:w-16 text-slate-400"/>
                                                     </div>
                                                 )}
                                             </div>
@@ -202,7 +202,7 @@ const MarketPage = () => {
                                                             />
                                                         ) : (
                                                             <div className="w-full h-full flex items-center justify-center">
-                                                                <Package className="h-6 w-6 text-slate-600" />
+                                                                <Package className="h-6 w-6 text-slate-400" />
                                                             </div>
                                                         )}
                                                     </div>
