@@ -86,7 +86,7 @@ export const AppSidebar = () => {
   }
 
   const getSidebarTitle = () => {
-    return userRole === 'driver' ? 'Haydovchi Panel' : "Sky-Travel"
+    return userRole === 'driver' ? 'Haydovchi Panel' : "Sky-Transfer"
   }
 
   const navigationItems = getNavigationItems()
