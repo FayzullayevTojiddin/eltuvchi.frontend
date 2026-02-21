@@ -1,6 +1,6 @@
 export default function BlockedPage() {
     const contactAdmin = () => {
-        const botUrl = 'https://t.me/urgumchakbot'
+        const botUrl = 'https://t.me/Sky_Transfer_Bot'
 
         if (window.Telegram?.WebApp) {
             (window.Telegram.WebApp as any).openTelegramLink(botUrl)

@@ -2,7 +2,7 @@
 
 ## 📖 Loyihaning maqsadi
 
-“O'rgimchak shaharlararo TAXI” — bu onlayn yetkazib berish/xabar yetkazuvchi xizmat tizimi. Foydalanuvchilar buyurtma berish, jo‘natish va qabul qilish manzillarini tanlash, buyurtma holatini kuzatish va yetkazuvchiga bog‘lanish kabi funksiyalardan foydalanishlari mumkin.
+“Sky-Travel shaharlararo TAXI” — bu onlayn yetkazib berish/xabar yetkazuvchi xizmat tizimi. Foydalanuvchilar buyurtma berish, jo‘natish va qabul qilish manzillarini tanlash, buyurtma holatini kuzatish va yetkazuvchiga bog‘lanish kabi funksiyalardan foydalanishlari mumkin.
 
 ## 🛠 Asosiy funksiyalar
 

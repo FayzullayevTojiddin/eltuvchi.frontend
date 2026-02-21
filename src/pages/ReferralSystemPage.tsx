@@ -46,7 +46,7 @@ const ReferralSystemPage = () => {
   }
 
   const shareViaWhatsApp = () => {
-    const message = `O'rgimchak ilovasidan foydalaning va bepul safarlar qiling! Mening referal kodim: ${referralCode}\nIlovani yuklab olish: https://eltuvchi.uz/register?ref=${referralCode}`
+    const message = `Sky-Travel ilovasidan foydalaning va bepul safarlar qiling! Mening referal kodim: ${referralCode}\nIlovani yuklab olish: https://eltuvchi.uz/register?ref=${referralCode}`
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, '_blank')
   }
